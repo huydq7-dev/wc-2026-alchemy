@@ -9,13 +9,7 @@ interface Props {
   className?: string;
 }
 
-export default function PageHeader({
-  title,
-  icon,
-  description,
-  actions,
-  className,
-}: Props) {
+export default function PageHeader({ title, actions, className }: Props) {
   return (
     <div
       className={cn(

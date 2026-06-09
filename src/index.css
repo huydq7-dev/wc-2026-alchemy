@@ -14,7 +14,7 @@
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Archivo', sans-serif;
   background:
     radial-gradient(circle at top, rgba(25, 188, 255, 0.08), transparent 20%),
     radial-gradient(circle at 18% 24%, rgba(10, 84, 180, 0.1), transparent 22%),
@@ -22,6 +22,7 @@ body {
   color: #F0F4FF;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "tnum" 1, "ss01" 1;
   margin: 0;
   min-height: 100vh;
   overflow-x: hidden;
