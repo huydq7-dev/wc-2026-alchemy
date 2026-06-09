@@ -94,8 +94,9 @@ export default function MatchCard({ match, userPick, showPickButtons = true }: R
             <div className="flex items-center gap-1">
               <DealBadge
                 deal={match.deal}
-                teamName={match.deal_side === 'A' ? match.team_a_name : match.team_b_name}
-                otherTeamName={match.deal_side === 'A' ? match.team_b_name : match.team_a_name}
+                dealSide={match.deal_side as 'A' | 'B'}
+                teamAName={match.team_a_name}
+                teamBName={match.team_b_name}
               />
               {isAdmin && (
                 <button

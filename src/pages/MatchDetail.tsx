@@ -68,7 +68,7 @@ export default function MatchDetail() {
               ) : (
                 <span className="font-display text-2xl text-gray-400">{match.time}</span>
               )}
-              <DealBadge deal={match.deal} teamName={match.deal_side === 'A' ? match.team_a_name : match.team_b_name} otherTeamName={match.deal_side === 'A' ? match.team_b_name : match.team_a_name} />
+              <DealBadge deal={match.deal} dealSide={match.deal_side as 'A' | 'B'} teamAName={match.team_a_name} teamBName={match.team_b_name} />
             </div>
 
             <div className="flex flex-col items-center gap-2 flex-1 min-w-0">
