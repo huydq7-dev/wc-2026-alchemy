@@ -61,7 +61,6 @@ const NAME_ALIASES: Record<string, string> = {
   'ROU': 'Romania',
   'BUL': 'Bulgaria',
   'SRB': 'Serbia',
-  'CRO': 'Croatia',
   'SLO': 'Slovenia',
   'BIH': 'Bosnia and Herzegovina',
   'GRE': 'Greece',
@@ -74,7 +73,6 @@ const NAME_ALIASES: Record<string, string> = {
   'CRC': 'Costa Rica',
   'HON': 'Honduras',
   'SLV': 'El Salvador',
-  'PAN': 'Panama',
   'CUW': 'Curaçao',
 };
 
