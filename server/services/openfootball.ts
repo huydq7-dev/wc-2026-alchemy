@@ -93,7 +93,7 @@ async function processMatchResult(
   if (missingUsers.length > 0) {
     await db.batch(
       missingUsers.map((u: any) => ({
-        sql: 'INSERT OR IGNORE INTO predictions (user_id, match_id, pick, result, points, auto_loss) VALUES (?, ?, ?, ?, ?, 1)',
+        sql: "INSERT OR IGNORE INTO predictions (user_id, match_id, pick, result, points, auto_loss, created_at) VALUES (?, ?, ?, ?, ?, 1, datetime('now', '+7 hours'))",
         args: [u.id, matchId, 'A', 'lose', -1],
       })),
       'write',

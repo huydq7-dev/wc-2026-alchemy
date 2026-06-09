@@ -44,7 +44,7 @@ router.post('/', async (req: Request, res: Response) => {
   if (existing) {
     await db.execute({ sql: 'UPDATE predictions SET pick = ? WHERE id = ?', args: [pick, existing.id] });
   } else {
-    await db.execute({ sql: 'INSERT INTO predictions (user_id, match_id, pick) VALUES (?, ?, ?)', args: [userId, matchId, pick] });
+    await db.execute({ sql: "INSERT INTO predictions (user_id, match_id, pick, created_at) VALUES (?, ?, ?, datetime('now', '+7 hours'))", args: [userId, matchId, pick] });
   }
 
   await logActivity(userId, user.name, existing ? 'change_prediction' : 'place_prediction', {
