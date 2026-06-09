@@ -2,25 +2,12 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Trophy, LogIn, AlertCircle, KeyRound } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useGameStore } from '@/store/useGameStore'
 import { api } from '@/api/client'
 import { cn } from '@/lib/utils'
-
-const USER_LIST = [
-  { id: 'U01', name: 'Julian', avatar: '🦅' },
-  { id: 'U02', name: 'Mountain', avatar: '⛰️' },
-  { id: 'U03', name: 'Terry', avatar: '🦁' },
-  { id: 'U04', name: 'Mike', avatar: '🐺' },
-  { id: 'U05', name: 'Alfred', avatar: '🐉' },
-  { id: 'U06', name: 'Stephen', avatar: '🦊' },
-  { id: 'U07', name: 'Viktor', avatar: '🦚' },
-  { id: 'U08', name: 'Curtis', avatar: '🐯' },
-  { id: 'U09', name: 'Gavin', avatar: '🦋' },
-  { id: 'U10', name: 'Don', avatar: '🐻' },
-  { id: 'U11', name: 'Andrew', avatar: '🦉' },
-]
 
 export default function Login() {
   const [selectedUser, setSelectedUser] = useState<string | null>(null)
@@ -30,6 +17,11 @@ export default function Login() {
   const [needsPinChange, setNeedsPinChange] = useState(false)
   const [newPin, setNewPin] = useState('')
   const [confirmPin, setConfirmPin] = useState('')
+  const { data: users, isLoading: usersLoading } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => api.getUsers(),
+    staleTime: 60000,
+  })
   const login = useGameStore(s => s.login)
   const navigate = useNavigate()
 
@@ -139,21 +131,27 @@ export default function Login() {
         <div className="mb-6">
           <p className="text-xs text-gray-500 uppercase tracking-wider mb-3 text-center">Select Player</p>
           <div className="grid grid-cols-4 gap-2">
-            {USER_LIST.map((user) => (
-              <button
-                key={user.id}
-                onClick={() => { setSelectedUser(user.id); setError('') }}
-                className={cn(
-                  'flex flex-col items-center gap-1 p-3 rounded-xl border transition-all',
-                  selectedUser === user.id
-                    ? 'border-[#C8102E] bg-[#C8102E]/10 scale-105'
-                    : 'border-white/5 bg-[#141929] hover:border-white/20 hover:bg-[#141929]/80'
-                )}
-              >
-                <span className="text-3xl">{user.avatar}</span>
-                <span className="text-[11px] text-gray-400 font-medium leading-tight text-center">{user.name}</span>
-              </button>
-            ))}
+            {usersLoading ? (
+              <div className="col-span-4 text-center text-gray-500 py-4">Loading...</div>
+            ) : users ? (
+              users.map((user: any) => (
+                <button
+                  key={user.id}
+                  onClick={() => { setSelectedUser(user.id); setError('') }}
+                  className={cn(
+                    'flex flex-col items-center gap-1 p-3 rounded-xl border transition-all',
+                    selectedUser === user.id
+                      ? 'border-[#C8102E] bg-[#C8102E]/10 scale-105'
+                      : 'border-white/5 bg-[#141929] hover:border-white/20 hover:bg-[#141929]/80'
+                  )}
+                >
+                  <span className="text-3xl">{user.avatar}</span>
+                  <span className="text-[11px] text-gray-400 font-medium leading-tight text-center">{user.name}</span>
+                </button>
+              ))
+            ) : (
+              <div className="col-span-4 text-center text-gray-500 py-4">No users found</div>
+            )}
           </div>
         </div>
 
