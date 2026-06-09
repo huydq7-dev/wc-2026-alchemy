@@ -59,11 +59,11 @@ router.patch('/users/:id', requireAdmin, async (req: Request, res: Response) => 
   const { id } = req.params;
   const { paid } = req.body;
 
-  const user = (await db.execute({ sql: 'SELECT * FROM users WHERE id = ?', args: [id] })).rows[0] as any;
+  const user = (await db.execute('SELECT * FROM users WHERE id = ?', [id])).rows[0] as any;
   if (!user) return res.status(404).json({ error: 'User not found' });
 
-  await db.execute({ sql: 'UPDATE users SET debt_paid = ? WHERE id = ?', args: [paid ? 1 : 0, id] });
-  const updated = (await db.execute({ sql: 'SELECT * FROM users WHERE id = ?', args: [id] })).rows[0];
+  await db.execute('UPDATE users SET debt_paid = ? WHERE id = ?', [paid ? 1 : 0, id]);
+  const updated = (await db.execute('SELECT * FROM users WHERE id = ?', [id])).rows[0];
   res.json(updated);
 });
 

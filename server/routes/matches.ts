@@ -23,7 +23,7 @@ router.get('/', async (req: Request, res: Response) => {
   if (conditions.length) query += ' WHERE ' + conditions.join(' AND ');
   query += ' ORDER BY date, time';
 
-  const result = await db.execute({ sql: query, args: params });
+  const result = await db.execute(query, params);
   res.json(result.rows);
 });
 
@@ -35,17 +35,15 @@ router.get('/next', async (_req: Request, res: Response) => {
 });
 
 router.get('/:id', async (req: Request, res: Response) => {
-  const match = (await db.execute({ sql: 'SELECT * FROM matches WHERE id = ?', args: [req.params.id] })).rows[0];
+  const match = (await db.execute('SELECT * FROM matches WHERE id = ?', [req.params.id])).rows[0];
   if (!match) return res.status(404).json({ error: 'Match not found' });
 
-  const predictions = (await db.execute({
-    sql: `
-    SELECT p.*, u.name, u.avatar FROM predictions p
-    JOIN users u ON p.user_id = u.id
-    WHERE p.match_id = ?
-  `,
-    args: [req.params.id],
-  })).rows;
+  const predictions = (await db.execute(
+    `SELECT p.*, u.name, u.avatar FROM predictions p
+     JOIN users u ON p.user_id = u.id
+     WHERE p.match_id = ?`,
+    [req.params.id],
+  )).rows;
 
   const dealInfo = generateDealExplanation(match);
 
@@ -57,20 +55,20 @@ router.patch('/:id', requireAdmin, async (req: Request, res: Response) => {
   const { status, score_a, score_b, deal, deal_side } = req.body;
   const adminId = req.headers['x-user-id'] as string;
 
-  const match = (await db.execute({ sql: 'SELECT * FROM matches WHERE id = ?', args: [id] })).rows[0] as any;
+  const match = (await db.execute('SELECT * FROM matches WHERE id = ?', [id])).rows[0] as any;
   if (!match) return res.status(404).json({ error: 'Match not found' });
 
   const newDeal = deal ?? match.deal;
   const newDealSide = deal_side ?? match.deal_side;
 
-  await db.execute({
-    sql: 'UPDATE matches SET status = ?, score_a = ?, score_b = ?, deal = ?, deal_side = ? WHERE id = ?',
-    args: [status || match.status, score_a ?? match.score_a, score_b ?? match.score_b, newDeal, newDealSide, id],
-  });
+  await db.execute(
+    'UPDATE matches SET status = ?, score_a = ?, score_b = ?, deal = ?, deal_side = ? WHERE id = ?',
+    [status || match.status, score_a ?? match.score_a, score_b ?? match.score_b, newDeal, newDealSide, id],
+  );
 
   // Recalculate predictions if match is finished
   if (status === 'finished' && score_a != null && score_b != null) {
-    const predictions = (await db.execute({ sql: 'SELECT * FROM predictions WHERE match_id = ?', args: [id] })).rows as any[];
+    const predictions = (await db.execute('SELECT * FROM predictions WHERE match_id = ?', [id])).rows as any[];
 
     const updateStmts = predictions.map((pred: any) => {
       const result = calculateResult(score_a, score_b, match.deal, match.deal_side, pred.pick);
@@ -87,7 +85,7 @@ router.patch('/:id', requireAdmin, async (req: Request, res: Response) => {
   }
 
   // Log admin action
-  const admin = (await db.execute({ sql: 'SELECT name FROM users WHERE id = ?', args: [adminId] })).rows[0] as any;
+  const admin = (await db.execute('SELECT name FROM users WHERE id = ?', [adminId])).rows[0] as any;
   const changedFields: string[] = [];
   if (deal !== undefined) changedFields.push('deal');
   if (status !== undefined) changedFields.push('status');
@@ -101,12 +99,12 @@ router.patch('/:id', requireAdmin, async (req: Request, res: Response) => {
     });
   }
 
-  const updated = (await db.execute({ sql: 'SELECT * FROM matches WHERE id = ?', args: [id] })).rows[0];
+  const updated = (await db.execute('SELECT * FROM matches WHERE id = ?', [id])).rows[0];
   res.json(updated);
 });
 
 router.get('/:id/pickable', async (req: Request, res: Response) => {
-  const match = (await db.execute({ sql: 'SELECT * FROM matches WHERE id = ?', args: [req.params.id] })).rows[0] as any;
+  const match = (await db.execute('SELECT * FROM matches WHERE id = ?', [req.params.id])).rows[0] as any;
   if (!match) return res.status(404).json({ error: 'Match not found' });
 
   const allowed = match.status === 'upcoming' && isPickAllowed(match.date, match.time);

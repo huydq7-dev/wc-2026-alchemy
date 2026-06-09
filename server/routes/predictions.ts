@@ -57,31 +57,27 @@ router.post('/', async (req: Request, res: Response) => {
 
 router.get('/user/:userId/history', async (req: Request, res: Response) => {
   const { userId } = req.params;
-  const predictions = (await db.execute({
-    sql: `
-    SELECT p.*, m.date, m.time, m.team_a_name, m.team_a_flag, m.team_a_code, m.team_b_name, m.team_b_flag, m.team_b_code,
+  const predictions = (await db.execute(
+    `SELECT p.*, m.date, m.time, m.team_a_name, m.team_a_flag, m.team_a_code, m.team_b_name, m.team_b_flag, m.team_b_code,
            m.deal, m.deal_side, m.stage, m.status, m.score_a, m.score_b
     FROM predictions p
     JOIN matches m ON p.match_id = m.id
     WHERE p.user_id = ?
-    ORDER BY m.date DESC, m.time DESC
-  `,
-    args: [userId],
-  })).rows;
+    ORDER BY m.date DESC, m.time DESC`,
+    [userId],
+  )).rows;
 
-  const stats = (await db.execute({
-    sql: `
-    SELECT
+  const stats = (await db.execute(
+    `SELECT
       COUNT(*) as total,
       SUM(CASE WHEN result = 'win' THEN 1 ELSE 0 END) as wins,
       SUM(CASE WHEN result = 'lose' THEN 1 ELSE 0 END) as losses,
       SUM(CASE WHEN result = 'draw' THEN 1 ELSE 0 END) as draws,
       SUM(CASE WHEN result IS NULL THEN 1 ELSE 0 END) as pending,
       SUM(CASE WHEN result = 'win' THEN 1 ELSE 0 END) - SUM(CASE WHEN result = 'lose' THEN 1 ELSE 0 END) as totalPoints
-    FROM predictions WHERE user_id = ?
-  `,
-    args: [userId],
-  })).rows[0];
+    FROM predictions WHERE user_id = ?`,
+    [userId],
+  )).rows[0];
 
   res.json({ predictions, stats });
 });
