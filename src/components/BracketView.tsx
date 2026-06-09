@@ -16,7 +16,7 @@ const SIDE_ROUND_ORDER = [
 ] as const;
 
 const WORLD_CUP_2026_EMBLEM =
-  "https://commons.wikimedia.org/wiki/Special:FilePath/2026%20FIFA%20World%20Cup%20emblem%20(without%20trophy).svg";
+  "https://pngdownload.io/wp-content/uploads/2025/07/FIFA-2026-World-Cup-Logo.webp";
 
 const COLUMN_WIDTH = 188;
 const CONNECTOR_WIDTH = 36;
