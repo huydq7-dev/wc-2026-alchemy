@@ -70,12 +70,16 @@ export default function Login() {
 
   if (needsPinChange) {
     return (
-      <div className="min-h-screen bg-[#0A0E1A] flex items-center justify-center p-4">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <KeyRound className="w-12 h-12 text-[#F5A623] mx-auto mb-4" />
-            <h1 className="font-display text-2xl text-white tracking-wider">Set Your PIN</h1>
-            <p className="text-gray-500 mt-2 text-sm">First time login — please choose a new PIN</p>
+      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#060912] p-4">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.08),_transparent_32%),linear-gradient(135deg,_rgba(16,24,52,0.95),_rgba(7,10,20,1))]" />
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="app-panel relative w-full max-w-md rounded-[30px] p-7">
+          <div className="mb-8 text-center">
+            <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]">
+              <KeyRound className="h-7 w-7 text-white" />
+            </div>
+            <p className="app-kicker justify-center">First Login</p>
+            <h1 className="mt-3 font-display text-2xl tracking-[0.16em] text-white">Set Your PIN</h1>
+            <p className="mt-2 text-sm text-white/50">Choose a private PIN before entering the pool.</p>
           </div>
 
           <div className="space-y-4">
@@ -84,7 +88,7 @@ export default function Login() {
               placeholder="New PIN (4-6 digits)"
               value={newPin}
               onChange={e => { setNewPin(e.target.value.replace(/\D/g, '')); setError('') }}
-              className="bg-[#141929] border-white/10 text-white text-center text-xl tracking-[0.3em] h-14 rounded-xl focus:border-[#F5A623]"
+              className="h-14 rounded-2xl text-center text-xl tracking-[0.3em]"
               autoFocus
             />
             <Input
@@ -93,11 +97,11 @@ export default function Login() {
               value={confirmPin}
               onChange={e => { setConfirmPin(e.target.value.replace(/\D/g, '')); setError('') }}
               onKeyDown={handleKeyDown}
-              className="bg-[#141929] border-white/10 text-white text-center text-xl tracking-[0.3em] h-14 rounded-xl focus:border-[#F5A623]"
+              className="h-14 rounded-2xl text-center text-xl tracking-[0.3em]"
             />
 
             {error && (
-              <motion.p initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="text-red-400 text-sm flex items-center gap-1.5">
+              <motion.p initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-1.5 text-sm text-red-300">
                 <AlertCircle className="w-4 h-4" />{error}
               </motion.p>
             )}
@@ -105,7 +109,7 @@ export default function Login() {
             <Button
               onClick={handleChangePin}
               disabled={loading || newPin.length < 4 || confirmPin.length < 4}
-              className="w-full h-12 bg-[#F5A623] hover:bg-[#F5A623]/80 text-[#0A0E1A] font-semibold rounded-xl text-base"
+              className="h-12 w-full rounded-2xl text-base"
             >
               {loading ? <span className="animate-pulse">Saving...</span> : 'Set PIN & Continue'}
             </Button>
@@ -116,41 +120,45 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0E1A] flex items-center justify-center p-4">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
-        <div className="text-center mb-8">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#060912] p-4">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.08),_transparent_32%),linear-gradient(135deg,_rgba(16,24,52,0.95),_rgba(7,10,20,1))]" />
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="app-panel relative w-full max-w-md rounded-[30px] p-7">
+        <div className="mb-8 text-center">
           <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', delay: 0.1 }}>
-            <Trophy className="w-16 h-16 text-[#F5A623] mx-auto mb-4" />
+            <div className="mx-auto mb-4 flex size-20 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]">
+              <Trophy className="h-9 w-9 text-white" />
+            </div>
           </motion.div>
-          <h1 className="font-display text-4xl text-white tracking-wider">
-            WC<span className="text-[#C8102E]">2026</span>
+          <p className="app-kicker justify-center">Internal Prediction Pool</p>
+          <h1 className="mt-3 font-display text-4xl tracking-[0.18em] text-white">
+            WC<span className="text-white/60">2026</span>
           </h1>
-          <p className="text-gray-500 mt-2 text-sm">Log in to make predictions</p>
+          <p className="mt-2 text-sm text-white/50">Log in to make predictions and track your rank.</p>
         </div>
 
         <div className="mb-6">
-          <p className="text-xs text-gray-500 uppercase tracking-wider mb-3 text-center">Select Player</p>
+          <p className="mb-3 text-center text-[10px] uppercase tracking-[0.28em] text-white/45">Select Player</p>
           <div className="grid grid-cols-4 gap-2">
             {usersLoading ? (
-              <div className="col-span-4 text-center text-gray-500 py-4">Loading...</div>
+              <div className="col-span-4 py-4 text-center text-white/40">Loading...</div>
             ) : users ? (
               users.map((user: any) => (
                 <button
                   key={user.id}
                   onClick={() => { setSelectedUser(user.id); setError('') }}
                   className={cn(
-                    'flex flex-col items-center gap-1 p-3 rounded-xl border transition-all',
+                    'flex flex-col items-center gap-1 rounded-2xl border p-3 transition-all',
                     selectedUser === user.id
-                      ? 'border-[#C8102E] bg-[#C8102E]/10 scale-105'
-                      : 'border-white/5 bg-[#141929] hover:border-white/20 hover:bg-[#141929]/80'
+                      ? 'scale-[1.02] border-white/18 bg-white/12'
+                      : 'border-white/8 bg-white/[0.03] hover:border-white/18 hover:bg-white/[0.06]'
                   )}
                 >
                   <span className="text-3xl">{user.avatar}</span>
-                  <span className="text-[11px] text-gray-400 font-medium leading-tight text-center">{user.name}</span>
+                  <span className="text-center text-[11px] leading-tight font-medium text-white/60">{user.name}</span>
                 </button>
               ))
             ) : (
-              <div className="col-span-4 text-center text-gray-500 py-4">No users found</div>
+              <div className="col-span-4 py-4 text-center text-white/40">No users found</div>
             )}
           </div>
         </div>
@@ -162,12 +170,12 @@ export default function Login() {
             value={pin}
             onChange={e => { setPin(e.target.value.replace(/\D/g, '')); setError('') }}
             onKeyDown={handleKeyDown}
-            className="bg-[#141929] border-white/10 text-white text-center text-2xl tracking-[0.5em] h-14 rounded-xl focus:border-[#C8102E]"
+            className="h-14 rounded-2xl text-center text-2xl tracking-[0.5em]"
             autoFocus
           />
 
           {error && (
-            <motion.p initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="text-red-400 text-sm flex items-center gap-1.5">
+            <motion.p initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-1.5 text-sm text-red-300">
               <AlertCircle className="w-4 h-4" />{error}
             </motion.p>
           )}
@@ -175,7 +183,7 @@ export default function Login() {
           <Button
             onClick={handleLogin}
             disabled={loading || !selectedUser || pin.length < 4}
-            className="w-full h-12 bg-[#C8102E] hover:bg-[#C8102E]/80 text-white font-semibold rounded-xl text-base"
+            className="h-12 w-full rounded-2xl text-base"
           >
             {loading ? (
               <span className="animate-pulse">Logging in...</span>
@@ -187,7 +195,7 @@ export default function Login() {
           </Button>
         </div>
 
-        <p className="text-center text-xs text-gray-600 mt-6">
+        <p className="mt-6 text-center text-xs text-white/32">
           Default PIN: last 4 digits of your user ID
         </p>
       </motion.div>

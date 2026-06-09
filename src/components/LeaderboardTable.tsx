@@ -20,7 +20,7 @@ export default function LeaderboardTable({ entries }: Props) {
   return (
     <div>
       {/* Desktop Table */}
-      <div className="hidden md:block overflow-x-auto">
+      <div className="app-panel overflow-x-auto rounded-[24px] p-2 hidden md:block">
         <table className="w-full">
           <thead>
             <tr className="border-b border-white/5 text-xs text-gray-500 uppercase tracking-wider">
@@ -41,8 +41,8 @@ export default function LeaderboardTable({ entries }: Props) {
                 key={entry.userId}
                 layout
                 className={cn(
-                  "border-b border-white/5 cursor-pointer hover:bg-white/[0.02] transition-colors",
-                  entry.rank === 1 && "bg-[#F5A623]/[0.03]",
+              "border-b border-white/5 cursor-pointer hover:bg-white/[0.03] transition-colors",
+                  entry.rank === 1 && "bg-[#F5A623]/[0.06]",
                 )}
                 onClick={() => setSelectedUserId(entry.userId)}
               >
@@ -129,7 +129,7 @@ export default function LeaderboardTable({ entries }: Props) {
             key={entry.userId}
             layout
             className={cn(
-              "rounded-xl border bg-[#141929] p-4 cursor-pointer",
+              "app-panel rounded-[24px] p-4 cursor-pointer",
               entry.rank === 1 ? "border-[#F5A623]/30" : "border-white/5",
             )}
             onClick={() => setSelectedUserId(entry.userId)}
@@ -212,7 +212,7 @@ function UserHistoryModal({
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
-        className="bg-[#141929] border border-white/10 rounded-2xl p-6 w-full max-w-lg max-h-[80vh] overflow-y-auto"
+        className="app-panel w-full max-w-lg max-h-[80vh] overflow-y-auto rounded-[28px] p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">

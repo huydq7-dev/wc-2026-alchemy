@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Calendar, Filter } from "lucide-react";
 import MatchCard from "@/components/MatchCard";
+import PageHeader from "@/components/PageHeader";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMatches } from "@/hooks/useMatches";
 import { usePredictions } from "@/hooks/usePredictions";
@@ -48,12 +49,11 @@ export default function Schedule() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-3xl text-white tracking-wider flex items-center gap-2">
-          <Calendar className="w-7 h-7 text-primary" />
-          Schedule & Predict
-        </h1>
-      </div>
+      <PageHeader
+        title="Schedule & Predict"
+        icon={<Calendar className="w-7 h-7 text-primary" />}
+        description="Browse fixtures by day, lock in picks quickly, and review finished matches without losing your place."
+      />
 
       <Tabs
         value={filter}
@@ -95,7 +95,7 @@ export default function Schedule() {
 
             return (
               <div key={date}>
-                <h2 className="font-display text-lg text-gray-400 mb-3 uppercase tracking-wider">
+                <h2 className="font-display text-lg text-white/58 mb-3 uppercase tracking-[0.18em]">
                   {dateLabel}
                   {date === today && (
                     <span className="ml-2 text-primary text-sm">· TODAY</span>

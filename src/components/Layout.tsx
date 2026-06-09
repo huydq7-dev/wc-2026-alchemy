@@ -21,26 +21,29 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-[#0A0E1A] flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-[#0A0E1A]/95 backdrop-blur border-b border-white/5">
+      <header className="sticky top-0 z-50 border-b border-white/6 bg-[#0A0E1A]/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <NavLink to="/" className="flex items-center gap-3">
-            <Trophy className="w-8 h-8 text-[#F5A623]" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/8 bg-white/[0.03]">
+              <Trophy className="w-5 h-5 text-[#F5A623]" />
+            </div>
             <div>
-              <h1 className="font-display text-2xl text-white tracking-wider">
+              <p className="app-kicker">Alchemy Pool</p>
+              <h1 className="font-display text-2xl text-white tracking-wider leading-none">
                 WC<span className="text-[#C8102E]">2026</span>
               </h1>
             </div>
           </NavLink>
 
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-1 rounded-2xl border border-white/6 bg-white/[0.025] p-1">
             {navItems.map(({ to, icon: Icon, label }) => (
               <NavLink
                 key={to}
                 to={to}
                 className={cn(
-                  'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                  'flex items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-medium transition-colors',
                   location.pathname === to
-                    ? 'bg-[#C8102E]/20 text-[#C8102E]'
+                    ? 'bg-white text-[#0A0E1A]'
                     : 'text-gray-400 hover:text-white hover:bg-white/5'
                 )}
               >
@@ -62,16 +65,16 @@ export default function Layout({ children }: { children: ReactNode }) {
       </main>
 
       {/* Bottom Nav (Mobile) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0A0E1A]/95 backdrop-blur border-t border-white/5">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-white/6 bg-[#0A0E1A]/88 backdrop-blur-xl">
         <div className="flex items-center justify-around px-2 py-2">
           {navItems.map(({ to, icon: Icon, label }) => (
             <NavLink
               key={to}
               to={to}
               className={cn(
-                'flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors min-w-0',
+                'flex min-w-0 flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-colors',
                 location.pathname === to
-                  ? 'text-[#C8102E]'
+                  ? 'bg-white text-[#0A0E1A]'
                   : 'text-gray-500'
               )}
             >

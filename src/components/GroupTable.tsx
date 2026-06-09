@@ -9,17 +9,17 @@ interface Props {
 
 export default function GroupTable({ group, teams }: Props) {
   return (
-    <div className="bg-[#141929] border border-white/5 rounded-xl overflow-hidden">
-      <div className="px-4 py-2 border-b border-white/5 bg-white/[0.02]">
-        <h3 className="font-display text-sm text-gray-400 tracking-widest">
-          BẢNG {group}
+    <div className="app-panel overflow-hidden rounded-[24px]">
+      <div className="border-b border-white/6 bg-white/[0.03] px-4 py-3">
+        <h3 className="font-display text-sm tracking-[0.24em] text-white/55">
+          GROUP {group}
         </h3>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
           <thead>
-            <tr className="text-gray-500 border-b border-white/5">
-              <th className="text-left py-1.5 px-3 font-normal">Đội</th>
+            <tr className="border-b border-white/6 text-white/36">
+              <th className="text-left py-2 px-3 font-normal">Team</th>
               <th className="text-center py-1.5 px-1 font-normal w-7">P</th>
               <th className="text-center py-1.5 px-1 font-normal w-7 hidden sm:table-cell">W</th>
               <th className="text-center py-1.5 px-1 font-normal w-7 hidden sm:table-cell">D</th>
@@ -36,10 +36,10 @@ export default function GroupTable({ group, teams }: Props) {
                 key={row.code}
                 className={cn(
                   'border-b border-white/5 last:border-0',
-                  i < 2 && 'bg-white/[0.01]',
+                  i < 2 && 'bg-white/[0.03]',
                 )}
               >
-                <td className="py-1.5 px-3">
+                <td className="py-2 px-3">
                   <div className="flex items-center gap-1.5">
                     <FlagImage code={row.code} size={40} className="w-5 h-3.5 rounded-none object-cover" />
                     <span className="text-white text-xs truncate max-w-[80px] sm:max-w-[100px]">{row.team}</span>

@@ -53,8 +53,8 @@ export default function MatchCard({ match, userPick, showPickButtons = true }: R
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
-        'relative rounded-xl border bg-[#141929] p-4 transition-all',
-        isLive && 'border-[#C8102E]/40 shadow-lg shadow-[#C8102E]/5',
+        'app-panel relative rounded-[26px] p-4 transition-all',
+        isLive && 'border-[#C8102E]/40 shadow-lg shadow-[#C8102E]/10',
         isFinished && 'border-white/5 opacity-80',
         isUpcoming && 'border-white/10 hover:border-white/20',
         isPicked && 'ring-1 ring-[#F5A623]/30'
@@ -76,7 +76,7 @@ export default function MatchCard({ match, userPick, showPickButtons = true }: R
       </div>
 
       {/* Stage */}
-      <p className="text-[11px] text-gray-500 mb-3 flex items-center">{match.stage}  - {match.venue && <span className="inline-flex items-center gap-1 ml-1">{match.venue}</span>}</p>
+      <p className="mb-3 flex items-center text-[11px] text-white/42">{match.stage}  - {match.venue && <span className="ml-1 inline-flex items-center gap-1">{match.venue}</span>}</p>
 
       {/* Teams & Score */}
       <Link to={`/match/${match.id}`} className="block">
@@ -127,7 +127,7 @@ export default function MatchCard({ match, userPick, showPickButtons = true }: R
 
         {/* View details link */}
         <div className="flex justify-center mt-3">
-          <span className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-[#C8102E] transition-colors">
+          <span className="inline-flex items-center gap-1 text-xs text-white/40 transition-colors hover:text-[#C8102E]">
             <Clock className="w-3 h-3" />
             Detail
             <ChevronRight className="w-3 h-3" />

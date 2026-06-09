@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import db from '../db.js';
+import { getSingleValue } from '../utils/request.js';
 
 export async function requireAdmin(req: Request, res: Response, next: NextFunction) {
-  const userId = req.headers['x-user-id'] as string;
+  const userId = getSingleValue(req.headers['x-user-id']);
   if (!userId) return res.status(401).json({ error: 'Not logged in' });
 
   const user = (await db.execute({

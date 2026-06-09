@@ -1,5 +1,6 @@
 import { Wallet, Check, AlertTriangle, PiggyBank, Banknote } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import PageHeader from '@/components/PageHeader'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
@@ -37,19 +38,21 @@ export default function Fund() {
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
-      <h1 className="font-display text-3xl text-white tracking-wider flex items-center gap-2">
-        <Wallet className="w-7 h-7 text-[#C8102E]" />Prize Pool
-      </h1>
+      <PageHeader
+        title="Prize Pool"
+        icon={<Wallet className="w-7 h-7 text-[#C8102E]" />}
+        description="Track the pool size, unpaid losses, and the current prize split at a glance."
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Card className="bg-[#141929] border-white/5">
+        <Card>
           <CardContent className="p-4">
             <PiggyBank className="w-5 h-5 text-[#F5A623] mb-2" />
             <p className="font-display text-2xl text-white">{(fund?.totalFund || 0).toLocaleString()} đ</p>
             <p className="text-xs text-gray-500">Est. Total Pool</p>
           </CardContent>
         </Card>
-        <Card className="bg-[#141929] border-white/5">
+        <Card>
           <CardContent className="p-4">
             <Banknote className="w-5 h-5 text-green-400 mb-2" />
             <p className="font-display text-2xl text-white">{(fund?.betAmount || 5000).toLocaleString()} đ</p>
@@ -58,7 +61,7 @@ export default function Fund() {
         </Card>
       </div>
 
-      <Card className="bg-[#141929] border-white/5">
+      <Card>
         <CardHeader>
           <CardTitle className="text-white font-display text-lg flex items-center gap-2">
             <Wallet className="w-4 h-4 text-[#F5A623]" />Individual Debts
@@ -71,7 +74,7 @@ export default function Fund() {
           {fund?.paidUsers?.length > 0 && (
             <div className="space-y-1">
               {fund.paidUsers.map((user: any) => (
-                <div key={user.userId} className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/5">
+                <div key={user.userId} className="app-panel-muted flex items-center justify-between rounded-2xl p-3">
                   <div className="flex items-center gap-2">
                     <span className="text-xl">{user.avatar}</span>
                     <div>
@@ -96,7 +99,7 @@ export default function Fund() {
               {fund.paidUsers?.length > 0 && <Separator className="my-3 bg-white/5" />}
               <div className="space-y-1">
                 {fund.unpaidUsers.map((user: any) => (
-                  <div key={user.userId} className="flex items-center justify-between p-3 rounded-lg bg-red-500/[0.02] border border-red-500/10">
+                  <div key={user.userId} className="flex items-center justify-between rounded-2xl border border-red-500/14 bg-red-500/[0.045] p-3">
                     <div className="flex items-center gap-2">
                       <span className="text-xl">{user.avatar}</span>
                       <div>
@@ -124,7 +127,7 @@ export default function Fund() {
       </Card>
 
       {fund?.totalFund > 0 && (
-        <Card className="bg-[#141929] border-white/5">
+        <Card>
           <CardHeader>
             <CardTitle className="text-white font-display text-lg flex items-center gap-2">
               <TrophyIcon className="w-4 h-4 text-[#F5A623]" />Prize Distribution
@@ -133,7 +136,7 @@ export default function Fund() {
           <CardContent>
             <div className="space-y-2">
               {fund?.prizes?.map((prize: any) => (
-                <div key={prize.rank} className={cn('flex items-center justify-between p-3 rounded-lg border', prize.rank === 1 && 'bg-[#F5A623]/5 border-[#F5A623]/10', prize.rank !== 1 && 'bg-white/[0.02] border-white/5')}>
+                <div key={prize.rank} className={cn('flex items-center justify-between rounded-2xl border p-3', prize.rank === 1 && 'bg-[#F5A623]/8 border-[#F5A623]/16', prize.rank !== 1 && 'app-panel-muted')}>
                   <div className="flex items-center gap-3">
                     <span className="font-display text-xl w-8 text-center">{prize.rank === 1 ? '🥇' : prize.rank === 2 ? '🥈' : prize.rank === 3 ? '🥉' : `#${prize.rank}`}</span>
                     <div>

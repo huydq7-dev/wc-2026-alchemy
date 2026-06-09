@@ -55,7 +55,7 @@ export default function Standings() {
         )}
 
         {tab === 'bracket' && (
-        <div className="mt-4">
+        <div className="relative left-1/2 mt-4 w-screen -translate-x-1/2 px-4 sm:px-6">
           {bracketLoading ? (
             <div className="h-64 bg-[#141929] rounded-xl animate-pulse" />
           ) : bracket ? (

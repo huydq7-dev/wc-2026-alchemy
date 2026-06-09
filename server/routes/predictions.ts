@@ -2,17 +2,19 @@ import { Router, Request, Response } from 'express';
 import db from '../db.js';
 import { isPickAllowed } from '../gameLogic.js';
 import { logActivity } from '../services/activity.js';
+import { getSingleValue, isPick, requireSingleValue } from '../utils/request.js';
 
 const router = Router();
 
 router.get('/', async (req: Request, res: Response) => {
-  const { userId, matchId } = req.query;
+  const userId = getSingleValue(req.query.userId);
+  const matchId = getSingleValue(req.query.matchId);
   let query = 'SELECT * FROM predictions';
   const conditions: string[] = [];
   const params: string[] = [];
 
-  if (userId) { conditions.push('user_id = ?'); params.push(userId as string); }
-  if (matchId) { conditions.push('match_id = ?'); params.push(matchId as string); }
+  if (userId) { conditions.push('user_id = ?'); params.push(userId); }
+  if (matchId) { conditions.push('match_id = ?'); params.push(matchId); }
   if (conditions.length) query += ' WHERE ' + conditions.join(' AND ');
   query += ' ORDER BY created_at';
 
@@ -26,7 +28,7 @@ router.post('/', async (req: Request, res: Response) => {
   if (!userId || !matchId || !pick) {
     return res.status(400).json({ error: 'Missing required fields: userId, matchId, pick' });
   }
-  if (pick !== 'A' && pick !== 'B') {
+  if (!isPick(pick)) {
     return res.status(400).json({ error: 'Pick must be A or B' });
   }
 
@@ -56,7 +58,7 @@ router.post('/', async (req: Request, res: Response) => {
 });
 
 router.get('/user/:userId/history', async (req: Request, res: Response) => {
-  const { userId } = req.params;
+  const userId = requireSingleValue(req.params.userId);
   const predictions = (await db.execute(
     `SELECT p.*, m.date, m.time, m.team_a_name, m.team_a_flag, m.team_a_code, m.team_b_name, m.team_b_flag, m.team_b_code,
            m.deal, m.deal_side, m.stage, m.status, m.score_a, m.score_b

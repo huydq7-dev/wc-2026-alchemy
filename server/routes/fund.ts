@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import db from '../db.js';
 import { requireAdmin } from '../middleware/admin.js';
+import { requireSingleValue } from '../utils/request.js';
 
 const BET_AMOUNT = 5000;
 const PRIZE_PERCENTAGES = [40, 30, 20, 10];
@@ -56,7 +57,7 @@ router.get('/', async (_req: Request, res: Response) => {
 });
 
 router.patch('/users/:id', requireAdmin, async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = requireSingleValue(req.params.id);
   const { paid } = req.body;
 
   const user = (await db.execute('SELECT * FROM users WHERE id = ?', [id])).rows[0] as any;

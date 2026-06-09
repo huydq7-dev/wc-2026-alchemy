@@ -9,8 +9,6 @@
     "strict": false,
     "noImplicitAny": false,
     "strictNullChecks": false,
-    "baseUrl": ".",
-    "ignoreDeprecations": "6.0",
     "paths": {
       "@/*": ["./src/*"]
     },

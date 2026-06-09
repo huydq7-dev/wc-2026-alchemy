@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { Clock, Target, Edit3, RefreshCw, Flag, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { api } from '@/api/client'
+import PageHeader from '@/components/PageHeader'
 
 const ACTIONS = [
   { key: '', label: 'All', icon: Clock, color: 'text-gray-400' },
@@ -38,10 +39,11 @@ export default function Activity() {
   return (
     <div className="space-y-6">
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="font-display text-2xl text-white tracking-wider">
-          Recent <span className="text-[#C8102E]">Activity</span>
-        </h1>
-        <p className="text-gray-500 text-sm mt-1">Track all predictions and changes in the group</p>
+        <PageHeader
+          title="Recent Activity"
+          icon={<Clock className="w-7 h-7 text-[#C8102E]" />}
+          description="A live feed of predictions, result updates, deal changes, and sync actions across the pool."
+        />
       </motion.div>
 
       {/* Filter Chips */}
@@ -54,8 +56,8 @@ export default function Activity() {
               onClick={() => { setFilter(key); setPage(1) }}
               className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
                 active
-                  ? 'bg-[#C8102E]/20 border border-[#C8102E]/40 text-white'
-                  : 'bg-[#141929] border border-white/5 text-gray-400 hover:text-white hover:border-white/20'
+                  ? 'bg-white text-[#0A0E1A] border border-white'
+                  : 'app-panel-muted text-gray-400 hover:text-white hover:border-white/20'
               }`}
             >
               <Icon className={`w-3 h-3 ${active ? color : ''}`} />
@@ -85,7 +87,7 @@ export default function Activity() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.02 }}
-                className="flex items-center gap-3 p-3 rounded-xl bg-[#141929] border border-white/5"
+                className="app-panel flex items-center gap-3 rounded-[22px] p-3"
               >
                 <div className="shrink-0 w-9 h-9 rounded-full bg-white/5 flex items-center justify-center">
                   <Icon className={`w-4 h-4 ${color}`} />

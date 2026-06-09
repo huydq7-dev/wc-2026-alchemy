@@ -1,4 +1,5 @@
 import { BarChart3, Trophy, Target } from 'lucide-react'
+import PageHeader from '@/components/PageHeader'
 import LeaderboardTable from '@/components/LeaderboardTable'
 import { Card, CardContent } from '@/components/ui/card'
 import { useLeaderboard } from '@/hooks/useLeaderboard'
@@ -13,12 +14,14 @@ export default function LeaderboardPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-3xl text-white tracking-wider flex items-center gap-2">
-        <BarChart3 className="w-7 h-7 text-[#C8102E]" />Leaderboard
-      </h1>
+      <PageHeader
+        title="Leaderboard"
+        icon={<BarChart3 className="w-7 h-7 text-[#C8102E]" />}
+        description="See who is leading the pool, who is on a streak, and who needs a comeback."
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        <Card className="bg-[#141929] border-white/5">
+        <Card>
           <CardContent className="p-4 flex items-center gap-3">
             <Trophy className="w-8 h-8 text-[#F5A623]" />
             <div>
@@ -27,7 +30,7 @@ export default function LeaderboardPage() {
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[#141929] border-white/5">
+        <Card>
           <CardContent className="p-4 flex items-center gap-3">
             <Target className="w-8 h-8 text-green-400" />
             <div>
@@ -36,7 +39,7 @@ export default function LeaderboardPage() {
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[#141929] border-white/5">
+        <Card>
           <CardContent className="p-4 flex items-center gap-3">
             <BarChart3 className="w-8 h-8 text-blue-400" />
             <div>
@@ -50,7 +53,7 @@ export default function LeaderboardPage() {
       {isLoading ? (
         <div className="space-y-2">
           {[1, 2, 3, 4, 5].map(i => (
-            <div key={i} className="rounded-xl border border-white/5 bg-[#141929] p-4 h-16 animate-pulse" />
+            <div key={i} className="app-tile rounded-[22px] p-4 h-16 animate-pulse" />
           ))}
         </div>
       ) : (

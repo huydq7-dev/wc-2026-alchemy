@@ -82,8 +82,7 @@ async function processMatchResult(
   scoreA: number,
   scoreB: number,
   deal: string,
-  dealSide: string,
-  match: any,
+  dealSide: 'A' | 'B',
 ) {
   // Insert auto-loss for users who didn't predict
   const allUsers = (await db.execute('SELECT id FROM users')).rows as any[];
@@ -123,7 +122,7 @@ export async function syncMatches(): Promise<{ synced: number; message: string }
   // 1. Fetch teams
   const teamsRes = await fetch(`${BASE}/worldcup.teams.json`);
   if (!teamsRes.ok) throw new Error(`Failed to fetch teams: ${teamsRes.status}`);
-  const teams: OFTeam[] = await teamsRes.json();
+  const teams = await teamsRes.json() as OFTeam[];
 
   const teamMap = new Map<string, OFTeam>();
   for (const t of teams) {
@@ -142,7 +141,7 @@ export async function syncMatches(): Promise<{ synced: number; message: string }
   // 2. Fetch matches
   const matchesRes = await fetch(`${BASE}/worldcup.json`);
   if (!matchesRes.ok) throw new Error(`Failed to fetch matches: ${matchesRes.status}`);
-  const data = await matchesRes.json();
+  const data = await matchesRes.json() as { matches: OFMatch[] };
   const ofMatches: OFMatch[] = data.matches;
 
   // 3. Get existing match IDs to distinguish insert vs update
@@ -172,12 +171,18 @@ export async function syncMatches(): Promise<{ synced: number; message: string }
         const match = (await db.execute('SELECT * FROM matches WHERE id = ?', [id])).rows[0] as any;
         await db.execute(
           'UPDATE matches SET status = ?, score_a = ?, score_b = ? WHERE id = ?',
-          ['finished', m.score1, m.score2, id],
+          ['finished', m.score1!, m.score2!, id],
         );
         updated++;
 
         // Recalculate predictions + auto-loss for missed picks
-        await processMatchResult(id, m.score1!, m.score2!, match.deal, match.deal_side, match);
+        await processMatchResult(
+          id,
+          m.score1!,
+          m.score2!,
+          match.deal,
+          match.deal_side === 'B' ? 'B' : 'A',
+        );
       }
     } else {
       await db.execute({

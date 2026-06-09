@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/api/client';
 import { toast } from 'sonner';
+import type { Prediction } from '@/types';
 
 export function usePredictions(params?: { userId?: string; matchId?: string }) {
   return useQuery({
@@ -15,14 +16,62 @@ export function usePlacePrediction() {
   return useMutation({
     mutationFn: (data: { userId: string; matchId: string; pick: 'A' | 'B' }) =>
       api.placePrediction(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['predictions'] });
-      queryClient.invalidateQueries({ queryKey: ['matches'] });
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({
+        predicate: (query) =>
+          query.queryKey[0] === 'predictions' && query.queryKey[1] !== 'history',
+      });
+
+      const previousPredictions = queryClient.getQueriesData<Prediction[]>({
+        predicate: (query) =>
+          query.queryKey[0] === 'predictions' && query.queryKey[1] !== 'history',
+      });
+
+      const optimisticPrediction: Prediction = {
+        user_id: variables.userId,
+        match_id: variables.matchId,
+        pick: variables.pick,
+        result: null,
+        points: null,
+      };
+
+      previousPredictions.forEach(([queryKey, data]) => {
+        const queryParams =
+          typeof queryKey[1] === 'object' && queryKey[1] !== null ? queryKey[1] as {
+            userId?: string;
+            matchId?: string;
+          } : undefined;
+
+        if (queryParams?.userId && queryParams.userId !== variables.userId) return;
+        if (queryParams?.matchId && queryParams.matchId !== variables.matchId) return;
+
+        const next = (data ?? []).filter(
+          (prediction) =>
+            !(
+              prediction.user_id === variables.userId &&
+              prediction.match_id === variables.matchId
+            )
+        );
+
+        queryClient.setQueryData<Prediction[]>(queryKey, [...next, optimisticPrediction]);
+      });
+
+      return { previousPredictions };
+    },
+    onError: (error: Error, _variables, context) => {
+      context?.previousPredictions.forEach(([queryKey, data]) => {
+        queryClient.setQueryData(queryKey, data);
+      });
+      toast.error(error.message);
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        predicate: (query) =>
+          query.queryKey[0] === 'predictions' && query.queryKey[1] !== 'history',
+      });
+      queryClient.invalidateQueries({ queryKey: ['matches', variables.matchId] });
       queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
       toast.success('Dự đoán thành công!');
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
     },
   });
 }

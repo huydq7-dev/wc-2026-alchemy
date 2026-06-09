@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { Calendar, Trophy, Flame, ArrowRight, RefreshCw } from 'lucide-react'
 import CountdownTimer from '@/components/CountdownTimer'
 import LiveBadge from '@/components/LiveBadge'
+import PageHeader from '@/components/PageHeader'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useNextMatch, useMatches } from '@/hooks/useMatches'
@@ -60,26 +61,33 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Hero Section */}
+      <PageHeader
+        title="World Cup 2026"
+        icon={<Trophy className="w-8 h-8 text-[#F5A623]" />}
+        description="Predict match results, track the live table, and keep the whole office pool moving."
+      />
+
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#C8102E]/20 via-[#141929] to-[#003087]/20 border border-white/5 p-6 md:p-10"
+        className="app-panel relative overflow-hidden rounded-[30px] bg-[radial-gradient(circle_at_top_left,rgba(200,16,46,0.22),transparent_24%),linear-gradient(135deg,rgba(20,25,41,0.98),rgba(10,14,26,0.98)_58%,rgba(0,48,135,0.16))] p-6 md:p-10"
       >
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-4">
-            <Trophy className="w-10 h-10 text-[#F5A623]" />
-            <h1 className="font-display text-3xl md:text-5xl text-white tracking-wider">
+            <div className="app-panel-muted flex h-14 w-14 items-center justify-center rounded-2xl">
+              <Trophy className="w-7 h-7 text-[#F5A623]" />
+            </div>
+            <h2 className="font-display text-3xl md:text-5xl text-white tracking-wider">
               WORLD CUP <span className="text-[#C8102E]">2026</span>
-            </h1>
+            </h2>
           </div>
-          <p className="text-gray-400 max-w-lg mb-6">
+          <p className="text-white/58 max-w-lg mb-6">
             Predict World Cup 2026 results with the Alchemy crew. Make predictions, climb the ranks, win prizes!
           </p>
 
           {nextMatch && (
-            <div className="mb-6">
-              <p className="text-sm text-gray-500 mb-3">NEXT MATCH</p>
+            <div className="mb-6 rounded-[24px] border border-white/8 bg-white/[0.03] p-4">
+              <p className="app-kicker mb-3">Next Match</p>
               <div className="flex items-center gap-4 mb-4">
                 <FlagImage code={nextMatch.team_a_code} size={80} className="w-8 h-5.5 rounded-sm object-cover" />
                 <span className="font-display text-2xl text-white">{nextMatch.team_a_name}</span>
@@ -92,7 +100,7 @@ export default function Dashboard() {
           )}
 
           <div className="flex gap-3">
-            <Button asChild className="bg-[#C8102E] hover:bg-[#C8102E]/80 font-semibold">
+            <Button asChild className="bg-[#C8102E] text-white hover:bg-[#C8102E]/85 font-semibold">
               <Link to="/schedule">
                 <Calendar className="w-4 h-4 mr-2" />Predict Now
               </Link>
@@ -123,7 +131,7 @@ export default function Dashboard() {
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="rounded-xl border-2 border-[#C8102E]/40 bg-[#C8102E]/5 p-4"
+          className="app-panel rounded-[26px] border-[#C8102E]/30 bg-[linear-gradient(135deg,rgba(200,16,46,0.18),rgba(20,25,41,0.92))] p-4"
         >
           <div className="flex items-center gap-2 mb-3">
             <LiveBadge />
@@ -155,7 +163,7 @@ export default function Dashboard() {
       </div>
 
       {/* Mini Leaderboard */}
-      <Card className="bg-[#141929] border-white/5">
+      <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-white font-display text-lg tracking-wider flex items-center gap-2">
             <Trophy className="w-5 h-5 text-[#F5A623]" />Top 3 Leaderboard
@@ -167,7 +175,7 @@ export default function Dashboard() {
         <CardContent>
           <div className="space-y-2">
             {top3.map((entry: any, i: number) => (
-              <div key={entry.userId} className={cn('flex items-center justify-between p-3 rounded-lg', i === 0 && 'bg-[#F5A623]/5 border border-[#F5A623]/10')}>
+              <div key={entry.userId} className={cn('app-panel-muted flex items-center justify-between rounded-2xl p-3', i === 0 && 'border-[#F5A623]/18 bg-[#F5A623]/8')}>
                 <div className="flex items-center gap-3">
                   <span className="font-display text-xl w-8 text-center">{i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'}</span>
                   <span className="text-2xl">{entry.avatar}</span>
@@ -190,10 +198,10 @@ export default function Dashboard() {
 
 function StatCard({ icon: Icon, label, value, color }: { icon: any; label: string; value: number; color?: string }) {
   return (
-    <div className="bg-[#141929] border border-white/5 rounded-xl p-4">
+    <div className="app-tile rounded-[22px] p-4">
       <Icon className={cn('w-5 h-5 mb-2', color || 'text-gray-400')} />
       <p className="font-display text-2xl text-white">{value}</p>
-      <p className="text-xs text-gray-500">{label}</p>
+      <p className="text-xs text-white/45">{label}</p>
     </div>
   )
 }

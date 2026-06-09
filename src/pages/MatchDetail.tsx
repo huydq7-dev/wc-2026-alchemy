@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, MapPin, Clock, HelpCircle } from 'lucide-react'
+import PageHeader from '@/components/PageHeader'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -40,11 +41,17 @@ export default function MatchDetail() {
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
+      <PageHeader
+        title="Match Detail"
+        icon={<MapPin className="w-7 h-7 text-[#C8102E]" />}
+        description="Fixture detail, final score, deal explanation, and everyone’s picks in one place."
+      />
+
       <Button asChild variant="ghost" className="text-gray-400 -ml-3">
         <Link to="/schedule"><ArrowLeft className="w-4 h-4 mr-1" />Schedule</Link>
       </Button>
 
-      <Card className="bg-[#141929] border-white/5">
+      <Card>
         <CardContent className="p-6">
           <div className="flex items-center justify-center gap-2 mb-4">
             {isLive && <LiveBadge />}
@@ -84,7 +91,7 @@ export default function MatchDetail() {
       </Card>
 
       {hasScore && match.dealInfo && (
-        <Card className="bg-[#141929] border-white/5">
+        <Card>
           <CardHeader>
             <CardTitle className="text-white font-display text-lg flex items-center gap-2">
               <HelpCircle className="w-5 h-5 text-[#F5A623]" />Deal Explanation
@@ -92,7 +99,7 @@ export default function MatchDetail() {
           </CardHeader>
           <CardContent>
             <p className="text-gray-300 text-sm leading-relaxed">{match.dealInfo.summary}</p>
-            <div className="mt-3 p-3 rounded-lg bg-white/[0.02] border border-white/5">
+            <div className="app-panel-muted mt-3 rounded-2xl p-3">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">{match.team_a_name} ({match.score_a}){match.deal_side === 'A' && ` + (${match.deal})`}</span>
                 <span className="text-gray-400">{match.team_b_name} ({match.score_b}){match.deal_side === 'B' && ` + (${match.deal})`}</span>
@@ -109,7 +116,7 @@ export default function MatchDetail() {
       )}
 
       {match.predictions?.length > 0 && (
-        <Card className="bg-[#141929] border-white/5">
+        <Card>
           <CardHeader>
             <CardTitle className="text-white font-display text-lg">Who predicted what?</CardTitle>
           </CardHeader>
