@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Clock, ChevronRight, Pencil } from "lucide-react";
+import { ChevronRight, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import LiveBadge from "./LiveBadge";
@@ -59,10 +59,10 @@ export default function MatchCard({
       animate={{ opacity: 1, y: 0 }}
       className={cn(
         "app-panel relative rounded-none p-4 transition-all",
-        isLive && "border-[#17307C] shadow-lg shadow-[#60E6F6]/10",
+        isLive && "border-[#17307C] shadow-lg shadow-primary/10",
         isFinished && "border-white/5 opacity-80",
         isUpcoming && "border-white/10 hover:border-white/20",
-        isPicked && "ring-1 ring-[#60E6F6]/25",
+        isPicked && "ring-1 ring-primary/25",
       )}
     >
       {/* Status Badge */}
@@ -112,7 +112,6 @@ export default function MatchCard({
                 deal={match.deal}
                 dealSide={match.deal_side as "A" | "B"}
                 teamAName={match.team_a_name}
-                teamBName={match.team_b_name}
               />
               {isAdmin && (
                 <button
@@ -120,7 +119,7 @@ export default function MatchCard({
                     e.preventDefault();
                     setShowDealEditor(true);
                   }}
-                  className="text-white/26 transition-colors hover:text-[#F5A623]"
+                  className="text-white/26 transition-colors hover:text-accent"
                   title="Sửa deal"
                 >
                   <Pencil className="w-3 h-3" />

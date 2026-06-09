@@ -4,7 +4,6 @@ interface Props {
   deal: string;
   dealSide: "A" | "B";
   teamAName: string;
-  teamBName: string;
   className?: string;
 }
 
@@ -12,7 +11,6 @@ export default function DealBadge({
   deal,
   dealSide,
   teamAName,
-  teamBName,
   className,
 }: Props) {
   const value = parseFloat(deal);

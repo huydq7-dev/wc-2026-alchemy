@@ -94,7 +94,6 @@ export default function MatchDetail() {
                 deal={match.deal}
                 dealSide={match.deal_side as "A" | "B"}
                 teamAName={match.team_a_name}
-                teamBName={match.team_b_name}
               />
             </div>
 
