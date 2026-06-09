@@ -11,7 +11,7 @@ import { useLeaderboard } from '@/hooks/useLeaderboard'
 import { usePredictions } from '@/hooks/usePredictions'
 import { useGameStore } from '@/store/useGameStore'
 import { api } from '@/api/client'
-import { getFlagUrl } from '@/lib/flags'
+import FlagImage from '@/components/FlagImage'
 import { cn } from '@/lib/utils'
 
 export default function Dashboard() {
@@ -69,11 +69,11 @@ export default function Dashboard() {
             <div className="mb-6">
               <p className="text-sm text-gray-500 mb-3">NEXT MATCH</p>
               <div className="flex items-center gap-4 mb-4">
-                <img src={getFlagUrl(nextMatch.team_a_code, 80)} alt="" className="w-8 h-5.5 rounded-sm object-cover" />
+                <FlagImage code={nextMatch.team_a_code} size={80} className="w-8 h-5.5 rounded-sm object-cover" />
                 <span className="font-display text-2xl text-white">{nextMatch.team_a_name}</span>
                 <span className="text-gray-500 text-sm">vs</span>
                 <span className="font-display text-2xl text-white">{nextMatch.team_b_name}</span>
-                <img src={getFlagUrl(nextMatch.team_b_code, 80)} alt="" className="w-8 h-5.5 rounded-sm object-cover" />
+                <FlagImage code={nextMatch.team_b_code} size={80} className="w-8 h-5.5 rounded-sm object-cover" />
               </div>
               <CountdownTimer date={nextMatch.date} time={nextMatch.time} label="Starts in" />
             </div>
@@ -112,13 +112,13 @@ export default function Dashboard() {
             <span className="text-sm text-gray-400">{liveMatch.stage}</span>
           </div>
           <div className="flex items-center justify-center gap-4">
-            <img src={getFlagUrl(liveMatch.team_a_code, 80)} alt="" className="w-8 h-5.5 rounded-sm object-cover" />
+            <FlagImage code={liveMatch.team_a_code} size={80} className="w-8 h-5.5 rounded-sm object-cover" />
             <span className="font-display text-2xl text-white">{liveMatch.team_a_name}</span>
             <span className="font-display text-3xl text-white tabular-nums">
               {liveMatch.score_a} - {liveMatch.score_b}
             </span>
             <span className="font-display text-2xl text-white">{liveMatch.team_b_name}</span>
-            <img src={getFlagUrl(liveMatch.team_b_code, 80)} alt="" className="w-8 h-5.5 rounded-sm object-cover" />
+            <FlagImage code={liveMatch.team_b_code} size={80} className="w-8 h-5.5 rounded-sm object-cover" />
           </div>
           <div className="flex justify-center mt-3">
             <Button asChild variant="link" size="sm" className="text-[#C8102E]">

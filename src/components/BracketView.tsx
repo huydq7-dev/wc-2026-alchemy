@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { getFlagUrl } from '@/lib/flags'
+import FlagImage from '@/components/FlagImage'
 import type { BracketData, BracketMatch } from '@/types'
 
 interface Props {
@@ -60,7 +60,7 @@ function BracketSlot({ match }: { match: BracketMatch }) {
         'flex items-center justify-between gap-1 text-xs py-0.5 px-1 rounded',
         teamAWon && 'bg-green-500/10 text-white',
       )}>
-        <img src={getFlagUrl(match.team_a.code, 40)} alt="" className="w-4 h-3 rounded-sm object-cover" />
+        <FlagImage code={match.team_a.code} size={40} className="w-4 h-3 rounded-sm object-cover" />
         <span className="truncate flex-1 text-xs">{isSlotCode(match.team_a.name) ? slotLabel(match.team_a.name) : match.team_a.name}</span>
         {hasScore && <span className="tabular-nums font-bold text-white">{match.score_a}</span>}
       </div>
@@ -68,7 +68,7 @@ function BracketSlot({ match }: { match: BracketMatch }) {
         'flex items-center justify-between gap-1 text-xs py-0.5 px-1 rounded mt-0.5',
         teamBWon && 'bg-green-500/10 text-white',
       )}>
-        <img src={getFlagUrl(match.team_b.code, 40)} alt="" className="w-4 h-3 rounded-sm object-cover" />
+        <FlagImage code={match.team_b.code} size={40} className="w-4 h-3 rounded-sm object-cover" />
         <span className="truncate flex-1 text-xs">{isSlotCode(match.team_b.name) ? slotLabel(match.team_b.name) : match.team_b.name}</span>
         {hasScore && <span className="tabular-nums font-bold text-white">{match.score_b}</span>}
       </div>

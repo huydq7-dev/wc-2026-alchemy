@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useUserHistory } from "@/hooks/usePredictions";
 import { cn } from "@/lib/utils";
-import { getFlagUrl } from "@/lib/flags";
+import FlagImage from "@/components/FlagImage";
 import type { LeaderboardEntry } from "@/types";
 
 interface Props {
@@ -266,31 +266,30 @@ function UserHistoryModal({
                   className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/5"
                 >
                   <div className="flex items-center gap-2">
-                    <img
-                      src={getFlagUrl(pred.team_a_code, 40)}
-                      alt=""
+                    <FlagImage
+                      code={pred.team_a_code}
+                      size={40}
                       className="w-4 h-3 rounded-sm object-cover"
                     />
                     <span className="text-xs text-gray-400">
                       {pred.team_a_name} vs {pred.team_b_name}
                     </span>
-                    <img
-                      src={getFlagUrl(pred.team_b_code, 40)}
-                      alt=""
+                    <FlagImage
+                      code={pred.team_b_code}
+                      size={40}
                       className="w-4 h-3 rounded-sm object-cover"
                     />
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-gray-500">
                       Pick:{" "}
-                      <img
-                        src={getFlagUrl(
+                      <FlagImage
+                        code={
                           pred.pick === "A"
                             ? pred.team_a_code
-                            : pred.team_b_code,
-                          40,
-                        )}
-                        alt=""
+                            : pred.team_b_code
+                        }
+                        size={40}
                         className="w-4 h-3 rounded-sm object-cover inline-block"
                       />
                     </span>

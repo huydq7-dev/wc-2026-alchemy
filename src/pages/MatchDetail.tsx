@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator'
 import LiveBadge from '@/components/LiveBadge'
 import DealBadge from '@/components/DealBadge'
 import { useMatch } from '@/hooks/useMatches'
-import { getFlagUrl } from '@/lib/flags'
+import FlagImage from '@/components/FlagImage'
 import { cn } from '@/lib/utils'
 
 export default function MatchDetail() {
@@ -58,7 +58,7 @@ export default function MatchDetail() {
 
           <div className="flex items-center justify-center gap-4 md:gap-8">
             <div className="flex flex-col items-center gap-2">
-              <img src={getFlagUrl(match.team_a_code, 160)} alt="" className="w-16 h-11 rounded-sm object-cover shadow-lg" />
+              <FlagImage code={match.team_a_code} size={160} className="w-16 h-11 rounded-sm object-cover shadow-lg" />
               <h2 className="font-display text-xl md:text-2xl text-white">{match.team_a_name}</h2>
             </div>
 
@@ -72,7 +72,7 @@ export default function MatchDetail() {
             </div>
 
             <div className="flex flex-col items-center gap-2">
-              <img src={getFlagUrl(match.team_b_code, 160)} alt="" className="w-16 h-11 rounded-sm object-cover shadow-lg" />
+              <FlagImage code={match.team_b_code} size={160} className="w-16 h-11 rounded-sm object-cover shadow-lg" />
               <h2 className="font-display text-xl md:text-2xl text-white">{match.team_b_name}</h2>
             </div>
           </div>
@@ -123,7 +123,7 @@ export default function MatchDetail() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-400">
-                      <img src={getFlagUrl(pred.pick === 'A' ? match.team_a_code : match.team_b_code, 40)} alt="" className="w-6 h-4 rounded-none object-cover inline-block" />
+                      <FlagImage code={pred.pick === 'A' ? match.team_a_code : match.team_b_code} size={40} className="w-6 h-4 rounded-none object-cover inline-block" />
                     </span>
                     {pred.result && (
                       <Badge className={cn('text-[10px]', pred.result === 'win' && 'bg-green-500/15 text-green-400', pred.result === 'lose' && 'bg-red-500/15 text-red-400', pred.result === 'draw' && 'bg-gray-500/15 text-gray-400')}>

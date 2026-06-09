@@ -1,5 +1,5 @@
 import type { StandingRow } from '@/types'
-import { getFlagUrl } from '@/lib/flags'
+import FlagImage from '@/components/FlagImage'
 import { cn } from '@/lib/utils'
 
 interface Props {
@@ -41,7 +41,7 @@ export default function GroupTable({ group, teams }: Props) {
               >
                 <td className="py-1.5 px-3">
                   <div className="flex items-center gap-1.5">
-                    <img src={getFlagUrl(row.code, 40)} alt="" className="w-5 h-3.5 rounded-none object-cover" />
+                    <FlagImage code={row.code} size={40} className="w-5 h-3.5 rounded-none object-cover" />
                     <span className="text-white text-xs truncate max-w-[80px] sm:max-w-[100px]">{row.team}</span>
                   </div>
                 </td>
