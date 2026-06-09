@@ -259,13 +259,13 @@ function UserHistoryModal({
               {data.predictions.map((pred: any) => (
                 <div
                   key={pred.match_id}
-                  className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/[0.02] p-3"
+                  className="flex items-center justify-between rounded-none border border-white/5 bg-white/[0.02] p-3"
                 >
                   <div className="flex items-center gap-2">
                     <FlagImage
                       code={pred.team_a_code}
                       size={40}
-                      className="w-4 h-3 rounded-sm object-cover"
+                      className="w-4 h-3 object-cover"
                     />
                     <span className="text-xs text-white/48">
                       {pred.team_a_name} vs {pred.team_b_name}
@@ -273,12 +273,11 @@ function UserHistoryModal({
                     <FlagImage
                       code={pred.team_b_code}
                       size={40}
-                      className="w-4 h-3 rounded-sm object-cover"
+                      className="w-4 h-3 object-cover"
                     />
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-white/36">
-                      Pick:{" "}
                       <FlagImage
                         code={
                           pred.pick === "A"
@@ -286,7 +285,7 @@ function UserHistoryModal({
                             : pred.team_b_code
                         }
                         size={40}
-                        className="w-4 h-3 rounded-sm object-cover inline-block"
+                        className="w-4 h-3 object-cover inline-block"
                       />
                     </span>
                     {pred.result && (
