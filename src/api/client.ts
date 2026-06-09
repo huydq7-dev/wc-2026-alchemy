@@ -77,6 +77,8 @@ export const api = {
   // Sync
   syncMatches: () =>
     request<{ synced: number; message: string }>('/matches/sync', { method: 'POST' }),
+  syncOdds: () =>
+    request<{ updated: number; message: string }>('/matches/sync-odds', { method: 'POST' }),
 
   // Standings & Bracket
   getStandings: () => request<any>('/standings'),

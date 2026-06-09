@@ -11,6 +11,7 @@ const ACTIONS = [
   { key: 'update_deal', label: 'Deal', icon: Edit3, color: 'text-orange-400' },
   { key: 'update_result', label: 'Result', icon: Flag, color: 'text-[#C8102E]' },
   { key: 'sync_matches', label: 'Sync', icon: RefreshCw, color: 'text-blue-400' },
+  { key: 'sync_odds', label: 'Odds', icon: RefreshCw, color: 'text-purple-400' },
   { key: 'auto_loss', label: 'Auto-Loss', icon: AlertCircle, color: 'text-red-400' },
 ]
 

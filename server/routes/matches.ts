@@ -3,22 +3,24 @@ import db from '../db.js';
 import { calculateResult, isPickAllowed } from '../gameLogic.js';
 import { requireAdmin } from '../middleware/admin.js';
 import { logActivity } from '../services/activity.js';
+import { getSingleValue, isPick, requireSingleValue } from '../utils/request.js';
 
 const router = Router();
 
 router.get('/', async (req: Request, res: Response) => {
-  const { status, stage } = req.query;
+  const status = getSingleValue(req.query.status);
+  const stage = getSingleValue(req.query.stage);
   let query = 'SELECT * FROM matches';
   const conditions: string[] = [];
   const params: string[] = [];
 
   if (status) {
     conditions.push('status = ?');
-    params.push(status as string);
+    params.push(status);
   }
   if (stage) {
     conditions.push('stage = ?');
-    params.push(stage as string);
+    params.push(stage);
   }
   if (conditions.length) query += ' WHERE ' + conditions.join(' AND ');
   query += ' ORDER BY date, time';
@@ -35,14 +37,15 @@ router.get('/next', async (_req: Request, res: Response) => {
 });
 
 router.get('/:id', async (req: Request, res: Response) => {
-  const match = (await db.execute('SELECT * FROM matches WHERE id = ?', [req.params.id])).rows[0];
+  const id = requireSingleValue(req.params.id);
+  const match = (await db.execute('SELECT * FROM matches WHERE id = ?', [id])).rows[0];
   if (!match) return res.status(404).json({ error: 'Match not found' });
 
   const predictions = (await db.execute(
     `SELECT p.*, u.name, u.avatar FROM predictions p
      JOIN users u ON p.user_id = u.id
      WHERE p.match_id = ?`,
-    [req.params.id],
+    [id],
   )).rows;
 
   const dealInfo = generateDealExplanation(match);
@@ -55,7 +58,7 @@ async function recalculateAllPredictions(
   scoreA: number,
   scoreB: number,
   deal: string,
-  dealSide: string,
+  dealSide: 'A' | 'B',
 ) {
   const predictions = (
     await db.execute('SELECT * FROM predictions WHERE match_id = ? AND auto_loss = 0', [matchId])
@@ -74,15 +77,17 @@ async function recalculateAllPredictions(
 }
 
 router.patch('/:id', requireAdmin, async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = requireSingleValue(req.params.id);
   const { status, score_a, score_b, deal, deal_side } = req.body;
-  const adminId = req.headers['x-user-id'] as string;
+  const adminId = getSingleValue(req.headers['x-user-id']);
+  if (!adminId) return res.status(401).json({ error: 'Not logged in' });
 
   const match = (await db.execute('SELECT * FROM matches WHERE id = ?', [id])).rows[0] as any;
   if (!match) return res.status(404).json({ error: 'Match not found' });
 
   const newDeal = deal ?? match.deal;
-  const newDealSide = deal_side ?? match.deal_side;
+  const nextDealSide = deal_side ?? match.deal_side;
+  const newDealSide: 'A' | 'B' = isPick(nextDealSide) ? nextDealSide : 'A';
 
   await db.execute(
     'UPDATE matches SET status = ?, score_a = ?, score_b = ?, deal = ?, deal_side = ? WHERE id = ?',
@@ -146,7 +151,8 @@ router.patch('/:id', requireAdmin, async (req: Request, res: Response) => {
 });
 
 router.get('/:id/pickable', async (req: Request, res: Response) => {
-  const match = (await db.execute('SELECT * FROM matches WHERE id = ?', [req.params.id])).rows[0] as any;
+  const id = requireSingleValue(req.params.id);
+  const match = (await db.execute('SELECT * FROM matches WHERE id = ?', [id])).rows[0] as any;
   if (!match) return res.status(404).json({ error: 'Match not found' });
 
   const allowed = match.status === 'upcoming' && isPickAllowed(match.date, match.time);
@@ -180,5 +186,19 @@ function generateDealExplanation(match: any) {
     summary: `${match.team_a_name} ${match.score_a}-${match.score_b} ${match.team_b_name}. Deal ${match.deal} for ${dealTeam}. → ${result}`,
   };
 }
+
+router.post('/sync-odds', requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const { syncOdds } = await import('../services/odds.js');
+    const result = await syncOdds();
+    const admin = (await db.execute('SELECT name FROM users WHERE id = ?', [req.headers['x-user-id'] as string])).rows[0] as any;
+    await logActivity(req.headers['x-user-id'] as string, admin?.name || 'Admin', 'sync_odds', {
+      updated: result.updated,
+    });
+    res.json(result);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 export default router;

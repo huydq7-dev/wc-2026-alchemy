@@ -27,6 +27,7 @@ export default function Dashboard() {
   const userPreds = predictions || []
 
   const [syncing, setSyncing] = useState(false)
+  const [syncingOdds, setSyncingOdds] = useState(false)
   const handleSync = async () => {
     setSyncing(true)
     try {
@@ -36,6 +37,17 @@ export default function Dashboard() {
       // silently fail
     } finally {
       setSyncing(false)
+    }
+  }
+  const handleSyncOdds = async () => {
+    setSyncingOdds(true)
+    try {
+      const res = await api.syncOdds()
+      alert(res.message)
+    } catch (err: any) {
+      alert(err.message || 'Failed to sync odds')
+    } finally {
+      setSyncingOdds(false)
     }
   }
 
@@ -91,10 +103,16 @@ export default function Dashboard() {
               </Link>
             </Button>
             {isAdmin && (
+            <>
             <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-300" onClick={handleSync} disabled={syncing}>
               <RefreshCw className={cn('w-4 h-4 mr-1', syncing && 'animate-spin')} />
               {syncing ? 'Syncing...' : 'Sync Data'}
             </Button>
+            <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-300" onClick={handleSyncOdds} disabled={syncingOdds}>
+              <RefreshCw className={cn('w-4 h-4 mr-1', syncingOdds && 'animate-spin')} />
+              {syncingOdds ? 'Fetching...' : 'Sync Odds'}
+            </Button>
+            </>
             )}
           </div>
         </div>
