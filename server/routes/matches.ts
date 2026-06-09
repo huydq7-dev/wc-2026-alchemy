@@ -89,8 +89,9 @@ router.patch('/:id', requireAdmin, async (req: Request, res: Response) => {
   const nextDealSide = deal_side ?? match.deal_side;
   const newDealSide: 'A' | 'B' = isPick(nextDealSide) ? nextDealSide : 'A';
 
+  const dealChanged = deal !== undefined || deal_side !== undefined;
   await db.execute(
-    'UPDATE matches SET status = ?, score_a = ?, score_b = ?, deal = ?, deal_side = ? WHERE id = ?',
+    `UPDATE matches SET status = ?, score_a = ?, score_b = ?, deal = ?, deal_side = ?${dealChanged ? ', deal_manual = 1' : ''} WHERE id = ?`,
     [status || match.status, score_a ?? match.score_a, score_b ?? match.score_b, newDeal, newDealSide, id],
   );
 

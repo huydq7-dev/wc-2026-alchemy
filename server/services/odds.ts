@@ -104,7 +104,7 @@ export async function syncOdds(): Promise<{ updated: number; message: string }> 
   }
 
   const upcoming = (await db.execute(
-    "SELECT * FROM matches WHERE status = 'upcoming' ORDER BY date, time"
+    "SELECT * FROM matches WHERE status = 'upcoming' AND deal_manual = 0 ORDER BY date, time"
   )).rows as any[];
 
   if (upcoming.length === 0) {
