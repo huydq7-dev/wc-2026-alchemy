@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { Clock, Target, Edit3, RefreshCw, Flag } from 'lucide-react'
+import { Clock, Target, Edit3, RefreshCw, Flag, AlertCircle } from 'lucide-react'
 import { api } from '@/api/client'
 
 const actionConfig: Record<string, { icon: any; label: string; color: string }> = {
@@ -9,6 +9,7 @@ const actionConfig: Record<string, { icon: any; label: string; color: string }> 
   update_deal: { icon: Edit3, label: 'Edited Deal', color: 'text-orange-400' },
   update_result: { icon: Flag, label: 'Updated Result', color: 'text-[#C8102E]' },
   sync_matches: { icon: RefreshCw, label: 'Synced Data', color: 'text-blue-400' },
+  auto_loss: { icon: AlertCircle, label: 'Auto-Loss', color: 'text-red-400' },
 }
 
 export default function Activity() {

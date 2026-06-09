@@ -88,6 +88,7 @@ export async function initDB() {
   await migrate('ALTER TABLE predictions ADD COLUMN bet_amount INTEGER DEFAULT 5000');
   await migrate('ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0');
   await migrate('ALTER TABLE users ADD COLUMN pin_changed INTEGER DEFAULT 0');
+  await migrate('ALTER TABLE predictions ADD COLUMN auto_loss INTEGER DEFAULT 0');
 
   await client.execute(`
     CREATE TABLE IF NOT EXISTS activity_log (

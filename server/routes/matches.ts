@@ -50,6 +50,29 @@ router.get('/:id', async (req: Request, res: Response) => {
   res.json({ ...match, predictions, dealInfo });
 });
 
+async function recalculateAllPredictions(
+  matchId: string,
+  scoreA: number,
+  scoreB: number,
+  deal: string,
+  dealSide: string,
+) {
+  const predictions = (
+    await db.execute('SELECT * FROM predictions WHERE match_id = ? AND auto_loss = 0', [matchId])
+  ).rows as any[];
+
+  const stmts = predictions.map((pred: any) => {
+    const result = calculateResult(scoreA, scoreB, deal, dealSide, pred.pick);
+    const points = result === 'win' ? 1 : result === 'lose' ? -1 : 0;
+    return {
+      sql: 'UPDATE predictions SET result = ?, points = ? WHERE id = ?',
+      args: [result, points, pred.id],
+    };
+  });
+
+  if (stmts.length > 0) await db.batch(stmts, 'write');
+}
+
 router.patch('/:id', requireAdmin, async (req: Request, res: Response) => {
   const { id } = req.params;
   const { status, score_a, score_b, deal, deal_side } = req.body;
@@ -66,22 +89,41 @@ router.patch('/:id', requireAdmin, async (req: Request, res: Response) => {
     [status || match.status, score_a ?? match.score_a, score_b ?? match.score_b, newDeal, newDealSide, id],
   );
 
-  // Recalculate predictions if match is finished
+  // Transitioning to finished with scores → auto-loss + recalculate
   if (status === 'finished' && score_a != null && score_b != null) {
-    const predictions = (await db.execute('SELECT * FROM predictions WHERE match_id = ?', [id])).rows as any[];
+    // Insert auto-loss for users who didn't predict
+    const allUsers = (await db.execute('SELECT id, name FROM users')).rows as any[];
+    const existingPreds = (await db.execute('SELECT user_id FROM predictions WHERE match_id = ?', [id])).rows as any[];
+    const predictedIds = new Set(existingPreds.map((p: any) => p.user_id));
+    const missingUsers = allUsers.filter((u: any) => !predictedIds.has(u.id));
 
-    const updateStmts = predictions.map((pred: any) => {
-      const result = calculateResult(score_a, score_b, match.deal, match.deal_side, pred.pick);
-      const points = result === 'win' ? 1 : result === 'lose' ? -1 : 0;
-      return {
-        sql: 'UPDATE predictions SET result = ?, points = ? WHERE id = ?',
-        args: [result, points, pred.id],
-      };
-    });
-
-    if (updateStmts.length > 0) {
-      await db.batch(updateStmts, 'write');
+    if (missingUsers.length > 0) {
+      await db.batch(
+        missingUsers.map((u: any) => ({
+          sql: 'INSERT OR IGNORE INTO predictions (user_id, match_id, pick, result, points, auto_loss) VALUES (?, ?, ?, ?, ?, 1)',
+          args: [u.id, id, 'A', 'lose', -1],
+        })),
+        'write',
+      );
+      for (const u of missingUsers) {
+        logActivity(adminId, u.name, 'auto_loss', {
+          matchId: id,
+          match: `${match.team_a_name} vs ${match.team_b_name}`,
+          reason: 'No prediction submitted',
+        }).catch(() => {});
+      }
     }
+
+    await recalculateAllPredictions(id, score_a, score_b, newDeal, newDealSide);
+  }
+  // Deal changed on already-finished match → recalculate with new deal
+  else if (
+    match.status === 'finished' &&
+    (deal !== undefined || deal_side !== undefined) &&
+    match.score_a != null &&
+    match.score_b != null
+  ) {
+    await recalculateAllPredictions(id, match.score_a, match.score_b, newDeal, newDealSide);
   }
 
   // Log admin action

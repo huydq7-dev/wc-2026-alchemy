@@ -97,7 +97,7 @@ export default function MatchCard({ match, userPick, showPickButtons = true }: R
                 dealSide={match.deal_side}
                 teamName={match.deal_side === 'A' ? match.team_a_name : match.team_b_name}
               />
-              {isUpcoming && isAdmin && (
+              {isAdmin && (
                 <button
                   onClick={(e) => { e.preventDefault(); setShowDealEditor(true) }}
                   className="text-gray-600 hover:text-[#F5A623] transition-colors"
