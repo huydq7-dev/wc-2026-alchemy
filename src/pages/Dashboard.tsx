@@ -64,7 +64,7 @@ export default function Dashboard() {
     <div className="space-y-6">
       <PageHeader
         title="World Cup 2026"
-        icon={<Trophy className="w-7 h-7 text-[#60E6F6]" />}
+        icon={<Trophy className="w-7 h-7 text-primary" />}
         description="Predict match results, track the live table, and keep the whole office pool moving."
       />
 
@@ -76,12 +76,12 @@ export default function Dashboard() {
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-4">
             <div className="app-panel-muted flex h-14 w-14 items-center justify-center rounded-2xl">
-              <Trophy className="w-7 h-7 text-[#60E6F6]" />
+              <img src="https://digitalhub.fifa.com/transform/157d23bf-7e13-4d7b-949e-5d27d340987e/WC26_Logo?&io=transform:fill&quality=75" />
             </div>
             <div>
               <p className="app-kicker">Matchday Center</p>
               <h2 className="font-display text-3xl tracking-[0.18em] text-white md:text-5xl">
-                WORLD CUP <span className="text-[#60E6F6]">2026</span>
+                WORLD CUP <span className="text-primary">2026</span>
               </h2>
             </div>
           </div>
@@ -221,7 +221,7 @@ export default function Dashboard() {
           icon={Flame}
           label="Completed"
           value={stats.finishedMatches}
-          color="text-[#60E6F6]"
+          color="text-primary"
         />
         <StatCard
           icon={Trophy}
@@ -241,7 +241,7 @@ export default function Dashboard() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-white font-display text-lg tracking-wider flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-[#60E6F6]" />
+            <Trophy className="w-5 h-5 text-primary" />
             Top 3 Leaderboard
           </CardTitle>
           <Button asChild variant="link" size="sm">
@@ -256,7 +256,7 @@ export default function Dashboard() {
               <div
                 key={entry.userId}
                 className={cn(
-                  "app-panel-muted flex items-center justify-between rounded-2xl p-3",
+                  "app-panel-muted flex items-center justify-between p-3",
                   i === 0 && "border-[#17307C] bg-[#0B1543]/70",
                 )}
               >
@@ -277,7 +277,7 @@ export default function Dashboard() {
                 <span
                   className={cn(
                     "font-display text-xl font-bold",
-                    entry.totalPoints > 0 && "text-[#60E6F6]",
+                    entry.totalPoints > 0 && "text-primary",
                   )}
                 >
                   {entry.totalPoints > 0 ? "+" : ""}

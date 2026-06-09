@@ -1,6 +1,5 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
-  Trophy,
   Calendar,
   BarChart3,
   Wallet,
@@ -33,9 +32,9 @@ export default function Layout({ children }: { children: ReactNode }) {
           <NavLink to="/" className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center">
               <img
-                src="https://png.pngtree.com/png-vector/20250923/ourmid/pngtree-the-fifa-world-cup-trophy-png-image_17551611.webp"
+                src="https://digitalhub.fifa.com/transform/157d23bf-7e13-4d7b-949e-5d27d340987e/WC26_Logo?&io=transform:fill&quality=75"
                 alt="Alchemy Pool"
-                className="h-full w-full object-cover"
+                className="h-14"
               />
             </div>
             <div>
