@@ -1,5 +1,5 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { Trophy, Calendar, BarChart3, BookOpen, Wallet, Home, LogOut, Swords, Activity } from 'lucide-react'
+import { Trophy, Calendar, BarChart3, Wallet, Home, LogOut, Swords, Activity } from 'lucide-react'
 import { useGameStore } from '@/store/useGameStore'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -9,7 +9,6 @@ const navItems = [
   { to: '/', icon: Home, label: 'Home' },
   { to: '/schedule', icon: Calendar, label: 'Schedule' },
   { to: '/leaderboard', icon: BarChart3, label: 'Rank' },
-  { to: '/rules', icon: BookOpen, label: 'Rules' },
   { to: '/fund', icon: Wallet, label: 'Prize' },
   { to: '/standings', icon: Swords, label: 'Standings' },
   { to: '/activity', icon: Activity, label: 'Activity' },

@@ -69,7 +69,7 @@ export default function MatchCard({ match, userPick, showPickButtons = true }: R
           </Badge>
         )}
         {isUpcoming && (
-          <Badge variant="secondary">
+          <Badge variant="secondary" className="border-[#17307C] bg-[#0B1543] text-white/78">
             {match.date} {match.time}
           </Badge>
         )}
@@ -110,7 +110,7 @@ export default function MatchCard({ match, userPick, showPickButtons = true }: R
             </div>
             <span className={cn(
               'font-display text-2xl tracking-wider',
-              isFinished || isLive ? 'text-white' : 'text-white/42'
+              isFinished || isLive ? 'text-white' : 'text-white/72'
             )}>
               {scoreDisplay}
             </span>
