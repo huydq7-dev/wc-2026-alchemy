@@ -83,5 +83,13 @@ export const api = {
   getBracket: () => request<any>('/bracket'),
 
   // Activity
-  getActivity: () => request<any[]>('/activity'),
+  getActivity: (params?: { page?: number; limit?: number; action?: string; userId?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.page) sp.set('page', String(params.page));
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.action) sp.set('action', params.action);
+    if (params?.userId) sp.set('userId', params.userId);
+    const qs = sp.toString();
+    return request<any>(`/activity${qs ? `?${qs}` : ''}`);
+  },
 };

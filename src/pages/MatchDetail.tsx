@@ -57,12 +57,12 @@ export default function MatchDetail() {
           </p>
 
           <div className="flex items-center justify-center gap-4 md:gap-8">
-            <div className="flex flex-col items-center gap-2">
+            <div className="flex flex-col items-center gap-2 flex-1 min-w-0">
               <FlagImage code={match.team_a_code} size={160} className="w-16 h-11 rounded-sm object-cover shadow-lg" />
-              <h2 className="font-display text-xl md:text-2xl text-white">{match.team_a_name}</h2>
+              <h2 className="font-display text-xl md:text-2xl text-white text-center truncate w-full">{match.team_a_name}</h2>
             </div>
 
-            <div className="flex flex-col items-center gap-2">
+            <div className="flex flex-col items-center gap-2 shrink-0">
               {hasScore ? (
                 <span className="font-display text-4xl md:text-5xl text-white tabular-nums">{match.score_a} - {match.score_b}</span>
               ) : (
@@ -71,9 +71,9 @@ export default function MatchDetail() {
               <DealBadge deal={match.deal} dealSide={match.deal_side} teamName={match.deal_side === 'A' ? match.team_a_name : match.team_b_name} />
             </div>
 
-            <div className="flex flex-col items-center gap-2">
+            <div className="flex flex-col items-center gap-2 flex-1 min-w-0">
               <FlagImage code={match.team_b_code} size={160} className="w-16 h-11 rounded-sm object-cover shadow-lg" />
-              <h2 className="font-display text-xl md:text-2xl text-white">{match.team_b_name}</h2>
+              <h2 className="font-display text-xl md:text-2xl text-white text-center truncate w-full">{match.team_b_name}</h2>
             </div>
           </div>
 
