@@ -2,8 +2,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @theme {
-  --color-primary: #C8102E;
-  --color-primary-light: #E63946;
+  --color-primary: #60E6F6;
+  --color-primary-light: #9DEFF9;
   --color-secondary: #003087;
   --color-accent: #F5A623;
   --color-success: #00B140;
@@ -17,14 +17,37 @@
 body {
   font-family: 'Inter', sans-serif;
   background:
-    radial-gradient(circle at top, rgba(200, 16, 46, 0.14), transparent 22%),
-    radial-gradient(circle at 80% 20%, rgba(0, 48, 135, 0.18), transparent 26%),
-    linear-gradient(180deg, #08101f 0%, #0a0e1a 100%);
+    radial-gradient(circle at top, rgba(25, 188, 255, 0.1), transparent 22%),
+    radial-gradient(circle at 18% 24%, rgba(10, 84, 180, 0.12), transparent 24%),
+    linear-gradient(180deg, #08113e 0%, #09133f 58%, #08101f 100%);
   color: #F0F4FF;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
   min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.025) 50%, transparent 100%),
+    radial-gradient(circle at 82% 14%, rgba(96, 230, 246, 0.06), transparent 20%);
+  opacity: 0.6;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(4, 8, 26, 0.1) 0%, rgba(4, 8, 26, 0.34) 100%);
+  mix-blend-mode: normal;
 }
 
 .font-display {
@@ -33,23 +56,25 @@ body {
 
 #root {
   min-height: 100vh;
+  position: relative;
+  isolation: isolate;
 }
 
 .app-panel {
-  background: linear-gradient(180deg, rgba(20, 25, 41, 0.96) 0%, rgba(14, 19, 33, 0.96) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: linear-gradient(180deg, rgba(17, 26, 72, 0.92) 0%, rgba(10, 18, 53, 0.94) 100%);
+  border: 1px solid rgba(26, 42, 102, 0.9);
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.24);
 }
 
 .app-panel-muted {
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(11, 21, 67, 0.58);
+  border: 1px solid rgba(23, 48, 124, 0.62);
 }
 
 .app-tile {
-  background: linear-gradient(180deg, rgba(18, 24, 39, 0.94) 0%, rgba(15, 20, 35, 0.94) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  background: linear-gradient(180deg, rgba(14, 22, 62, 0.94) 0%, rgba(10, 17, 49, 0.96) 100%);
+  border: 1px solid rgba(23, 48, 124, 0.52);
+  box-shadow: inset 0 1px 0 rgba(120, 214, 255, 0.04);
 }
 
 .app-kicker {
@@ -57,4 +82,15 @@ body {
   font-size: 11px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
+}
+
+.app-meta {
+  color: rgba(240, 244, 255, 0.42);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.app-divider {
+  border-color: rgba(255, 255, 255, 0.06);
 }

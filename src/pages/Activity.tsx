@@ -6,14 +6,14 @@ import { api } from '@/api/client'
 import PageHeader from '@/components/PageHeader'
 
 const ACTIONS = [
-  { key: '', label: 'All', icon: Clock, color: 'text-gray-400' },
-  { key: 'place_prediction', label: 'Predicted', icon: Target, color: 'text-green-400' },
-  { key: 'change_prediction', label: 'Changed', icon: Edit3, color: 'text-yellow-400' },
-  { key: 'update_deal', label: 'Deal', icon: Edit3, color: 'text-orange-400' },
-  { key: 'update_result', label: 'Result', icon: Flag, color: 'text-[#C8102E]' },
-  { key: 'sync_matches', label: 'Sync', icon: RefreshCw, color: 'text-blue-400' },
-  { key: 'sync_odds', label: 'Odds', icon: RefreshCw, color: 'text-purple-400' },
-  { key: 'auto_loss', label: 'Auto-Loss', icon: AlertCircle, color: 'text-red-400' },
+  { key: '', label: 'All', icon: Clock, color: 'text-white/55' },
+  { key: 'place_prediction', label: 'Predicted', icon: Target, color: 'text-white/55' },
+  { key: 'change_prediction', label: 'Changed', icon: Edit3, color: 'text-white/55' },
+  { key: 'update_deal', label: 'Deal', icon: Edit3, color: 'text-white/55' },
+  { key: 'update_result', label: 'Result', icon: Flag, color: 'text-white/55' },
+  { key: 'sync_matches', label: 'Sync', icon: RefreshCw, color: 'text-white/55' },
+  { key: 'sync_odds', label: 'Odds', icon: RefreshCw, color: 'text-white/55' },
+  { key: 'auto_loss', label: 'Auto-Loss', icon: AlertCircle, color: 'text-white/55' },
 ]
 
 const LIMIT = 15
@@ -41,26 +41,26 @@ export default function Activity() {
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
         <PageHeader
           title="Recent Activity"
-          icon={<Clock className="w-7 h-7 text-[#C8102E]" />}
+          icon={<Clock className="w-7 h-7 text-[#60E6F6]" />}
           description="A live feed of predictions, result updates, deal changes, and sync actions across the pool."
         />
       </motion.div>
 
       {/* Filter Chips */}
       <div className="flex flex-wrap gap-1.5">
-        {ACTIONS.map(({ key, label, icon: Icon, color }) => {
+        {ACTIONS.map(({ key, label, icon: Icon }) => {
           const active = filter === key
           return (
             <button
               key={key}
               onClick={() => { setFilter(key); setPage(1) }}
-              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+              className={`inline-flex items-center gap-1 rounded-none border px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em] transition-all ${
                 active
-                  ? 'bg-white text-[#0A0E1A] border border-white'
-                  : 'app-panel-muted text-gray-400 hover:text-white hover:border-white/20'
+                  ? 'border-white bg-white text-[#09112B]'
+                  : 'border-white/8 bg-white/[0.025] text-white/48 hover:border-white/20 hover:text-white'
               }`}
             >
-              <Icon className={`w-3 h-3 ${active ? color : ''}`} />
+              <Icon className="w-3 h-3" />
               {label}
             </button>
           )
@@ -69,9 +69,9 @@ export default function Activity() {
 
       {/* Log List */}
       {isLoading ? (
-        <div className="text-gray-500 text-center py-20">Loading...</div>
+        <div className="py-20 text-center text-white/45">Loading...</div>
       ) : !logs.length ? (
-        <div className="text-gray-500 text-center py-20">No activity yet</div>
+        <div className="py-20 text-center text-white/45">No activity yet</div>
       ) : (
         <div className="space-y-2">
           {logs.map((log: any, i: number) => {
@@ -89,16 +89,16 @@ export default function Activity() {
                 transition={{ delay: i * 0.02 }}
                 className="app-panel flex items-center gap-3 rounded-[22px] p-3"
               >
-                <div className="shrink-0 w-9 h-9 rounded-full bg-white/5 flex items-center justify-center">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/8 bg-white/5">
                   <Icon className={`w-4 h-4 ${color}`} />
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-semibold text-white">{log.user_name}</span>
-                    <span className={`text-xs font-medium ${color}`}>{label}</span>
+                    <span className={`app-meta ${color}`}>{label}</span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-0.5 truncate">
+                  <p className="mt-0.5 truncate text-xs text-white/36">
                     {details?.match || details?.matchId || ''}
                     {details?.team && ` → ${details.team}`}
                     {details?.status && ` (${details.status})`}
@@ -106,7 +106,7 @@ export default function Activity() {
                   </p>
                 </div>
 
-                <span className="text-[10px] text-gray-600 shrink-0">
+                <span className="shrink-0 text-[10px] text-white/28">
                   {log.created_at?.slice(5, 16)?.replace(' ', ' ')}
                 </span>
               </motion.div>
@@ -121,17 +121,17 @@ export default function Activity() {
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page <= 1}
-            className="p-1.5 rounded-lg border border-white/10 text-gray-400 hover:text-white hover:border-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            className="rounded-xl border border-white/10 p-1.5 text-white/45 transition-all hover:border-white/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
-          <span className="text-sm text-gray-400">
+          <span className="text-sm text-white/45">
             {page} / {totalPages}
           </span>
           <button
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page >= totalPages}
-            className="p-1.5 rounded-lg border border-white/10 text-gray-400 hover:text-white hover:border-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            className="rounded-xl border border-white/10 p-1.5 text-white/45 transition-all hover:border-white/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
           >
             <ChevronRight className="w-4 h-4" />
           </button>

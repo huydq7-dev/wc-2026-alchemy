@@ -36,7 +36,7 @@ export default function DealEditor({ match, onSave, onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="app-panel w-full max-w-sm rounded-[24px] p-6"
+        className="app-panel w-full max-w-sm rounded-none p-6"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">

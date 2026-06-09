@@ -18,15 +18,22 @@ export default function PageHeader({
 }: Props) {
   return (
     <div className={cn('flex flex-col gap-4 md:flex-row md:items-end md:justify-between', className)}>
-      <div>
+      <div className="space-y-2">
         <div className="flex items-center gap-3">
-          {icon}
-          <h1 className="font-display text-3xl tracking-[0.12em] text-white sm:text-4xl">
+          {icon ? (
+            <div className="app-panel-muted flex size-12 items-center justify-center rounded-2xl">
+              {icon}
+            </div>
+          ) : null}
+          <div>
+            <p className="app-kicker">Tournament View</p>
+            <h1 className="font-display text-3xl tracking-[0.16em] text-white sm:text-4xl">
             {title}
-          </h1>
+            </h1>
+          </div>
         </div>
         {description && (
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-white/52">
+          <p className="max-w-2xl text-sm leading-6 text-white/52">
             {description}
           </p>
         )}

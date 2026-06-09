@@ -51,7 +51,7 @@ export default function Schedule() {
     <div className="space-y-6">
       <PageHeader
         title="Schedule & Predict"
-        icon={<Calendar className="w-7 h-7 text-primary" />}
+        icon={<Calendar className="w-7 h-7 text-[#60E6F6]" />}
         description="Browse fixtures by day, lock in picks quickly, and review finished matches without losing your place."
       />
 
@@ -59,7 +59,7 @@ export default function Schedule() {
         value={filter}
         onValueChange={(v: string) => setFilter(v as FilterTab)}
       >
-        <TabsList className="bg-bg-card border border-white/5">
+        <TabsList className="border-white/8 bg-white/[0.03]">
           <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="today">Today</TabsTrigger>
           <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
@@ -72,14 +72,14 @@ export default function Schedule() {
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="rounded-xl border border-white/5 bg-bg-card p-4 h-48 animate-pulse"
+              className="app-panel h-48 rounded-none p-4 animate-pulse"
             />
           ))}
         </div>
       ) : sortedDates.length === 0 ? (
-        <div className="text-center py-20">
-          <Filter className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-          <p className="text-gray-500">No matches found.</p>
+        <div className="app-panel-muted py-20 text-center">
+          <Filter className="mx-auto mb-4 h-12 w-12 text-white/24" />
+          <p className="text-white/45">No matches found.</p>
         </div>
       ) : (
         <div className="space-y-8">
@@ -95,10 +95,10 @@ export default function Schedule() {
 
             return (
               <div key={date}>
-                <h2 className="font-display text-lg text-white/58 mb-3 uppercase tracking-[0.18em]">
+                <h2 className="mb-3 font-display text-lg uppercase tracking-[0.18em] text-white/58">
                   {dateLabel}
                   {date === today && (
-                    <span className="ml-2 text-primary text-sm">· TODAY</span>
+                    <span className="ml-2 text-sm text-[#60E6F6]">· TODAY</span>
                   )}
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

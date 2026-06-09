@@ -19,32 +19,31 @@ export default function Layout({ children }: { children: ReactNode }) {
   const location = useLocation()
 
   return (
-    <div className="min-h-screen bg-[#0A0E1A] flex flex-col">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-white/6 bg-[#0A0E1A]/80 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+    <div className="flex min-h-screen flex-col bg-transparent">
+      <header className="sticky top-0 z-50 border-b border-[#17307C] bg-[#08113E]/84 backdrop-blur-xl">
+        <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4">
           <NavLink to="/" className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/8 bg-white/[0.03]">
-              <Trophy className="w-5 h-5 text-[#F5A623]" />
+            <div className="flex h-11 w-11 items-center justify-center border border-[#17307C] bg-[#0B1543]">
+              <Trophy className="h-5 w-5 text-[#60E6F6]" />
             </div>
             <div>
               <p className="app-kicker">Alchemy Pool</p>
-              <h1 className="font-display text-2xl text-white tracking-wider leading-none">
-                WC<span className="text-[#C8102E]">2026</span>
+              <h1 className="font-display text-2xl leading-none tracking-[0.18em] text-white">
+                WC<span className="text-[#60E6F6]">2026</span>
               </h1>
             </div>
           </NavLink>
 
-          <nav className="hidden md:flex items-center gap-1 rounded-2xl border border-white/6 bg-white/[0.025] p-1">
+          <nav className="hidden items-center gap-1 border border-white/8 bg-white/[0.03] p-1.5 md:flex">
             {navItems.map(({ to, icon: Icon, label }) => (
               <NavLink
                 key={to}
                 to={to}
                 className={cn(
-                  'flex items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-medium transition-colors',
+                  'flex items-center gap-2 rounded-none px-3.5 py-2 text-sm font-medium transition-colors',
                   location.pathname === to
-                    ? 'bg-white text-[#0A0E1A]'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    ? 'bg-white text-[#09112B]'
+                    : 'text-white/50 hover:bg-white/6 hover:text-white'
                 )}
               >
                 <Icon className="w-4 h-4" />
@@ -59,23 +58,22 @@ export default function Layout({ children }: { children: ReactNode }) {
 
       {/* Main */}
       <main className="flex-1 pb-20 md:pb-0">
-        <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="mx-auto max-w-7xl px-4 py-6 md:py-8">
           {children}
         </div>
       </main>
 
-      {/* Bottom Nav (Mobile) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-white/6 bg-[#0A0E1A]/88 backdrop-blur-xl">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#17307C] bg-[#08113E]/88 backdrop-blur-xl md:hidden">
         <div className="flex items-center justify-around px-2 py-2">
           {navItems.map(({ to, icon: Icon, label }) => (
             <NavLink
               key={to}
               to={to}
               className={cn(
-                'flex min-w-0 flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-colors',
+                'flex min-w-0 flex-col items-center gap-0.5 rounded-none px-3 py-1.5 text-xs font-medium transition-colors',
                 location.pathname === to
-                  ? 'bg-white text-[#0A0E1A]'
-                  : 'text-gray-500'
+                  ? 'bg-white text-[#09112B]'
+                  : 'text-white/40'
               )}
             >
               <Icon className="w-5 h-5" />
@@ -102,15 +100,15 @@ function UserMenu() {
 
   return (
     <div className="flex items-center gap-3">
-      <div className="hidden sm:flex items-center gap-2">
+      <div className="hidden items-center gap-2 sm:flex">
         <span className="text-xl">{user.avatar}</span>
-        <span className="text-sm text-white font-medium">{user.name}</span>
+        <span className="text-sm font-medium text-white">{user.name}</span>
       </div>
       <Button
         variant="ghost"
         size="sm"
         onClick={handleLogout}
-        className="text-gray-400 hover:text-red-400 hover:bg-red-500/10"
+        className="text-white/48 hover:bg-white/6 hover:text-white"
       >
         <LogOut className="w-4 h-4" />
         <span className="hidden sm:inline ml-1">Logout</span>

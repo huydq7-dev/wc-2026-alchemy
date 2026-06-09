@@ -9,9 +9,9 @@ interface Props {
 
 export default function GroupTable({ group, teams }: Props) {
   return (
-    <div className="app-panel overflow-hidden rounded-[24px]">
-      <div className="border-b border-white/6 bg-white/[0.03] px-4 py-3">
-        <h3 className="font-display text-sm tracking-[0.24em] text-white/55">
+    <div className="app-panel overflow-hidden rounded-none">
+      <div className="border-b border-[#17307C]/45 bg-[#0B1543]/62 px-4 py-3">
+        <h3 className="font-display text-sm tracking-[0.24em] text-[#9DEFF9]">
           GROUP {group}
         </h3>
       </div>
@@ -36,7 +36,7 @@ export default function GroupTable({ group, teams }: Props) {
                 key={row.code}
                 className={cn(
                   'border-b border-white/5 last:border-0',
-                  i < 2 && 'bg-white/[0.03]',
+                  i < 2 && 'bg-[#60E6F6]/[0.045]',
                 )}
               >
                 <td className="py-2 px-3">
@@ -45,17 +45,17 @@ export default function GroupTable({ group, teams }: Props) {
                     <span className="text-white text-xs truncate max-w-[80px] sm:max-w-[100px]">{row.team}</span>
                   </div>
                 </td>
-                <td className="text-center py-1.5 px-1 text-gray-300 tabular-nums">{row.played}</td>
-                <td className="text-center py-1.5 px-1 text-gray-300 tabular-nums hidden sm:table-cell">{row.won}</td>
-                <td className="text-center py-1.5 px-1 text-gray-300 tabular-nums hidden sm:table-cell">{row.drawn}</td>
-                <td className="text-center py-1.5 px-1 text-gray-300 tabular-nums hidden sm:table-cell">{row.lost}</td>
-                <td className="text-center py-1.5 px-1 text-gray-300 tabular-nums hidden md:table-cell">{row.gf}</td>
-                <td className="text-center py-1.5 px-1 text-gray-300 tabular-nums hidden md:table-cell">{row.ga}</td>
+                <td className="text-center py-1.5 px-1 text-white/70 tabular-nums">{row.played}</td>
+                <td className="text-center py-1.5 px-1 text-white/70 tabular-nums hidden sm:table-cell">{row.won}</td>
+                <td className="text-center py-1.5 px-1 text-white/70 tabular-nums hidden sm:table-cell">{row.drawn}</td>
+                <td className="text-center py-1.5 px-1 text-white/70 tabular-nums hidden sm:table-cell">{row.lost}</td>
+                <td className="text-center py-1.5 px-1 text-white/70 tabular-nums hidden md:table-cell">{row.gf}</td>
+                <td className="text-center py-1.5 px-1 text-white/70 tabular-nums hidden md:table-cell">{row.ga}</td>
                 <td className={cn(
                   'text-center py-1.5 px-1 tabular-nums font-medium',
-                  row.gd > 0 && 'text-green-400',
-                  row.gd < 0 && 'text-red-400',
-                  row.gd === 0 && 'text-gray-400',
+                  row.gd > 0 && 'text-[#60E6F6]',
+                  row.gd < 0 && 'text-[#FFD890]',
+                  row.gd === 0 && 'text-white/42',
                 )}>
                   {row.gd > 0 ? '+' : ''}{row.gd}
                 </td>

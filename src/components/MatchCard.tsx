@@ -53,30 +53,30 @@ export default function MatchCard({ match, userPick, showPickButtons = true }: R
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
-        'app-panel relative rounded-[26px] p-4 transition-all',
-        isLive && 'border-[#C8102E]/40 shadow-lg shadow-[#C8102E]/10',
+        'app-panel relative rounded-none p-4 transition-all',
+        isLive && 'border-[#17307C] shadow-lg shadow-[#60E6F6]/10',
         isFinished && 'border-white/5 opacity-80',
         isUpcoming && 'border-white/10 hover:border-white/20',
-        isPicked && 'ring-1 ring-[#F5A623]/30'
+        isPicked && 'ring-1 ring-[#60E6F6]/25'
       )}
     >
       {/* Status Badge */}
       <div className="absolute top-3 right-3">
         {isLive && <LiveBadge />}
         {isFinished && (
-          <Badge variant="secondary" className="text-[10px] bg-white/5 text-gray-400">
+          <Badge variant="secondary">
             FT
           </Badge>
         )}
         {isUpcoming && (
-          <Badge variant="secondary" className="text-[10px] bg-white/5 text-gray-400">
+          <Badge variant="secondary">
             {match.date} {match.time}
           </Badge>
         )}
       </div>
 
       {/* Stage */}
-      <p className="mb-3 flex items-center text-[11px] text-white/42">{match.stage}  - {match.venue && <span className="ml-1 inline-flex items-center gap-1">{match.venue}</span>}</p>
+      <p className="mb-3 flex items-center text-[10px] uppercase tracking-[0.18em] text-white/42">{match.stage}  - {match.venue && <span className="ml-1 inline-flex items-center gap-1 text-white/30 normal-case tracking-normal">{match.venue}</span>}</p>
 
       {/* Teams & Score */}
       <Link to={`/match/${match.id}`} className="block">
@@ -101,7 +101,7 @@ export default function MatchCard({ match, userPick, showPickButtons = true }: R
               {isAdmin && (
                 <button
                   onClick={(e) => { e.preventDefault(); setShowDealEditor(true) }}
-                  className="text-gray-600 hover:text-[#F5A623] transition-colors"
+                  className="text-white/26 transition-colors hover:text-[#F5A623]"
                   title="Sửa deal"
                 >
                   <Pencil className="w-3 h-3" />
@@ -110,7 +110,7 @@ export default function MatchCard({ match, userPick, showPickButtons = true }: R
             </div>
             <span className={cn(
               'font-display text-2xl tracking-wider',
-              isFinished || isLive ? 'text-white' : 'text-gray-400'
+              isFinished || isLive ? 'text-white' : 'text-white/42'
             )}>
               {scoreDisplay}
             </span>
@@ -127,7 +127,7 @@ export default function MatchCard({ match, userPick, showPickButtons = true }: R
 
         {/* View details link */}
         <div className="flex justify-center mt-3">
-          <span className="inline-flex items-center gap-1 text-xs text-white/40 transition-colors hover:text-[#C8102E]">
+          <span className="inline-flex items-center gap-1 text-xs text-white/40 transition-colors hover:text-[#60E6F6]">
             <Clock className="w-3 h-3" />
             Detail
             <ChevronRight className="w-3 h-3" />
@@ -144,8 +144,8 @@ export default function MatchCard({ match, userPick, showPickButtons = true }: R
               size="sm"
               className={cn(
                 'flex-1 text-xs font-semibold',
-                userPick === 'A' && 'bg-[#C8102E] hover:bg-[#C8102E]/80',
-                userPick !== 'A' && 'border-white/10 text-gray-400 hover:text-white'
+                userPick === 'A' && 'bg-white text-[#09112B] hover:bg-white/92',
+                userPick !== 'A' && 'border-white/10 text-white/55 hover:text-white'
               )}
               disabled={placePrediction.isPending}
               onClick={() => handlePick('A')}
@@ -158,8 +158,8 @@ export default function MatchCard({ match, userPick, showPickButtons = true }: R
               size="sm"
               className={cn(
                 'flex-1 text-xs font-semibold',
-                userPick === 'B' && 'bg-[#C8102E] hover:bg-[#C8102E]/80',
-                userPick !== 'B' && 'border-white/10 text-gray-400 hover:text-white'
+                userPick === 'B' && 'bg-white text-[#09112B] hover:bg-white/92',
+                userPick !== 'B' && 'border-white/10 text-white/55 hover:text-white'
               )}
               disabled={placePrediction.isPending}
               onClick={() => handlePick('B')}
@@ -174,7 +174,7 @@ export default function MatchCard({ match, userPick, showPickButtons = true }: R
       {/* Finished: show pick result */}
       {isFinished && userPick && (
         <div className="flex items-center justify-center gap-2 mt-3 pt-3 border-t border-white/5">
-          <span className="text-xs text-gray-500 flex items-center gap-1 justify-center">
+          <span className="flex items-center justify-center gap-1 text-xs text-white/38">
             <FlagImage
               code={userPick === 'A' ? match.team_a_code : match.team_b_code}
               size={40}

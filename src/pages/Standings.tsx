@@ -6,6 +6,7 @@ import { api } from '@/api/client'
 import GroupTable from '@/components/GroupTable'
 import BracketView from '@/components/BracketView'
 import type { StandingsData, BracketData } from '@/types'
+import PageHeader from '@/components/PageHeader'
 
 type Tab = 'groups' | 'bracket'
 
@@ -23,13 +24,15 @@ export default function Standings() {
   const groupKeys = standings?.groups ? Object.keys(standings.groups).sort() : []
 
   return (
-    <div className="space-y-4">
-      <h1 className="font-display text-3xl text-white tracking-wider flex items-center gap-2">
-        <Trophy className="w-7 h-7 text-[#F5A623]" />Standings & Bracket
-      </h1>
+    <div className="space-y-6">
+      <PageHeader
+        title="Standings & Bracket"
+        icon={<Trophy className="w-7 h-7 text-[#60E6F6]" />}
+        description="Switch between the group race and the knockout tree without changing the underlying tournament logic."
+      />
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)}>
-        <TabsList className="bg-[#141929] border border-white/5">
+        <TabsList className="border-[#17307C] bg-[#0B1543]/58">
           <TabsTrigger value="groups"><LayoutGrid className="w-3.5 h-3.5 mr-1.5" />Groups</TabsTrigger>
           <TabsTrigger value="bracket"><Trophy className="w-3.5 h-3.5 mr-1.5" />Bracket</TabsTrigger>
         </TabsList>
@@ -39,7 +42,7 @@ export default function Standings() {
           {standingsLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-48 bg-[#141929] rounded-xl animate-pulse" />
+                <div key={i} className="app-panel h-48 rounded-none animate-pulse" />
               ))}
             </div>
           ) : groupKeys.length > 0 ? (
@@ -49,7 +52,7 @@ export default function Standings() {
               ))}
             </div>
           ) : (
-            <p className="text-gray-500 text-sm text-center py-8">No group data yet. Sync data first.</p>
+            <p className="py-8 text-center text-sm text-white/45">No group data yet. Sync data first.</p>
           )}
         </div>
         )}
@@ -57,11 +60,11 @@ export default function Standings() {
         {tab === 'bracket' && (
         <div className="relative left-1/2 mt-4 w-screen -translate-x-1/2 px-4 sm:px-6">
           {bracketLoading ? (
-            <div className="h-64 bg-[#141929] rounded-xl animate-pulse" />
+            <div className="app-panel h-64 rounded-none animate-pulse" />
           ) : bracket ? (
             <BracketView data={bracket} />
           ) : (
-            <p className="text-gray-500 text-sm text-center py-8">No bracket data yet.</p>
+            <p className="py-8 text-center text-sm text-white/45">No bracket data yet.</p>
           )}
         </div>
         )}

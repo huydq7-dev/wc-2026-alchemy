@@ -72,7 +72,7 @@ export default function Login() {
     return (
       <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#060912] p-4">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.08),_transparent_32%),linear-gradient(135deg,_rgba(16,24,52,0.95),_rgba(7,10,20,1))]" />
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="app-panel relative w-full max-w-md rounded-[30px] p-7">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="app-panel relative w-full max-w-md rounded-none p-7">
           <div className="mb-8 text-center">
             <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]">
               <KeyRound className="h-7 w-7 text-white" />
@@ -122,7 +122,7 @@ export default function Login() {
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#060912] p-4">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.08),_transparent_32%),linear-gradient(135deg,_rgba(16,24,52,0.95),_rgba(7,10,20,1))]" />
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="app-panel relative w-full max-w-md rounded-[30px] p-7">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="app-panel relative w-full max-w-md rounded-none p-7">
         <div className="mb-8 text-center">
           <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', delay: 0.1 }}>
             <div className="mx-auto mb-4 flex size-20 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]">

@@ -14,7 +14,7 @@ export default function DealBadge({ deal, dealSide, teamAName, teamBName, classN
 
   if (isEven) {
     return (
-      <span className={cn('px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-white/5 text-gray-400 border border-white/5', className)}>
+      <span className={cn('rounded-full border border-white/8 bg-white/5 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-white/48', className)}>
         Even
       </span>
     )
@@ -27,14 +27,14 @@ export default function DealBadge({ deal, dealSide, teamAName, teamBName, classN
   return (
     <div className={cn('inline-flex items-center gap-1.5', className)}>
       <span className={cn(
-        'px-2 py-0.5 rounded-full text-[11px] font-bold font-display border',
-        teamAGets ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20',
+        'rounded-full border px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em]',
+        teamAGets ? 'border-green-500/20 bg-green-500/10 text-green-400' : 'border-red-500/20 bg-red-500/10 text-red-400',
       )}>
         {labelA}
       </span>
-      <span className="text-[11px] text-gray-400">
+      <span className="text-[11px] text-white/46">
         {teamAName}
-        <span className="text-gray-600"> vs {teamBName}</span>
+        <span className="text-white/24"> vs {teamBName}</span>
       </span>
     </div>
   )

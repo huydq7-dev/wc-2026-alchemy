@@ -43,11 +43,11 @@ export default function MatchDetail() {
     <div className="space-y-6 max-w-2xl mx-auto">
       <PageHeader
         title="Match Detail"
-        icon={<MapPin className="w-7 h-7 text-[#C8102E]" />}
+        icon={<MapPin className="w-7 h-7 text-[#60E6F6]" />}
         description="Fixture detail, final score, deal explanation, and everyone’s picks in one place."
       />
 
-      <Button asChild variant="ghost" className="text-gray-400 -ml-3">
+      <Button asChild variant="ghost" className="-ml-3 text-white/45">
         <Link to="/schedule"><ArrowLeft className="w-4 h-4 mr-1" />Schedule</Link>
       </Button>
 
@@ -55,11 +55,11 @@ export default function MatchDetail() {
         <CardContent className="p-6">
           <div className="flex items-center justify-center gap-2 mb-4">
             {isLive && <LiveBadge />}
-            {isFinished && <Badge className="bg-white/5 text-gray-400">FINISHED</Badge>}
-            {match.status === 'upcoming' && <Badge className="bg-white/5 text-gray-400">UPCOMING</Badge>}
+            {isFinished && <Badge variant="secondary">Finished</Badge>}
+            {match.status === 'upcoming' && <Badge variant="secondary">Upcoming</Badge>}
           </div>
 
-          <p className="text-center text-xs text-gray-500 mb-4">
+          <p className="mb-4 text-center text-xs text-white/40">
             {match.stage} · <MapPin className="w-3 h-3 inline" /> {match.venue}
           </p>
 
@@ -73,7 +73,7 @@ export default function MatchDetail() {
               {hasScore ? (
                 <span className="font-display text-4xl md:text-5xl text-white tabular-nums">{match.score_a} - {match.score_b}</span>
               ) : (
-                <span className="font-display text-2xl text-gray-400">{match.time}</span>
+                <span className="font-display text-2xl text-white/50">{match.time}</span>
               )}
               <DealBadge deal={match.deal} dealSide={match.deal_side as 'A' | 'B'} teamAName={match.team_a_name} teamBName={match.team_b_name} />
             </div>
@@ -84,7 +84,7 @@ export default function MatchDetail() {
             </div>
           </div>
 
-          <p className="text-center text-sm text-gray-500 mt-4">
+          <p className="mt-4 text-center text-sm text-white/42">
             <Clock className="w-3 h-3 inline mr-1" />{match.date} · {match.time}
           </p>
         </CardContent>
@@ -94,20 +94,20 @@ export default function MatchDetail() {
         <Card>
           <CardHeader>
             <CardTitle className="text-white font-display text-lg flex items-center gap-2">
-              <HelpCircle className="w-5 h-5 text-[#F5A623]" />Deal Explanation
+              <HelpCircle className="w-5 h-5 text-[#60E6F6]" />Deal Explanation
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-300 text-sm leading-relaxed">{match.dealInfo.summary}</p>
+            <p className="text-sm leading-relaxed text-white/62">{match.dealInfo.summary}</p>
             <div className="app-panel-muted mt-3 rounded-2xl p-3">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">{match.team_a_name} ({match.score_a}){match.deal_side === 'A' && ` + (${match.deal})`}</span>
-                <span className="text-gray-400">{match.team_b_name} ({match.score_b}){match.deal_side === 'B' && ` + (${match.deal})`}</span>
+                <span className="text-white/52">{match.team_a_name} ({match.score_a}){match.deal_side === 'A' && ` + (${match.deal})`}</span>
+                <span className="text-white/52">{match.team_b_name} ({match.score_b}){match.deal_side === 'B' && ` + (${match.deal})`}</span>
               </div>
               <Separator className="my-2 bg-white/5" />
               <div className="flex justify-between text-sm">
                 <span className="text-white font-semibold">{match.dealInfo.adjustedA}</span>
-                <span className="text-gray-500">After Deal</span>
+                <span className="text-white/36">After Deal</span>
                 <span className="text-white font-semibold">{match.dealInfo.adjustedB}</span>
               </div>
             </div>
@@ -123,17 +123,17 @@ export default function MatchDetail() {
           <CardContent>
             <div className="space-y-2">
               {match.predictions.map((pred: any, i: number) => (
-                <div key={i} className={cn('flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/5', pred.result === 'win' && 'border-green-500/10 bg-green-500/[0.02]', pred.result === 'lose' && 'border-red-500/10 bg-red-500/[0.02]')}>
+                <div key={i} className={cn('flex items-center justify-between rounded-2xl border p-3', pred.result === 'win' && 'border-[#60E6F6]/14 bg-[#60E6F6]/[0.05]', pred.result === 'lose' && 'border-[#F5A623]/14 bg-[#F5A623]/[0.05]', !pred.result && 'border-white/6 bg-white/[0.02]')}>
                   <div className="flex items-center gap-2">
                     <span>{pred.avatar}</span>
                     <span className="text-sm text-white">{pred.name}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-400">
+                    <span className="text-sm text-white/45">
                       <FlagImage code={pred.pick === 'A' ? match.team_a_code : match.team_b_code} size={40} className="w-6 h-4 rounded-none object-cover inline-block" />
                     </span>
                     {pred.result && (
-                      <Badge className={cn('text-[10px]', pred.result === 'win' && 'bg-green-500/15 text-green-400', pred.result === 'lose' && 'bg-red-500/15 text-red-400', pred.result === 'draw' && 'bg-gray-500/15 text-gray-400')}>
+                      <Badge className={cn(pred.result === 'win' && 'border-[#60E6F6]/20 bg-[#60E6F6]/10 text-[#9DEFF9]', pred.result === 'lose' && 'border-[#F5A623]/20 bg-[#F5A623]/10 text-[#FFD890]', pred.result === 'draw' && 'border-white/12 bg-white/8 text-white/60')}>
                         {pred.result === 'win' ? '+1' : pred.result === 'lose' ? '-1' : '0'}
                       </Badge>
                     )}
@@ -146,7 +146,7 @@ export default function MatchDetail() {
       )}
 
       {(!match.predictions || match.predictions.length === 0) && (
-        <p className="text-center text-gray-500 text-sm py-8">No predictions yet for this match.</p>
+        <p className="py-8 text-center text-sm text-white/45">No predictions yet for this match.</p>
       )}
     </div>
   )

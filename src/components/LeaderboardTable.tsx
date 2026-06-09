@@ -20,10 +20,10 @@ export default function LeaderboardTable({ entries }: Props) {
   return (
     <div>
       {/* Desktop Table */}
-      <div className="app-panel overflow-x-auto rounded-[24px] p-2 hidden md:block">
+      <div className="app-panel hidden overflow-x-auto rounded-none p-2 md:block">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-white/5 text-xs text-gray-500 uppercase tracking-wider">
+            <tr className="border-b border-white/5 text-xs uppercase tracking-[0.22em] text-white/34">
               <th className="text-left py-3 px-4 w-12">#</th>
               <th className="text-left py-3 px-4">Player</th>
               <th className="text-center py-3 px-4">Points</th>
@@ -41,8 +41,8 @@ export default function LeaderboardTable({ entries }: Props) {
                 key={entry.userId}
                 layout
                 className={cn(
-              "border-b border-white/5 cursor-pointer hover:bg-white/[0.03] transition-colors",
-                  entry.rank === 1 && "bg-[#F5A623]/[0.06]",
+                  "cursor-pointer border-b border-white/5 transition-colors hover:bg-white/[0.03]",
+                  entry.rank === 1 && "bg-[#0B1543]/72",
                 )}
                 onClick={() => setSelectedUserId(entry.userId)}
               >
@@ -69,28 +69,28 @@ export default function LeaderboardTable({ entries }: Props) {
                   <span
                     className={cn(
                       "font-display text-xl font-bold",
-                      entry.totalPoints > 0 && "text-green-400",
-                      entry.totalPoints < 0 && "text-red-400",
-                      entry.totalPoints === 0 && "text-gray-400",
+                      entry.totalPoints > 0 && "text-[#60E6F6]",
+                      entry.totalPoints < 0 && "text-[#FFD890]",
+                      entry.totalPoints === 0 && "text-white/42",
                     )}
                   >
                     {entry.totalPoints > 0 ? "+" : ""}
                     {entry.totalPoints}
                   </span>
                 </td>
-                <td className="py-3 px-4 text-center text-green-400 text-sm">
+                <td className="py-3 px-4 text-center text-[#60E6F6] text-sm">
                   {entry.wins}
                 </td>
-                <td className="py-3 px-4 text-center text-red-400 text-sm">
+                <td className="py-3 px-4 text-center text-[#FFD890] text-sm">
                   {entry.losses}
                 </td>
-                <td className="py-3 px-4 text-center text-gray-500 text-sm">
+                <td className="py-3 px-4 text-center text-white/40 text-sm">
                   {entry.draws}
                 </td>
-                <td className="py-3 px-4 text-center text-[#F5A623] text-sm">
+                <td className="py-3 px-4 text-center text-white/72 text-sm">
                   {entry.pendingBets}
                 </td>
-                <td className="py-3 px-4 text-center text-gray-400 text-sm">
+                <td className="py-3 px-4 text-center text-white/48 text-sm">
                   {entry.winRate}%
                 </td>
                 <td className="py-3 px-4 text-center">
@@ -99,8 +99,8 @@ export default function LeaderboardTable({ entries }: Props) {
                       variant="outline"
                       className={
                         entry.debtPaid
-                          ? "text-[10px] border-green-500/30 text-green-400"
-                          : "text-[10px] border-red-500/30 text-red-400"
+                          ? "border-[#60E6F6]/20 text-[#9DEFF9]"
+                          : "border-[#F5A623]/20 text-[#FFD890]"
                       }
                     >
                       {entry.debtPaid
@@ -110,7 +110,7 @@ export default function LeaderboardTable({ entries }: Props) {
                   ) : (
                     <Badge
                       variant="outline"
-                      className="text-[10px] border-white/5 text-gray-500"
+                      className="border-white/6 text-white/32"
                     >
                       ---
                     </Badge>
@@ -129,8 +129,8 @@ export default function LeaderboardTable({ entries }: Props) {
             key={entry.userId}
             layout
             className={cn(
-              "app-panel rounded-[24px] p-4 cursor-pointer",
-              entry.rank === 1 ? "border-[#F5A623]/30" : "border-white/5",
+              "app-panel cursor-pointer rounded-none p-4",
+              entry.rank === 1 ? "border-[#17307C]" : "border-white/5",
             )}
             onClick={() => setSelectedUserId(entry.userId)}
           >
@@ -142,9 +142,9 @@ export default function LeaderboardTable({ entries }: Props) {
                   <p className="font-semibold text-white text-sm">
                     {entry.name}
                   </p>
-                  <div className="flex gap-2 text-xs text-gray-500 mt-0.5">
-                    <span className="text-green-400">{entry.wins}W</span>
-                    <span className="text-red-400">{entry.losses}L</span>
+                  <div className="mt-0.5 flex gap-2 text-xs text-white/36">
+                    <span className="text-[#60E6F6]">{entry.wins}W</span>
+                    <span className="text-[#FFD890]">{entry.losses}L</span>
                     <span>{entry.draws}D</span>
                   </div>
                 </div>
@@ -152,9 +152,9 @@ export default function LeaderboardTable({ entries }: Props) {
               <span
                 className={cn(
                   "font-display text-xl font-bold",
-                  entry.totalPoints > 0 && "text-green-400",
-                  entry.totalPoints < 0 && "text-red-400",
-                  entry.totalPoints === 0 && "text-gray-400",
+                  entry.totalPoints > 0 && "text-[#60E6F6]",
+                  entry.totalPoints < 0 && "text-[#FFD890]",
+                  entry.totalPoints === 0 && "text-white/42",
                 )}
               >
                 {entry.totalPoints > 0 ? "+" : ""}
@@ -212,48 +212,44 @@ function UserHistoryModal({
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
-        className="app-panel w-full max-w-lg max-h-[80vh] overflow-y-auto rounded-[28px] p-6"
+        className="app-panel max-h-[80vh] w-full max-w-lg overflow-y-auto rounded-none p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-display text-xl text-white">
+            <h3 className="font-display text-xl tracking-[0.14em] text-white">
             Prediction History
           </h3>
           <Button
             variant="ghost"
             size="icon"
             onClick={onClose}
-            className="text-gray-400"
+            className="text-white/45"
           >
             <X className="w-4 h-4" />
           </Button>
         </div>
 
         {isLoading ? (
-          <p className="text-gray-400 text-sm">Loading...</p>
+          <p className="text-sm text-white/45">Loading...</p>
         ) : data?.predictions && data.predictions.length > 0 ? (
           <>
             {/* Stats */}
             {data.stats && (
               <div className="grid grid-cols-4 gap-2 mb-4">
                 <StatBox label="Total" value={data.stats.total} />
-                <StatBox
-                  label="Wins"
-                  value={data.stats.wins}
-                  color="text-green-400"
-                />
+                <StatBox label="Wins" value={data.stats.wins} color="text-[#60E6F6]" />
                 <StatBox
                   label="Losses"
                   value={data.stats.losses}
-                  color="text-red-400"
+                  color="text-[#FFD890]"
                 />
                 <StatBox
                   label="Points"
                   value={`${data.stats.totalPoints > 0 ? "+" : ""}${data.stats.totalPoints}`}
                   color={
                     data.stats.totalPoints >= 0
-                      ? "text-green-400"
-                      : "text-red-400"
+                      ? "text-[#60E6F6]"
+                      : "text-[#FFD890]"
                   }
                 />
               </div>
@@ -263,7 +259,7 @@ function UserHistoryModal({
               {data.predictions.map((pred: any) => (
                 <div
                   key={pred.match_id}
-                  className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/5"
+                  className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/[0.02] p-3"
                 >
                   <div className="flex items-center gap-2">
                     <FlagImage
@@ -271,7 +267,7 @@ function UserHistoryModal({
                       size={40}
                       className="w-4 h-3 rounded-sm object-cover"
                     />
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-white/48">
                       {pred.team_a_name} vs {pred.team_b_name}
                     </span>
                     <FlagImage
@@ -281,7 +277,7 @@ function UserHistoryModal({
                     />
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-white/36">
                       Pick:{" "}
                       <FlagImage
                         code={
@@ -297,13 +293,13 @@ function UserHistoryModal({
                       <Badge
                         variant="outline"
                         className={cn(
-                          "text-[10px]",
+                          "",
                           pred.result === "win" &&
-                            "border-green-500/30 text-green-400",
+                            "border-[#60E6F6]/20 text-[#9DEFF9]",
                           pred.result === "lose" &&
-                            "border-red-500/30 text-red-400",
+                            "border-[#F5A623]/20 text-[#FFD890]",
                           pred.result === "draw" &&
-                            "border-gray-500/30 text-gray-400",
+                            "border-white/12 text-white/55",
                         )}
                       >
                         {pred.result === "win"
@@ -319,7 +315,7 @@ function UserHistoryModal({
             </div>
           </>
         ) : (
-          <p className="text-gray-400 text-sm">No prediction history yet.</p>
+          <p className="text-sm text-white/45">No prediction history yet.</p>
         )}
       </motion.div>
     </motion.div>
@@ -336,8 +332,8 @@ function StatBox({
   color?: string;
 }) {
   return (
-    <div className="text-center p-2 rounded-lg bg-white/[0.02]">
-      <p className="text-[10px] text-gray-500">{label}</p>
+    <div className="rounded-2xl bg-white/[0.03] p-2 text-center">
+      <p className="text-[10px] uppercase tracking-[0.18em] text-white/36">{label}</p>
       <p className={cn("font-display text-lg", color || "text-white")}>
         {value}
       </p>
