@@ -62,7 +62,7 @@ async function recalculateAllPredictions(
   ).rows as any[];
 
   const stmts = predictions.map((pred: any) => {
-    const result = calculateResult(scoreA, scoreB, deal, dealSide, pred.pick);
+    const result = calculateResult(scoreA, scoreB, deal, dealSide, pred.pick as 'A' | 'B');
     const points = result === 'win' ? 1 : result === 'lose' ? -1 : 0;
     return {
       sql: 'UPDATE predictions SET result = ?, points = ? WHERE id = ?',

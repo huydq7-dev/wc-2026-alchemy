@@ -1,4 +1,5 @@
 import db from '../db.js';
+import { calculateResult } from '../gameLogic.js';
 
 const BASE = 'https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026';
 
@@ -76,6 +77,48 @@ function generateMatchId(ofMatch: OFMatch, teamMap: Map<string, OFTeam>): string
   return `${grp}-${c1}-${c2}`;
 }
 
+async function processMatchResult(
+  matchId: string,
+  scoreA: number,
+  scoreB: number,
+  deal: string,
+  dealSide: string,
+  match: any,
+) {
+  // Insert auto-loss for users who didn't predict
+  const allUsers = (await db.execute('SELECT id FROM users')).rows as any[];
+  const existingPreds = (await db.execute('SELECT user_id FROM predictions WHERE match_id = ?', [matchId])).rows as any[];
+  const predictedIds = new Set(existingPreds.map((p: any) => p.user_id));
+  const missingUsers = allUsers.filter((u: any) => !predictedIds.has(u.id));
+
+  if (missingUsers.length > 0) {
+    await db.batch(
+      missingUsers.map((u: any) => ({
+        sql: 'INSERT OR IGNORE INTO predictions (user_id, match_id, pick, result, points, auto_loss) VALUES (?, ?, ?, ?, ?, 1)',
+        args: [u.id, matchId, 'A', 'lose', -1],
+      })),
+      'write',
+    );
+  }
+
+  // Recalculate non-auto predictions
+  const predictions = (
+    await db.execute('SELECT * FROM predictions WHERE match_id = ? AND auto_loss = 0', [matchId])
+  ).rows as any[];
+
+  if (predictions.length > 0) {
+    const stmts = predictions.map((pred: any) => {
+      const result = calculateResult(scoreA, scoreB, deal, dealSide, pred.pick as 'A' | 'B');
+      const points = result === 'win' ? 1 : result === 'lose' ? -1 : 0;
+      return {
+        sql: 'UPDATE predictions SET result = ?, points = ? WHERE id = ?',
+        args: [result, points, pred.id],
+      };
+    });
+    await db.batch(stmts, 'write');
+  }
+}
+
 export async function syncMatches(): Promise<{ synced: number; message: string }> {
   // 1. Fetch teams
   const teamsRes = await fetch(`${BASE}/worldcup.teams.json`);
@@ -126,11 +169,15 @@ export async function syncMatches(): Promise<{ synced: number; message: string }
 
     if (existingIds.has(id)) {
       if (hasScores) {
-        await db.execute({
-          sql: 'UPDATE matches SET status = ?, score_a = ?, score_b = ? WHERE id = ?',
-          args: ['finished', m.score1, m.score2, id],
-        });
+        const match = (await db.execute('SELECT * FROM matches WHERE id = ?', [id])).rows[0] as any;
+        await db.execute(
+          'UPDATE matches SET status = ?, score_a = ?, score_b = ? WHERE id = ?',
+          ['finished', m.score1, m.score2, id],
+        );
         updated++;
+
+        // Recalculate predictions + auto-loss for missed picks
+        await processMatchResult(id, m.score1!, m.score2!, match.deal, match.deal_side, match);
       }
     } else {
       await db.execute({
