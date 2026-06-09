@@ -21,7 +21,7 @@ export async function initDB() {
       pin TEXT NOT NULL DEFAULT '1234',
       paid INTEGER DEFAULT 0,
       debt_paid INTEGER DEFAULT 0,
-      created_at TEXT DEFAULT (datetime('now', 'localtime'))
+      created_at TEXT DEFAULT (datetime('now', '+7 hours'))
     )
   `);
 
@@ -55,7 +55,7 @@ export async function initDB() {
       result TEXT,
       points INTEGER,
       bet_amount INTEGER DEFAULT 5000,
-      created_at TEXT DEFAULT (datetime('now', 'localtime')),
+      created_at TEXT DEFAULT (datetime('now', '+7 hours')),
       UNIQUE(user_id, match_id),
       FOREIGN KEY (user_id) REFERENCES users(id),
       FOREIGN KEY (match_id) REFERENCES matches(id)
@@ -98,7 +98,7 @@ export async function initDB() {
       user_name TEXT NOT NULL,
       action TEXT NOT NULL,
       details TEXT,
-      created_at TEXT DEFAULT (datetime('now', 'localtime')),
+      created_at TEXT DEFAULT (datetime('now', '+7 hours')),
       FOREIGN KEY (user_id) REFERENCES users(id)
     )
   `);
