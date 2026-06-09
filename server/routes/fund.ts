@@ -1,14 +1,15 @@
 import { Router, Request, Response } from 'express';
 import db from '../db.js';
+import { requireAdmin } from '../middleware/admin.js';
 
 const BET_AMOUNT = 5000;
 const PRIZE_PERCENTAGES = [40, 30, 20, 10];
 
 const router = Router();
 
-router.get('/', (_req: Request, res: Response) => {
-  const users = db.prepare('SELECT * FROM users').all() as any[];
-  const predictions = db.prepare('SELECT * FROM predictions').all() as any[];
+router.get('/', async (_req: Request, res: Response) => {
+  const users = (await db.execute('SELECT * FROM users')).rows as any[];
+  const predictions = (await db.execute('SELECT * FROM predictions')).rows as any[];
 
   const userDebts = users.map(user => {
     const userPreds = predictions.filter(p => p.user_id === user.id);
@@ -54,15 +55,16 @@ router.get('/', (_req: Request, res: Response) => {
   });
 });
 
-router.patch('/users/:id', (req: Request, res: Response) => {
+router.patch('/users/:id', requireAdmin, async (req: Request, res: Response) => {
   const { id } = req.params;
   const { paid } = req.body;
 
-  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(id) as any;
+  const user = (await db.execute({ sql: 'SELECT * FROM users WHERE id = ?', args: [id] })).rows[0] as any;
   if (!user) return res.status(404).json({ error: 'User not found' });
 
-  db.prepare('UPDATE users SET debt_paid = ? WHERE id = ?').run(paid ? 1 : 0, id);
-  res.json(db.prepare('SELECT * FROM users WHERE id = ?').get(id));
+  await db.execute({ sql: 'UPDATE users SET debt_paid = ? WHERE id = ?', args: [paid ? 1 : 0, id] });
+  const updated = (await db.execute({ sql: 'SELECT * FROM users WHERE id = ?', args: [id] })).rows[0];
+  res.json(updated);
 });
 
 export default router;

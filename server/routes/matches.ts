@@ -1,10 +1,12 @@
 import { Router, Request, Response } from 'express';
 import db from '../db.js';
 import { calculateResult, isPickAllowed } from '../gameLogic.js';
+import { requireAdmin } from '../middleware/admin.js';
+import { logActivity } from '../services/activity.js';
 
 const router = Router();
 
-router.get('/', (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
   const { status, stage } = req.query;
   let query = 'SELECT * FROM matches';
   const conditions: string[] = [];
@@ -21,62 +23,90 @@ router.get('/', (req: Request, res: Response) => {
   if (conditions.length) query += ' WHERE ' + conditions.join(' AND ');
   query += ' ORDER BY date, time';
 
-  const matches = db.prepare(query).all(...params);
-  res.json(matches);
+  const result = await db.execute({ sql: query, args: params });
+  res.json(result.rows);
 });
 
-router.get('/next', (_req: Request, res: Response) => {
-  const match = db.prepare(
+router.get('/next', async (_req: Request, res: Response) => {
+  const result = await db.execute(
     "SELECT * FROM matches WHERE status = 'upcoming' ORDER BY date, time LIMIT 1"
-  ).get();
-  res.json(match || null);
+  );
+  res.json(result.rows[0] || null);
 });
 
-router.get('/:id', (req: Request, res: Response) => {
-  const match = db.prepare('SELECT * FROM matches WHERE id = ?').get(req.params.id);
+router.get('/:id', async (req: Request, res: Response) => {
+  const match = (await db.execute({ sql: 'SELECT * FROM matches WHERE id = ?', args: [req.params.id] })).rows[0];
   if (!match) return res.status(404).json({ error: 'Match not found' });
 
-  const predictions = db.prepare(`
+  const predictions = (await db.execute({
+    sql: `
     SELECT p.*, u.name, u.avatar FROM predictions p
     JOIN users u ON p.user_id = u.id
     WHERE p.match_id = ?
-  `).all(req.params.id);
+  `,
+    args: [req.params.id],
+  })).rows;
 
   const dealInfo = generateDealExplanation(match);
 
   res.json({ ...match, predictions, dealInfo });
 });
 
-router.patch('/:id', (req: Request, res: Response) => {
+router.patch('/:id', requireAdmin, async (req: Request, res: Response) => {
   const { id } = req.params;
   const { status, score_a, score_b, deal, deal_side } = req.body;
+  const adminId = req.headers['x-user-id'] as string;
 
-  const match = db.prepare('SELECT * FROM matches WHERE id = ?').get(id) as any;
+  const match = (await db.execute({ sql: 'SELECT * FROM matches WHERE id = ?', args: [id] })).rows[0] as any;
   if (!match) return res.status(404).json({ error: 'Match not found' });
 
   const newDeal = deal ?? match.deal;
   const newDealSide = deal_side ?? match.deal_side;
 
-  db.prepare('UPDATE matches SET status = ?, score_a = ?, score_b = ?, deal = ?, deal_side = ? WHERE id = ?')
-    .run(status || match.status, score_a ?? match.score_a, score_b ?? match.score_b, newDeal, newDealSide, id);
+  await db.execute({
+    sql: 'UPDATE matches SET status = ?, score_a = ?, score_b = ?, deal = ?, deal_side = ? WHERE id = ?',
+    args: [status || match.status, score_a ?? match.score_a, score_b ?? match.score_b, newDeal, newDealSide, id],
+  });
 
   // Recalculate predictions if match is finished
   if (status === 'finished' && score_a != null && score_b != null) {
-    const predictions = db.prepare('SELECT * FROM predictions WHERE match_id = ?').all(id) as any[];
-    const updatePred = db.prepare('UPDATE predictions SET result = ?, points = ? WHERE id = ?');
+    const predictions = (await db.execute({ sql: 'SELECT * FROM predictions WHERE match_id = ?', args: [id] })).rows as any[];
 
-    for (const pred of predictions) {
+    const updateStmts = predictions.map((pred: any) => {
       const result = calculateResult(score_a, score_b, match.deal, match.deal_side, pred.pick);
       const points = result === 'win' ? 1 : result === 'lose' ? -1 : 0;
-      updatePred.run(result, points, pred.id);
+      return {
+        sql: 'UPDATE predictions SET result = ?, points = ? WHERE id = ?',
+        args: [result, points, pred.id],
+      };
+    });
+
+    if (updateStmts.length > 0) {
+      await db.batch(updateStmts, 'write');
     }
   }
 
-  res.json(db.prepare('SELECT * FROM matches WHERE id = ?').get(id));
+  // Log admin action
+  const admin = (await db.execute({ sql: 'SELECT name FROM users WHERE id = ?', args: [adminId] })).rows[0] as any;
+  const changedFields: string[] = [];
+  if (deal !== undefined) changedFields.push('deal');
+  if (status !== undefined) changedFields.push('status');
+  if (score_a !== undefined) changedFields.push('score');
+  if (changedFields.length > 0) {
+    await logActivity(adminId, admin?.name || adminId, status === 'finished' ? 'update_result' : 'update_deal', {
+      matchId: id,
+      match: `${match.team_a_name} vs ${match.team_b_name}`,
+      ...(deal !== undefined && { deal: newDeal, dealSide: newDealSide }),
+      ...(status !== undefined && { status, score_a, score_b }),
+    });
+  }
+
+  const updated = (await db.execute({ sql: 'SELECT * FROM matches WHERE id = ?', args: [id] })).rows[0];
+  res.json(updated);
 });
 
-router.get('/:id/pickable', (req: Request, res: Response) => {
-  const match = db.prepare('SELECT * FROM matches WHERE id = ?').get(req.params.id) as any;
+router.get('/:id/pickable', async (req: Request, res: Response) => {
+  const match = (await db.execute({ sql: 'SELECT * FROM matches WHERE id = ?', args: [req.params.id] })).rows[0] as any;
   if (!match) return res.status(404).json({ error: 'Match not found' });
 
   const allowed = match.status === 'upcoming' && isPickAllowed(match.date, match.time);
@@ -94,11 +124,11 @@ function generateDealExplanation(match: any) {
 
   let result: string;
   if (adjustedA > adjustedB) {
-    result = `${match.team_a_name} thắng Deal (sau khi cộng ${match.deal})`;
+    result = `${match.team_a_name} wins Deal (after adding ${match.deal})`;
   } else if (adjustedB > adjustedA) {
-    result = `${match.team_b_name} thắng Deal (sau khi cộng ${match.deal})`;
+    result = `${match.team_b_name} wins Deal (after adding ${match.deal})`;
   } else {
-    result = `Hòa Deal`;
+    result = `Deal Draw`;
   }
 
   return {
@@ -107,7 +137,7 @@ function generateDealExplanation(match: any) {
     adjustedA,
     adjustedB,
     result,
-    summary: `${match.team_a_name} ${match.score_a}-${match.score_b} ${match.team_b_name}. Deal ${match.deal} cho ${dealTeam}. → ${result}`,
+    summary: `${match.team_a_name} ${match.score_a}-${match.score_b} ${match.team_b_name}. Deal ${match.deal} for ${dealTeam}. → ${result}`,
   };
 }
 

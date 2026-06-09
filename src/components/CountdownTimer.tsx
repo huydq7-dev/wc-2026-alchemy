@@ -14,8 +14,8 @@ export default function CountdownTimer({ date, time, label, className }: Props) 
   if (isExpired) {
     return (
       <div className={cn('text-center', className)}>
-        <p className="text-gray-400 text-sm">{label || 'Trận đấu'}</p>
-        <p className="font-display text-2xl text-[#C8102E]">ĐANG DIỄN RA</p>
+        <p className="text-gray-400 text-sm">{label || 'Match'}</p>
+        <p className="font-display text-2xl text-[#C8102E]">LIVE</p>
       </div>
     )
   }

@@ -1,17 +1,19 @@
-import Database from 'better-sqlite3';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import 'dotenv/config';
+import { createClient } from '@libsql/client';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DB_PATH = process.env.DB_PATH || path.join(__dirname, '..', 'data', 'wc2026.db');
+const client = createClient({
+  url: process.env.TURSO_DATABASE_URL || 'file:data/wc2026.db',
+  authToken: process.env.TURSO_AUTH_TOKEN,
+});
 
-const db = new Database(DB_PATH);
+let initialized = false;
 
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
+export async function initDB() {
+  if (initialized) return;
 
-export function initDB() {
-  db.exec(`
+  await client.execute('PRAGMA foreign_keys = ON');
+
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
@@ -20,8 +22,10 @@ export function initDB() {
       paid INTEGER DEFAULT 0,
       debt_paid INTEGER DEFAULT 0,
       created_at TEXT DEFAULT (datetime('now', 'localtime'))
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS matches (
       id TEXT PRIMARY KEY,
       date TEXT NOT NULL,
@@ -39,8 +43,10 @@ export function initDB() {
       status TEXT DEFAULT 'upcoming',
       score_a INTEGER,
       score_b INTEGER
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS predictions (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id TEXT NOT NULL,
@@ -53,30 +59,49 @@ export function initDB() {
       UNIQUE(user_id, match_id),
       FOREIGN KEY (user_id) REFERENCES users(id),
       FOREIGN KEY (match_id) REFERENCES matches(id)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS teams (
       name TEXT PRIMARY KEY,
       fifa_code TEXT NOT NULL,
       flag_icon TEXT NOT NULL,
       group_name TEXT NOT NULL
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS rules (
       id TEXT PRIMARY KEY,
       title TEXT NOT NULL,
       content TEXT NOT NULL,
       sort_order INTEGER DEFAULT 0
-    );
+    )
   `);
 
-  // Migration: add columns if missing (safe for existing DBs)
-  const migrate = (sql: string) => {
-    try { db.exec(sql); } catch { /* column already exists */ }
+  const migrate = async (sql: string) => {
+    try { await client.execute(sql); } catch { /* column already exists */ }
   };
-  migrate('ALTER TABLE users ADD COLUMN pin TEXT NOT NULL DEFAULT "1234"');
-  migrate('ALTER TABLE users ADD COLUMN debt_paid INTEGER DEFAULT 0');
-  migrate('ALTER TABLE predictions ADD COLUMN bet_amount INTEGER DEFAULT 5000');
+  await migrate('ALTER TABLE users ADD COLUMN pin TEXT NOT NULL DEFAULT "1234"');
+  await migrate('ALTER TABLE users ADD COLUMN debt_paid INTEGER DEFAULT 0');
+  await migrate('ALTER TABLE predictions ADD COLUMN bet_amount INTEGER DEFAULT 5000');
+  await migrate('ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0');
+  await migrate('ALTER TABLE users ADD COLUMN pin_changed INTEGER DEFAULT 0');
+
+  await client.execute(`
+    CREATE TABLE IF NOT EXISTS activity_log (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id TEXT NOT NULL,
+      user_name TEXT NOT NULL,
+      action TEXT NOT NULL,
+      details TEXT,
+      created_at TEXT DEFAULT (datetime('now', 'localtime')),
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+  `);
+
+  initialized = true;
 }
 
-export default db;
+export default client;

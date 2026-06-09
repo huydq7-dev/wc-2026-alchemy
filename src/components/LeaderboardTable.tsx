@@ -1,21 +1,21 @@
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { X } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { useUserHistory } from '@/hooks/usePredictions'
-import { cn } from '@/lib/utils'
-import { getFlagUrl } from '@/lib/flags'
-import type { LeaderboardEntry } from '@/types'
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { useUserHistory } from "@/hooks/usePredictions";
+import { cn } from "@/lib/utils";
+import { getFlagUrl } from "@/lib/flags";
+import type { LeaderboardEntry } from "@/types";
 
 interface Props {
-  entries: LeaderboardEntry[]
-  maxPoints: number
+  entries: LeaderboardEntry[];
+  maxPoints: number;
 }
 
 export default function LeaderboardTable({ entries }: Props) {
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   return (
     <div>
@@ -25,14 +25,14 @@ export default function LeaderboardTable({ entries }: Props) {
           <thead>
             <tr className="border-b border-white/5 text-xs text-gray-500 uppercase tracking-wider">
               <th className="text-left py-3 px-4 w-12">#</th>
-              <th className="text-left py-3 px-4">Người chơi</th>
-              <th className="text-center py-3 px-4">Điểm</th>
-              <th className="text-center py-3 px-4">Thắng</th>
-              <th className="text-center py-3 px-4">Thua</th>
-              <th className="text-center py-3 px-4">Hòa</th>
-              <th className="text-center py-3 px-4">Đang chờ</th>
-              <th className="text-center py-3 px-4">Tỉ lệ</th>
-              <th className="text-center py-3 px-4">Quỹ</th>
+              <th className="text-left py-3 px-4">Player</th>
+              <th className="text-center py-3 px-4">Points</th>
+              <th className="text-center py-3 px-4">Wins</th>
+              <th className="text-center py-3 px-4">Losses</th>
+              <th className="text-center py-3 px-4">Draws</th>
+              <th className="text-center py-3 px-4">Pending</th>
+              <th className="text-center py-3 px-4">Win Rate</th>
+              <th className="text-center py-3 px-4">Debt</th>
             </tr>
           </thead>
           <tbody>
@@ -41,8 +41,8 @@ export default function LeaderboardTable({ entries }: Props) {
                 key={entry.userId}
                 layout
                 className={cn(
-                  'border-b border-white/5 cursor-pointer hover:bg-white/[0.02] transition-colors',
-                  entry.rank === 1 && 'bg-[#F5A623]/[0.03]'
+                  "border-b border-white/5 cursor-pointer hover:bg-white/[0.02] transition-colors",
+                  entry.rank === 1 && "bg-[#F5A623]/[0.03]",
                 )}
                 onClick={() => setSelectedUserId(entry.userId)}
               >
@@ -53,38 +53,65 @@ export default function LeaderboardTable({ entries }: Props) {
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{entry.avatar}</span>
                     <div>
-                      <p className="font-semibold text-white text-sm">{entry.name}</p>
+                      <p className="font-semibold text-white text-sm">
+                        {entry.name}
+                      </p>
                       <div className="mt-1 w-24">
-                        <Progress value={entry.progressPercent} className="h-1" />
+                        <Progress
+                          value={entry.progressPercent}
+                          className="h-1"
+                        />
                       </div>
                     </div>
                   </div>
                 </td>
                 <td className="py-3 px-4 text-center">
-                  <span className={cn(
-                    'font-display text-xl font-bold',
-                    entry.totalPoints > 0 && 'text-green-400',
-                    entry.totalPoints < 0 && 'text-red-400',
-                    entry.totalPoints === 0 && 'text-gray-400'
-                  )}>
-                    {entry.totalPoints > 0 ? '+' : ''}{entry.totalPoints}
+                  <span
+                    className={cn(
+                      "font-display text-xl font-bold",
+                      entry.totalPoints > 0 && "text-green-400",
+                      entry.totalPoints < 0 && "text-red-400",
+                      entry.totalPoints === 0 && "text-gray-400",
+                    )}
+                  >
+                    {entry.totalPoints > 0 ? "+" : ""}
+                    {entry.totalPoints}
                   </span>
                 </td>
-                <td className="py-3 px-4 text-center text-green-400 text-sm">{entry.wins}</td>
-                <td className="py-3 px-4 text-center text-red-400 text-sm">{entry.losses}</td>
-                <td className="py-3 px-4 text-center text-gray-500 text-sm">{entry.draws}</td>
-                <td className="py-3 px-4 text-center text-[#F5A623] text-sm">{entry.pendingBets}</td>
-                <td className="py-3 px-4 text-center text-gray-400 text-sm">{entry.winRate}%</td>
+                <td className="py-3 px-4 text-center text-green-400 text-sm">
+                  {entry.wins}
+                </td>
+                <td className="py-3 px-4 text-center text-red-400 text-sm">
+                  {entry.losses}
+                </td>
+                <td className="py-3 px-4 text-center text-gray-500 text-sm">
+                  {entry.draws}
+                </td>
+                <td className="py-3 px-4 text-center text-[#F5A623] text-sm">
+                  {entry.pendingBets}
+                </td>
+                <td className="py-3 px-4 text-center text-gray-400 text-sm">
+                  {entry.winRate}%
+                </td>
                 <td className="py-3 px-4 text-center">
                   {entry.debt > 0 ? (
-                    <Badge variant="outline" className={entry.debtPaid
-                      ? 'text-[10px] border-green-500/30 text-green-400'
-                      : 'text-[10px] border-red-500/30 text-red-400'
-                    }>
-                      {entry.debtPaid ? 'Done' : `${entry.debt.toLocaleString()}đ`}
+                    <Badge
+                      variant="outline"
+                      className={
+                        entry.debtPaid
+                          ? "text-[10px] border-green-500/30 text-green-400"
+                          : "text-[10px] border-red-500/30 text-red-400"
+                      }
+                    >
+                      {entry.debtPaid
+                        ? "Done"
+                        : `${entry.debt.toLocaleString()}đ`}
                     </Badge>
                   ) : (
-                    <Badge variant="outline" className="text-[10px] border-white/5 text-gray-500">
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] border-white/5 text-gray-500"
+                    >
                       ---
                     </Badge>
                   )}
@@ -102,8 +129,8 @@ export default function LeaderboardTable({ entries }: Props) {
             key={entry.userId}
             layout
             className={cn(
-              'rounded-xl border bg-[#141929] p-4 cursor-pointer',
-              entry.rank === 1 ? 'border-[#F5A623]/30' : 'border-white/5'
+              "rounded-xl border bg-[#141929] p-4 cursor-pointer",
+              entry.rank === 1 ? "border-[#F5A623]/30" : "border-white/5",
             )}
             onClick={() => setSelectedUserId(entry.userId)}
           >
@@ -112,7 +139,9 @@ export default function LeaderboardTable({ entries }: Props) {
                 <RankBadge rank={entry.rank} />
                 <span className="text-2xl">{entry.avatar}</span>
                 <div>
-                  <p className="font-semibold text-white text-sm">{entry.name}</p>
+                  <p className="font-semibold text-white text-sm">
+                    {entry.name}
+                  </p>
                   <div className="flex gap-2 text-xs text-gray-500 mt-0.5">
                     <span className="text-green-400">{entry.wins}W</span>
                     <span className="text-red-400">{entry.losses}L</span>
@@ -120,13 +149,16 @@ export default function LeaderboardTable({ entries }: Props) {
                   </div>
                 </div>
               </div>
-              <span className={cn(
-                'font-display text-xl font-bold',
-                entry.totalPoints > 0 && 'text-green-400',
-                entry.totalPoints < 0 && 'text-red-400',
-                entry.totalPoints === 0 && 'text-gray-400'
-              )}>
-                {entry.totalPoints > 0 ? '+' : ''}{entry.totalPoints}
+              <span
+                className={cn(
+                  "font-display text-xl font-bold",
+                  entry.totalPoints > 0 && "text-green-400",
+                  entry.totalPoints < 0 && "text-red-400",
+                  entry.totalPoints === 0 && "text-gray-400",
+                )}
+              >
+                {entry.totalPoints > 0 ? "+" : ""}
+                {entry.totalPoints}
               </span>
             </div>
             <div className="mt-2">
@@ -146,18 +178,27 @@ export default function LeaderboardTable({ entries }: Props) {
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }
 
 function RankBadge({ rank }: { rank: number }) {
-  if (rank === 1) return <span className="font-display text-xl text-[#F5A623]">🥇</span>
-  if (rank === 2) return <span className="font-display text-xl text-gray-300">🥈</span>
-  if (rank === 3) return <span className="font-display text-xl text-amber-700">🥉</span>
-  return <span className="text-sm text-gray-500 font-medium">{rank}</span>
+  if (rank === 1)
+    return <span className="font-display text-xl text-[#F5A623]">🥇</span>;
+  if (rank === 2)
+    return <span className="font-display text-xl text-gray-300">🥈</span>;
+  if (rank === 3)
+    return <span className="font-display text-xl text-amber-700">🥉</span>;
+  return <span className="text-sm text-gray-500 font-medium">{rank}</span>;
 }
 
-function UserHistoryModal({ userId, onClose }: { userId: string; onClose: () => void }) {
-  const { data, isLoading } = useUserHistory(userId)
+function UserHistoryModal({
+  userId,
+  onClose,
+}: {
+  userId: string;
+  onClose: () => void;
+}) {
+  const { data, isLoading } = useUserHistory(userId);
 
   return (
     <motion.div
@@ -172,56 +213,105 @@ function UserHistoryModal({ userId, onClose }: { userId: string; onClose: () => 
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         className="bg-[#141929] border border-white/10 rounded-2xl p-6 w-full max-w-lg max-h-[80vh] overflow-y-auto"
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-display text-xl text-white">
-            Lịch sử cược
+            Prediction History
           </h3>
-          <Button variant="ghost" size="icon" onClick={onClose} className="text-gray-400">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="text-gray-400"
+          >
             <X className="w-4 h-4" />
           </Button>
         </div>
 
         {isLoading ? (
-          <p className="text-gray-400 text-sm">Đang tải...</p>
+          <p className="text-gray-400 text-sm">Loading...</p>
         ) : data?.predictions && data.predictions.length > 0 ? (
           <>
             {/* Stats */}
             {data.stats && (
               <div className="grid grid-cols-4 gap-2 mb-4">
-                <StatBox label="Tổng" value={data.stats.total} />
-                <StatBox label="Thắng" value={data.stats.wins} color="text-green-400" />
-                <StatBox label="Thua" value={data.stats.losses} color="text-red-400" />
-                <StatBox label="Điểm" value={`${data.stats.totalPoints > 0 ? '+' : ''}${data.stats.totalPoints}`} color={data.stats.totalPoints >= 0 ? 'text-green-400' : 'text-red-400'} />
+                <StatBox label="Total" value={data.stats.total} />
+                <StatBox
+                  label="Wins"
+                  value={data.stats.wins}
+                  color="text-green-400"
+                />
+                <StatBox
+                  label="Losses"
+                  value={data.stats.losses}
+                  color="text-red-400"
+                />
+                <StatBox
+                  label="Points"
+                  value={`${data.stats.totalPoints > 0 ? "+" : ""}${data.stats.totalPoints}`}
+                  color={
+                    data.stats.totalPoints >= 0
+                      ? "text-green-400"
+                      : "text-red-400"
+                  }
+                />
               </div>
             )}
 
             <div className="space-y-2">
               {data.predictions.map((pred: any) => (
-                <div key={pred.match_id} className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/5">
+                <div
+                  key={pred.match_id}
+                  className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/5"
+                >
                   <div className="flex items-center gap-2">
-                    <img src={getFlagUrl(pred.team_a_code, 40)} alt="" className="w-4 h-3 rounded-sm object-cover" />
-                    <span className="text-xs text-gray-400">{pred.team_a_name} vs {pred.team_b_name}</span>
-                    <img src={getFlagUrl(pred.team_b_code, 40)} alt="" className="w-4 h-3 rounded-sm object-cover" />
+                    <img
+                      src={getFlagUrl(pred.team_a_code, 40)}
+                      alt=""
+                      className="w-4 h-3 rounded-sm object-cover"
+                    />
+                    <span className="text-xs text-gray-400">
+                      {pred.team_a_name} vs {pred.team_b_name}
+                    </span>
+                    <img
+                      src={getFlagUrl(pred.team_b_code, 40)}
+                      alt=""
+                      className="w-4 h-3 rounded-sm object-cover"
+                    />
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-gray-500">
-                      Pick:{' '}
+                      Pick:{" "}
                       <img
-                        src={getFlagUrl(pred.pick === 'A' ? pred.team_a_code : pred.team_b_code, 40)}
+                        src={getFlagUrl(
+                          pred.pick === "A"
+                            ? pred.team_a_code
+                            : pred.team_b_code,
+                          40,
+                        )}
                         alt=""
                         className="w-4 h-3 rounded-sm object-cover inline-block"
                       />
                     </span>
                     {pred.result && (
-                      <Badge variant="outline" className={cn(
-                        'text-[10px]',
-                        pred.result === 'win' && 'border-green-500/30 text-green-400',
-                        pred.result === 'lose' && 'border-red-500/30 text-red-400',
-                        pred.result === 'draw' && 'border-gray-500/30 text-gray-400',
-                      )}>
-                        {pred.result === 'win' ? '+1' : pred.result === 'lose' ? '-1' : '0'}
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "text-[10px]",
+                          pred.result === "win" &&
+                            "border-green-500/30 text-green-400",
+                          pred.result === "lose" &&
+                            "border-red-500/30 text-red-400",
+                          pred.result === "draw" &&
+                            "border-gray-500/30 text-gray-400",
+                        )}
+                      >
+                        {pred.result === "win"
+                          ? "+1"
+                          : pred.result === "lose"
+                            ? "-1"
+                            : "0"}
                       </Badge>
                     )}
                   </div>
@@ -230,18 +320,28 @@ function UserHistoryModal({ userId, onClose }: { userId: string; onClose: () => 
             </div>
           </>
         ) : (
-          <p className="text-gray-400 text-sm">Chưa có lịch sử cược nào.</p>
+          <p className="text-gray-400 text-sm">No prediction history yet.</p>
         )}
       </motion.div>
     </motion.div>
-  )
+  );
 }
 
-function StatBox({ label, value, color }: { label: string; value: string | number; color?: string }) {
+function StatBox({
+  label,
+  value,
+  color,
+}: {
+  label: string;
+  value: string | number;
+  color?: string;
+}) {
   return (
     <div className="text-center p-2 rounded-lg bg-white/[0.02]">
       <p className="text-[10px] text-gray-500">{label}</p>
-      <p className={cn('font-display text-lg', color || 'text-white')}>{value}</p>
+      <p className={cn("font-display text-lg", color || "text-white")}>
+        {value}
+      </p>
     </div>
-  )
+  );
 }

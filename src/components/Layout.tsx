@@ -1,5 +1,5 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { Trophy, Calendar, BarChart3, BookOpen, Wallet, Home, LogOut, Swords } from 'lucide-react'
+import { Trophy, Calendar, BarChart3, BookOpen, Wallet, Home, LogOut, Swords, Activity } from 'lucide-react'
 import { useGameStore } from '@/store/useGameStore'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -7,11 +7,12 @@ import type { ReactNode } from 'react'
 
 const navItems = [
   { to: '/', icon: Home, label: 'Home' },
-  { to: '/schedule', icon: Calendar, label: 'Lịch & Cược' },
-  { to: '/leaderboard', icon: BarChart3, label: 'BXH' },
-  { to: '/rules', icon: BookOpen, label: 'Luật' },
-  { to: '/fund', icon: Wallet, label: 'Quỹ' },
-  { to: '/standings', icon: Swords, label: 'Bảng đấu' },
+  { to: '/schedule', icon: Calendar, label: 'Schedule' },
+  { to: '/leaderboard', icon: BarChart3, label: 'Rank' },
+  { to: '/rules', icon: BookOpen, label: 'Rules' },
+  { to: '/fund', icon: Wallet, label: 'Prize' },
+  { to: '/standings', icon: Swords, label: 'Standings' },
+  { to: '/activity', icon: Activity, label: 'Activity' },
 ]
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -109,7 +110,7 @@ function UserMenu() {
         className="text-gray-400 hover:text-red-400 hover:bg-red-500/10"
       >
         <LogOut className="w-4 h-4" />
-        <span className="hidden sm:inline ml-1">Thoát</span>
+        <span className="hidden sm:inline ml-1">Logout</span>
       </Button>
     </div>
   )

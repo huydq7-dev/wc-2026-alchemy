@@ -1,9 +1,10 @@
 import { Router, Request, Response } from 'express';
 import { syncMatches } from '../services/openfootball.js';
+import { requireAdmin } from '../middleware/admin.js';
 
 const router = Router();
 
-router.post('/', async (_req: Request, res: Response) => {
+router.post('/', requireAdmin, async (_req: Request, res: Response) => {
   try {
     const result = await syncMatches();
     res.json(result);

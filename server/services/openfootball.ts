@@ -88,15 +88,13 @@ export async function syncMatches(): Promise<{ synced: number; message: string }
   }
 
   // Persist teams
-  const upsertTeam = db.prepare(`
-    INSERT OR REPLACE INTO teams (name, fifa_code, flag_icon, group_name) VALUES (?, ?, ?, ?)
-  `);
-  const persistTeams = db.transaction(() => {
-    for (const t of teams) {
-      upsertTeam.run(t.name, t.fifa_code, t.flag_icon, t.group);
-    }
-  });
-  persistTeams();
+  await db.batch(
+    teams.map(t => ({
+      sql: 'INSERT OR REPLACE INTO teams (name, fifa_code, flag_icon, group_name) VALUES (?, ?, ?, ?)',
+      args: [t.name, t.fifa_code, t.flag_icon, t.group],
+    })),
+    'write',
+  );
 
   // 2. Fetch matches
   const matchesRes = await fetch(`${BASE}/worldcup.json`);
@@ -104,58 +102,56 @@ export async function syncMatches(): Promise<{ synced: number; message: string }
   const data = await matchesRes.json();
   const ofMatches: OFMatch[] = data.matches;
 
-  // 3. Upsert matches
-  const insert = db.prepare(`
-    INSERT OR IGNORE INTO matches (id, date, time, team_a_name, team_a_code, team_a_flag, team_b_name, team_b_code, team_b_flag, deal, deal_side, venue, stage, status, score_a, score_b)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-
-  const updateScores = db.prepare(`
-    UPDATE matches SET status = ?, score_a = ?, score_b = ? WHERE id = ?
-  `);
+  // 3. Get existing match IDs to distinguish insert vs update
+  const existingResult = await db.execute('SELECT id FROM matches');
+  const existingIds = new Set(existingResult.rows.map((r: any) => r.id));
 
   let inserted = 0;
   let updated = 0;
 
-  const upsertAll = db.transaction(() => {
-    for (const m of ofMatches) {
-      const id = generateMatchId(m, teamMap);
+  for (const m of ofMatches) {
+    const id = generateMatchId(m, teamMap);
 
-      const t1 = teamMap.get(m.team1);
-      const t2 = teamMap.get(m.team2);
+    const t1 = teamMap.get(m.team1);
+    const t2 = teamMap.get(m.team2);
 
-      const team_a_code = t1?.fifa_code || 'TBD';
-      const team_a_flag = t1?.flag_icon || '🏳️';
-      const team_b_code = t2?.fifa_code || 'TBD';
-      const team_b_flag = t2?.flag_icon || '🏳️';
+    const team_a_code = t1?.fifa_code || 'TBD';
+    const team_a_flag = t1?.flag_icon || '🏳️';
+    const team_b_code = t2?.fifa_code || 'TBD';
+    const team_b_flag = t2?.flag_icon || '🏳️';
 
-      const stage = stageFromRound(m.round);
-      const vn = convertToVietnamTime(m.date, m.time);
-      const hasScores = m.score1 != null && m.score2 != null;
+    const stage = stageFromRound(m.round);
+    const vn = convertToVietnamTime(m.date, m.time);
+    const hasScores = m.score1 != null && m.score2 != null;
 
-      const result = insert.run(
-        id, vn.date, vn.time,
-        m.team1, team_a_code, team_a_flag,
-        m.team2, team_b_code, team_b_flag,
-        '+0', 'A',
-        m.ground || null, stage,
-        hasScores ? 'finished' : 'upcoming',
-        m.score1 ?? null, m.score2 ?? null,
-      );
-
-      if (result.changes > 0) {
-        inserted++;
-      } else if (hasScores) {
-        updateScores.run('finished', m.score1, m.score2, id);
+    if (existingIds.has(id)) {
+      if (hasScores) {
+        await db.execute({
+          sql: 'UPDATE matches SET status = ?, score_a = ?, score_b = ? WHERE id = ?',
+          args: ['finished', m.score1, m.score2, id],
+        });
         updated++;
       }
+    } else {
+      await db.execute({
+        sql: `INSERT OR IGNORE INTO matches (id, date, time, team_a_name, team_a_code, team_a_flag, team_b_name, team_b_code, team_b_flag, deal, deal_side, venue, stage, status, score_a, score_b)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        args: [
+          id, vn.date, vn.time,
+          m.team1, team_a_code, team_a_flag,
+          m.team2, team_b_code, team_b_flag,
+          '+0', 'A',
+          m.ground || null, stage,
+          hasScores ? 'finished' : 'upcoming',
+          m.score1 ?? null, m.score2 ?? null,
+        ],
+      });
+      inserted++;
     }
-  });
-
-  upsertAll();
+  }
 
   return {
     synced: inserted + updated,
-    message: `Đã thêm ${inserted} trận mới, cập nhật ${updated} trận có tỉ số.`,
+    message: `Added ${inserted} new matches, updated ${updated} with scores.`,
   };
 }

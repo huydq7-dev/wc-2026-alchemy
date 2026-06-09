@@ -1,10 +1,11 @@
 import { Router, Request, Response } from 'express';
 import db from '../db.js';
 import { isPickAllowed } from '../gameLogic.js';
+import { logActivity } from '../services/activity.js';
 
 const router = Router();
 
-router.get('/', (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
   const { userId, matchId } = req.query;
   let query = 'SELECT * FROM predictions';
   const conditions: string[] = [];
@@ -15,11 +16,11 @@ router.get('/', (req: Request, res: Response) => {
   if (conditions.length) query += ' WHERE ' + conditions.join(' AND ');
   query += ' ORDER BY created_at';
 
-  const predictions = db.prepare(query).all(...params);
-  res.json(predictions);
+  const result = await db.execute({ sql: query, args: params });
+  res.json(result.rows);
 });
 
-router.post('/', (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response) => {
   const { userId, matchId, pick } = req.body;
 
   if (!userId || !matchId || !pick) {
@@ -29,37 +30,47 @@ router.post('/', (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Pick must be A or B' });
   }
 
-  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as any;
+  const user = (await db.execute({ sql: 'SELECT * FROM users WHERE id = ?', args: [userId] })).rows[0] as any;
   if (!user) return res.status(404).json({ error: 'User not found' });
 
-  const match = db.prepare('SELECT * FROM matches WHERE id = ?').get(matchId) as any;
+  const match = (await db.execute({ sql: 'SELECT * FROM matches WHERE id = ?', args: [matchId] })).rows[0] as any;
   if (!match) return res.status(404).json({ error: 'Match not found' });
-  if (match.status !== 'upcoming') return res.status(400).json({ error: 'Trận đấu đã bắt đầu hoặc kết thúc' });
-  if (!isPickAllowed(match.date, match.time)) return res.status(400).json({ error: 'Đã hết thời gian đặt cược (deadline 17:30)' });
+  if (match.status !== 'upcoming') return res.status(400).json({ error: 'Match has already started or finished' });
+  if (!isPickAllowed(match.date, match.time)) return res.status(400).json({ error: 'Prediction deadline has passed (17:30)' });
 
-  const existing = db.prepare('SELECT * FROM predictions WHERE user_id = ? AND match_id = ?').get(userId, matchId) as any;
+  const existing = (await db.execute({ sql: 'SELECT * FROM predictions WHERE user_id = ? AND match_id = ?', args: [userId, matchId] })).rows[0] as any;
   if (existing) {
-    db.prepare('UPDATE predictions SET pick = ? WHERE id = ?').run(pick, existing.id);
+    await db.execute({ sql: 'UPDATE predictions SET pick = ? WHERE id = ?', args: [pick, existing.id] });
   } else {
-    db.prepare('INSERT INTO predictions (user_id, match_id, pick) VALUES (?, ?, ?)').run(userId, matchId, pick);
+    await db.execute({ sql: 'INSERT INTO predictions (user_id, match_id, pick) VALUES (?, ?, ?)', args: [userId, matchId, pick] });
   }
 
-  const prediction = db.prepare('SELECT * FROM predictions WHERE user_id = ? AND match_id = ?').get(userId, matchId);
+  await logActivity(userId, user.name, existing ? 'change_prediction' : 'place_prediction', {
+    matchId,
+    pick,
+    team: pick === 'A' ? match.team_a_name : match.team_b_name,
+  });
+
+  const prediction = (await db.execute({ sql: 'SELECT * FROM predictions WHERE user_id = ? AND match_id = ?', args: [userId, matchId] })).rows[0];
   res.status(existing ? 200 : 201).json(prediction);
 });
 
-router.get('/user/:userId/history', (req: Request, res: Response) => {
+router.get('/user/:userId/history', async (req: Request, res: Response) => {
   const { userId } = req.params;
-  const predictions = db.prepare(`
+  const predictions = (await db.execute({
+    sql: `
     SELECT p.*, m.date, m.time, m.team_a_name, m.team_a_flag, m.team_a_code, m.team_b_name, m.team_b_flag, m.team_b_code,
            m.deal, m.deal_side, m.stage, m.status, m.score_a, m.score_b
     FROM predictions p
     JOIN matches m ON p.match_id = m.id
     WHERE p.user_id = ?
     ORDER BY m.date DESC, m.time DESC
-  `).all(userId);
+  `,
+    args: [userId],
+  })).rows;
 
-  const stats = db.prepare(`
+  const stats = (await db.execute({
+    sql: `
     SELECT
       COUNT(*) as total,
       SUM(CASE WHEN result = 'win' THEN 1 ELSE 0 END) as wins,
@@ -68,7 +79,9 @@ router.get('/user/:userId/history', (req: Request, res: Response) => {
       SUM(CASE WHEN result IS NULL THEN 1 ELSE 0 END) as pending,
       SUM(CASE WHEN result = 'win' THEN 1 ELSE 0 END) - SUM(CASE WHEN result = 'lose' THEN 1 ELSE 0 END) as totalPoints
     FROM predictions WHERE user_id = ?
-  `).get(userId);
+  `,
+    args: [userId],
+  })).rows[0];
 
   res.json({ predictions, stats });
 });

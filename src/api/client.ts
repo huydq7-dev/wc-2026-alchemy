@@ -1,8 +1,15 @@
+import { useGameStore } from '@/store/useGameStore';
+
 const BASE_URL = '/api';
+
+function getAuthHeaders(): Record<string, string> {
+  const userId = useGameStore.getState().currentUser?.id;
+  return userId ? { 'x-user-id': userId } : {};
+}
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE_URL}${url}`, {
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
     ...options,
   });
   if (!res.ok) {
@@ -55,10 +62,14 @@ export const api = {
 
   // Auth
   login: (userId: string, pin: string) =>
-    request<{ id: string; name: string; avatar: string; paid: boolean; debtPaid: boolean }>(
+    request<{ id: string; name: string; avatar: string; paid: boolean; debtPaid: boolean; isAdmin: boolean; pinChanged: boolean }>(
       '/auth/login',
       { method: 'POST', body: JSON.stringify({ userId, pin }) }
     ),
+  changePin: (userId: string, oldPin: string, newPin: string) =>
+    request<{ success: boolean; message: string }>('/auth/change-pin', { method: 'POST', body: JSON.stringify({ userId, oldPin, newPin }) }),
+  resetPin: (userId: string) =>
+    request<{ success: boolean; message: string }>('/auth/reset-pin', { method: 'POST', body: JSON.stringify({ userId }) }),
 
   // Rules
   getRules: () => request<any[]>('/rules'),
@@ -70,4 +81,7 @@ export const api = {
   // Standings & Bracket
   getStandings: () => request<any>('/standings'),
   getBracket: () => request<any>('/bracket'),
+
+  // Activity
+  getActivity: () => request<any[]>('/activity'),
 };

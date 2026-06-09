@@ -8,7 +8,7 @@ interface Props {
 
 export default function BracketView({ data }: Props) {
   if (!data.rounds || data.rounds.length === 0) {
-    return <p className="text-gray-500 text-sm text-center py-8">Chưa có dữ liệu vòng knockout.</p>
+    return <p className="text-gray-500 text-sm text-center py-8">No knockout data yet.</p>
   }
 
   const allRounds = data.rounds
@@ -106,12 +106,12 @@ function ConnectorLines({ matchCount, nextCount }: { matchCount: number; nextCou
 
 function roundLabel(name: string): string {
   const map: Record<string, string> = {
-    'Round of 32': 'Vòng 32',
-    'Round of 16': 'Vòng 16',
-    'Quarter-final': 'Tứ kết',
-    'Semi-final': 'Bán kết',
-    'Third Place': 'Tranh 3',
-    'Final': 'Chung kết',
+    'Round of 32': 'Round of 32',
+    'Round of 16': 'Round of 16',
+    'Quarter-final': 'Quarter-finals',
+    'Semi-final': 'Semi-finals',
+    'Third Place': 'Third Place',
+    'Final': 'Final',
   }
   return map[name] || name
 }
@@ -121,9 +121,9 @@ function isSlotCode(name: string): boolean {
 }
 
 function slotLabel(name: string): string {
-  if (/^\d[A-Z]$/.test(name)) return `Nhì ${name[1]}`
-  if (/^W\d+$/.test(name)) return `Thắng ${name.slice(1)}`
-  if (/^L\d+$/.test(name)) return `Thua ${name.slice(1)}`
-  if (/^R\d+$/.test(name)) return `Nhì ${name.slice(1)}`
+  if (/^\d[A-Z]$/.test(name)) return `2nd ${name[1]}`
+  if (/^W\d+$/.test(name)) return `Winner ${name.slice(1)}`
+  if (/^L\d+$/.test(name)) return `Loser ${name.slice(1)}`
+  if (/^R\d+$/.test(name)) return `2nd ${name.slice(1)}`
   return name
 }

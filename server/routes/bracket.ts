@@ -12,10 +12,11 @@ const ROUND_ORDER = [
   'Final',
 ];
 
-router.get('/', (_req: Request, res: Response) => {
-  const matches = db.prepare(
+router.get('/', async (_req: Request, res: Response) => {
+  const result = await db.execute(
     "SELECT * FROM matches WHERE stage != 'Group Stage' ORDER BY id"
-  ).all() as any[];
+  );
+  const matches = result.rows as any[];
 
   const rounds: { name: string; matches: any[] }[] = [];
 

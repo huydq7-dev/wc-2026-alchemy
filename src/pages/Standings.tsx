@@ -15,7 +15,6 @@ export default function Standings() {
     queryKey: ['standings'],
     queryFn: () => api.getStandings(),
   })
-
   const { data: bracket, isLoading: bracketLoading } = useQuery<BracketData>({
     queryKey: ['bracket'],
     queryFn: () => api.getBracket(),
@@ -26,23 +25,15 @@ export default function Standings() {
   return (
     <div className="space-y-4">
       <h1 className="font-display text-3xl text-white tracking-wider flex items-center gap-2">
-        <Trophy className="w-7 h-7 text-[#F5A623]" />
-        Bảng đấu & Sơ đồ
+        <Trophy className="w-7 h-7 text-[#F5A623]" />Standings & Bracket
       </h1>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)}>
         <TabsList className="bg-[#141929] border border-white/5">
-          <TabsTrigger value="groups">
-            <LayoutGrid className="w-3.5 h-3.5 mr-1.5" />
-            Bảng đấu
-          </TabsTrigger>
-          <TabsTrigger value="bracket">
-            <Trophy className="w-3.5 h-3.5 mr-1.5" />
-            Sơ đồ
-          </TabsTrigger>
+          <TabsTrigger value="groups"><LayoutGrid className="w-3.5 h-3.5 mr-1.5" />Groups</TabsTrigger>
+          <TabsTrigger value="bracket"><Trophy className="w-3.5 h-3.5 mr-1.5" />Bracket</TabsTrigger>
         </TabsList>
 
-        {/* Groups Tab */}
         {tab === 'groups' && (
         <div className="mt-4">
           {standingsLoading ? (
@@ -58,14 +49,11 @@ export default function Standings() {
               ))}
             </div>
           ) : (
-            <p className="text-gray-500 text-sm text-center py-8">
-              Chưa có dữ liệu bảng đấu. Hãy đồng bộ dữ liệu trước.
-            </p>
+            <p className="text-gray-500 text-sm text-center py-8">No group data yet. Sync data first.</p>
           )}
         </div>
         )}
 
-        {/* Bracket Tab */}
         {tab === 'bracket' && (
         <div className="mt-4">
           {bracketLoading ? (
@@ -73,9 +61,7 @@ export default function Standings() {
           ) : bracket ? (
             <BracketView data={bracket} />
           ) : (
-            <p className="text-gray-500 text-sm text-center py-8">
-              Chưa có dữ liệu sơ đồ.
-            </p>
+            <p className="text-gray-500 text-sm text-center py-8">No bracket data yet.</p>
           )}
         </div>
         )}

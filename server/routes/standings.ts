@@ -17,11 +17,11 @@ interface StandingRow {
   pts: number;
 }
 
-router.get('/', (_req: Request, res: Response) => {
-  const teams = db.prepare('SELECT * FROM teams ORDER BY group_name').all() as any[];
-  const matches = db.prepare(
+router.get('/', async (_req: Request, res: Response) => {
+  const teams = (await db.execute('SELECT * FROM teams ORDER BY group_name')).rows as any[];
+  const matches = (await db.execute(
     "SELECT * FROM matches WHERE stage = 'Group Stage' AND status = 'finished' AND score_a IS NOT NULL AND score_b IS NOT NULL"
-  ).all() as any[];
+  )).rows as any[];
 
   // Init standings for all teams
   const map = new Map<string, StandingRow>();

@@ -19,7 +19,7 @@ export function usePlacePrediction() {
       queryClient.invalidateQueries({ queryKey: ['predictions'] });
       queryClient.invalidateQueries({ queryKey: ['matches'] });
       queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
-      toast.success('Đặt cược thành công!');
+      toast.success('Dự đoán thành công!');
     },
     onError: (error: Error) => {
       toast.error(error.message);

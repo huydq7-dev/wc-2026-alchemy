@@ -7,6 +7,7 @@ import MatchDetail from '@/pages/MatchDetail'
 import Rules from '@/pages/Rules'
 import Fund from '@/pages/Fund'
 import Standings from '@/pages/Standings'
+import Activity from '@/pages/Activity'
 import Login from '@/pages/Login'
 import { useGameStore } from '@/store/useGameStore'
 
@@ -27,6 +28,7 @@ function ProtectedRoutes() {
         <Route path="/rules" element={<Rules />} />
         <Route path="/fund" element={<Fund />} />
         <Route path="/standings" element={<Standings />} />
+        <Route path="/activity" element={<Activity />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>

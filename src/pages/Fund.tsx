@@ -20,9 +20,9 @@ export default function Fund() {
       await api.updateFundUser(userId, !currentPaid)
       queryClient.invalidateQueries({ queryKey: ['fund'] })
       queryClient.invalidateQueries({ queryKey: ['leaderboard'] })
-      toast.success('Cập nhật trạng thái thành công')
+      toast.success('Status updated')
     } catch {
-      toast.error('Lỗi khi cập nhật')
+      toast.error('Update failed')
     }
   }
 
@@ -38,45 +38,36 @@ export default function Fund() {
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <h1 className="font-display text-3xl text-white tracking-wider flex items-center gap-2">
-        <Wallet className="w-7 h-7 text-[#C8102E]" />
-        Quỹ nhóm
+        <Wallet className="w-7 h-7 text-[#C8102E]" />Prize Pool
       </h1>
 
-      {/* Fund Summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card className="bg-[#141929] border-white/5">
           <CardContent className="p-4">
             <PiggyBank className="w-5 h-5 text-[#F5A623] mb-2" />
-            <p className="font-display text-2xl text-white">
-              {(fund?.totalFund || 0).toLocaleString()} đ
-            </p>
-            <p className="text-xs text-gray-500">Tổng quỹ dự kiến</p>
+            <p className="font-display text-2xl text-white">{(fund?.totalFund || 0).toLocaleString()} đ</p>
+            <p className="text-xs text-gray-500">Est. Total Pool</p>
           </CardContent>
         </Card>
         <Card className="bg-[#141929] border-white/5">
           <CardContent className="p-4">
             <Banknote className="w-5 h-5 text-green-400 mb-2" />
-            <p className="font-display text-2xl text-white">
-              {(fund?.betAmount || 5000).toLocaleString()} đ
-            </p>
-            <p className="text-xs text-gray-500">Tiền mỗi ván</p>
+            <p className="font-display text-2xl text-white">{(fund?.betAmount || 5000).toLocaleString()} đ</p>
+            <p className="text-xs text-gray-500">Per Prediction</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Debt List */}
       <Card className="bg-[#141929] border-white/5">
         <CardHeader>
           <CardTitle className="text-white font-display text-lg flex items-center gap-2">
-            <Wallet className="w-4 h-4 text-[#F5A623]" />
-            Nợ cá nhân
+            <Wallet className="w-4 h-4 text-[#F5A623]" />Individual Debts
             <span className="text-xs text-gray-500 font-normal ml-auto">
-              Mỗi ván thua = {(fund?.betAmount || 5000).toLocaleString()} đ
+              Each loss = {(fund?.betAmount || 5000).toLocaleString()} đ
             </span>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {/* Paid Users */}
           {fund?.paidUsers?.length > 0 && (
             <div className="space-y-1">
               {fund.paidUsers.map((user: any) => (
@@ -85,31 +76,21 @@ export default function Fund() {
                     <span className="text-xl">{user.avatar}</span>
                     <div>
                       <span className="text-sm text-white">{user.name}</span>
-                      <p className="text-[10px] text-gray-500">{user.losses} trận thua</p>
+                      <p className="text-[10px] text-gray-500">{user.losses} losses</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-400 font-medium">
-                      {user.debt.toLocaleString()} đ
-                    </span>
+                    <span className="text-sm text-gray-400 font-medium">{user.debt.toLocaleString()} đ</span>
                     <Badge className="bg-green-500/15 text-green-400 text-[10px] border-green-500/20">
-                      <Check className="w-3 h-3 mr-0.5" /> Đã đóng
+                      <Check className="w-3 h-3 mr-0.5" />Paid
                     </Badge>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-xs text-gray-500 h-7"
-                      onClick={() => handleTogglePaid(user.userId, true)}
-                    >
-                      Hủy
-                    </Button>
+                    <Button variant="ghost" size="sm" className="text-xs text-gray-500 h-7" onClick={() => handleTogglePaid(user.userId, true)}>Undo</Button>
                   </div>
                 </div>
               ))}
             </div>
           )}
 
-          {/* Unpaid Users */}
           {fund?.unpaidUsers?.length > 0 && (
             <>
               {fund.paidUsers?.length > 0 && <Separator className="my-3 bg-white/5" />}
@@ -120,24 +101,15 @@ export default function Fund() {
                       <span className="text-xl">{user.avatar}</span>
                       <div>
                         <span className="text-sm text-white">{user.name}</span>
-                        <p className="text-[10px] text-red-400">{user.losses} trận thua</p>
+                        <p className="text-[10px] text-red-400">{user.losses} losses</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-red-400 font-semibold">
-                        {user.debt.toLocaleString()} đ
-                      </span>
+                      <span className="text-sm text-red-400 font-semibold">{user.debt.toLocaleString()} đ</span>
                       <Badge className="bg-red-500/15 text-red-400 text-[10px] border-red-500/20">
-                        <AlertTriangle className="w-3 h-3 mr-0.5" /> Chưa đóng
+                        <AlertTriangle className="w-3 h-3 mr-0.5" />Unpaid
                       </Badge>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-xs text-green-400 h-7"
-                        onClick={() => handleTogglePaid(user.userId, false)}
-                      >
-                        Đã đóng
-                      </Button>
+                      <Button variant="ghost" size="sm" className="text-xs text-green-400 h-7" onClick={() => handleTogglePaid(user.userId, false)}>Mark Paid</Button>
                     </div>
                   </div>
                 ))}
@@ -146,58 +118,37 @@ export default function Fund() {
           )}
 
           {fund?.paidUsers?.length === 0 && fund?.unpaidUsers?.length === 0 && (
-            <p className="text-center text-gray-500 text-sm py-4">
-              Chưa có dữ liệu nợ. Hãy bắt đầu đặt cược!
-            </p>
+            <p className="text-center text-gray-500 text-sm py-4">No debt data yet. Start predicting!</p>
           )}
         </CardContent>
       </Card>
 
-      {/* Prize Distribution */}
       {fund?.totalFund > 0 && (
         <Card className="bg-[#141929] border-white/5">
           <CardHeader>
             <CardTitle className="text-white font-display text-lg flex items-center gap-2">
-              <TrophyIcon className="w-4 h-4 text-[#F5A623]" />
-              Dự kiến thưởng
+              <TrophyIcon className="w-4 h-4 text-[#F5A623]" />Prize Distribution
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
               {fund?.prizes?.map((prize: any) => (
-                <div
-                  key={prize.rank}
-                  className={cn(
-                    'flex items-center justify-between p-3 rounded-lg border',
-                    prize.rank === 1 && 'bg-[#F5A623]/5 border-[#F5A623]/10',
-                    prize.rank !== 1 && 'bg-white/[0.02] border-white/5'
-                  )}
-                >
+                <div key={prize.rank} className={cn('flex items-center justify-between p-3 rounded-lg border', prize.rank === 1 && 'bg-[#F5A623]/5 border-[#F5A623]/10', prize.rank !== 1 && 'bg-white/[0.02] border-white/5')}>
                   <div className="flex items-center gap-3">
-                    <span className="font-display text-xl w-8 text-center">
-                      {prize.rank === 1 ? '🥇' : prize.rank === 2 ? '🥈' : prize.rank === 3 ? '🥉' : `#${prize.rank}`}
-                    </span>
+                    <span className="font-display text-xl w-8 text-center">{prize.rank === 1 ? '🥇' : prize.rank === 2 ? '🥈' : prize.rank === 3 ? '🥉' : `#${prize.rank}`}</span>
                     <div>
-                      <p className="text-sm text-white font-semibold">
-                        {prize.user?.name || 'Chưa xác định'}
-                      </p>
-                      {prize.user && (
-                        <p className="text-xs text-gray-500">
-                          {prize.user.totalPoints > 0 ? '+' : ''}{prize.user.totalPoints} điểm
-                        </p>
-                      )}
+                      <p className="text-sm text-white font-semibold">{prize.user?.name || 'TBD'}</p>
+                      {prize.user && <p className="text-xs text-gray-500">{prize.user.totalPoints > 0 ? '+' : ''}{prize.user.totalPoints} pts</p>}
                     </div>
                   </div>
                   <div className="text-right">
                     <p className="font-display text-lg text-[#F5A623]">{prize.amount.toLocaleString()} đ</p>
-                    <p className="text-[10px] text-gray-500">{prize.percentage}% quỹ</p>
+                    <p className="text-[10px] text-gray-500">{prize.percentage}% of pool</p>
                   </div>
                 </div>
               ))}
             </div>
-            <p className="text-xs text-gray-500 mt-3 text-center">
-              * Dự kiến dựa trên bảng xếp hạng hiện tại. Tổng quỹ = tổng nợ của tất cả thành viên.
-            </p>
+            <p className="text-xs text-gray-500 mt-3 text-center">* Estimated based on current leaderboard. Total pool = sum of all debts.</p>
           </CardContent>
         </Card>
       )}

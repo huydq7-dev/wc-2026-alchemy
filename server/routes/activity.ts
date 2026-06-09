@@ -4,8 +4,10 @@ import db from '../db.js';
 const router = Router();
 
 router.get('/', async (_req: Request, res: Response) => {
-  const result = await db.execute('SELECT * FROM rules ORDER BY sort_order');
-  res.json(result.rows);
+  const logs = (await db.execute(
+    'SELECT * FROM activity_log ORDER BY created_at DESC LIMIT 100'
+  )).rows;
+  res.json(logs);
 });
 
 export default router;

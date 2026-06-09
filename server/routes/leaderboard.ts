@@ -3,9 +3,9 @@ import db from '../db.js';
 
 const router = Router();
 
-router.get('/', (_req: Request, res: Response) => {
-  const users = db.prepare('SELECT * FROM users').all() as any[];
-  const predictions = db.prepare('SELECT * FROM predictions').all() as any[];
+router.get('/', async (_req: Request, res: Response) => {
+  const users = (await db.execute('SELECT * FROM users')).rows as any[];
+  const predictions = (await db.execute('SELECT * FROM predictions')).rows as any[];
 
   const entries = users.map(user => {
     const userPreds = predictions.filter(p => p.user_id === user.id);

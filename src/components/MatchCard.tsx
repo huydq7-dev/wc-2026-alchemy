@@ -23,6 +23,7 @@ interface Props {
 
 export default function MatchCard({ match, userPick, showPickButtons = true }: Readonly<Props>) {
   const currentUserId = useGameStore(s => s.currentUser?.id || '')
+  const isAdmin = useGameStore(s => s.currentUser?.isAdmin || false)
   const placePrediction = usePlacePrediction()
   const queryClient = useQueryClient()
   const isPicked = !!userPick
@@ -82,7 +83,7 @@ export default function MatchCard({ match, userPick, showPickButtons = true }: R
         <div className="flex items-center justify-between gap-3">
           {/* Team A */}
           <div className="flex flex-col items-center gap-1 flex-1 min-w-0">
-            <img src={getFlagUrl(match.team_a_code, 160)} alt={match.team_a_name} className="w-10 h-7 rounded-sm object-cover shadow-sm" />
+            <img src={getFlagUrl(match.team_a_code, 160)} alt={match.team_a_name} className="w-10 h-7 object-cover shadow-sm" />
             <span className="text-sm font-semibold text-white text-center truncate w-full">
               {match.team_a_name}
             </span>
@@ -96,7 +97,7 @@ export default function MatchCard({ match, userPick, showPickButtons = true }: R
                 dealSide={match.deal_side}
                 teamName={match.deal_side === 'A' ? match.team_a_name : match.team_b_name}
               />
-              {isUpcoming && (
+              {isUpcoming && isAdmin && (
                 <button
                   onClick={(e) => { e.preventDefault(); setShowDealEditor(true) }}
                   className="text-gray-600 hover:text-[#F5A623] transition-colors"
@@ -116,7 +117,7 @@ export default function MatchCard({ match, userPick, showPickButtons = true }: R
 
           {/* Team B */}
           <div className="flex flex-col items-center gap-1 flex-1 min-w-0">
-            <img src={getFlagUrl(match.team_b_code, 160)} alt={match.team_b_name} className="w-10 h-7 rounded-sm object-cover shadow-sm" />
+            <img src={getFlagUrl(match.team_b_code, 160)} alt={match.team_b_name} className="w-10 h-7 object-cover shadow-sm" />
             <span className="text-sm font-semibold text-white text-center truncate w-full">
               {match.team_b_name}
             </span>
@@ -148,7 +149,7 @@ export default function MatchCard({ match, userPick, showPickButtons = true }: R
               disabled={placePrediction.isPending}
               onClick={() => handlePick('A')}
             >
-              <img src={getFlagUrl(match.team_a_code, 40)} alt="" className="w-4 h-3 rounded-sm inline-block" /> {match.team_a_name}
+              <img src={getFlagUrl(match.team_a_code, 40)} alt="" className="w-4 h-3 inline-block" /> {match.team_a_name}
               {userPick === 'A' && ' ✓'}
             </Button>
             <Button
@@ -162,7 +163,7 @@ export default function MatchCard({ match, userPick, showPickButtons = true }: R
               disabled={placePrediction.isPending}
               onClick={() => handlePick('B')}
             >
-              <img src={getFlagUrl(match.team_b_code, 40)} alt="" className="w-4 h-3 rounded-sm inline-block" /> {match.team_b_name}
+              <img src={getFlagUrl(match.team_b_code, 40)} alt="" className="w-4 h-3 inline-block" /> {match.team_b_name}
               {userPick === 'B' && ' ✓'}
             </Button>
           </div>
@@ -173,11 +174,10 @@ export default function MatchCard({ match, userPick, showPickButtons = true }: R
       {isFinished && userPick && (
         <div className="flex items-center justify-center gap-2 mt-3 pt-3 border-t border-white/5">
           <span className="text-xs text-gray-500 flex items-center gap-1 justify-center">
-            Bạn chọn{' '}
             <img
               src={getFlagUrl(userPick === 'A' ? match.team_a_code : match.team_b_code, 40)}
               alt=""
-              className="w-4 h-3 rounded-sm inline-block"
+              className="w-4 h-3 inline-block"
             />
           </span>
         </div>
