@@ -74,8 +74,9 @@ router.post('/reset-pin', requireAdmin, async (req: Request, res: Response) => {
 
   if (!user) return res.status(404).json({ error: 'User not found' });
 
-  // Default PIN based on user ID pattern: last 4 chars of ID or "1234"
-  const defaultPin = String(userId).slice(-4).padStart(4, '0');
+  // Default PIN: extract numeric part from ID (e.g. U01 → 01), repeat to 4 digits
+  const numericId = String(userId).replace(/[^0-9]/g, '');
+  const defaultPin = (numericId + numericId).slice(-4).padStart(4, '0');
 
   await db.execute({
     sql: 'UPDATE users SET pin = ?, pin_changed = 0 WHERE id = ?',
