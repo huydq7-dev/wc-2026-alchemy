@@ -116,7 +116,7 @@ export async function syncOdds(): Promise<{ updated: number; message: string }> 
 
   // Fetch odds for all World Cup matches in one API call
   try {
-    const url = `${BASE}/sports/soccer_world_cup/odds/?apiKey=${API_KEY}&regions=eu&markets=spreads&oddsFormat=decimal`;
+    const url = `${BASE}/sports/soccer_fifa_world_cup/odds/?apiKey=${API_KEY}&regions=eu&markets=spreads&oddsFormat=decimal`;
     const res = await fetch(url);
 
     if (!res.ok) {
