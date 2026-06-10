@@ -78,6 +78,8 @@ export const api = {
   // Sync
   syncMatches: () =>
     request<{ synced: number; message: string }>('/matches/sync', { method: 'POST' }),
+  syncResults: () =>
+    request<{ updated: number; details: string[] }>('/matches/sync/results', { method: 'POST' }),
   syncOdds: () =>
     request<{ updated: number; message: string }>('/matches/sync-odds', { method: 'POST' }),
 
