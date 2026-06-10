@@ -1,9 +1,10 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/api/client";
-import { ArrowLeft, Users, Shirt, MapPin } from "lucide-react";
+import { ArrowLeft, Users, Shirt, MapPin, LayoutGrid, List } from "lucide-react";
 import { useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Player {
   name: string;
@@ -342,48 +343,31 @@ export default function Squad() {
       </div>
 
       {/* View Toggle */}
-      <div className="flex rounded-xl border border-white/8 bg-white/[0.02] p-1 w-fit">
-        <button
-          onClick={() => setView("pitch")}
-          className={cn(
-            "rounded-lg px-4 py-2 text-sm font-medium transition-all",
-            view === "pitch"
-              ? "bg-white text-[#09112B]"
-              : "text-white/40 hover:text-white/70",
-          )}
-        >
-          Pitch View
-        </button>
-        <button
-          onClick={() => setView("list")}
-          className={cn(
-            "rounded-lg px-4 py-2 text-sm font-medium transition-all",
-            view === "list"
-              ? "bg-white text-[#09112B]"
-              : "text-white/40 hover:text-white/70",
-          )}
-        >
-          List View
-        </button>
-      </div>
+      <Tabs value={view} onValueChange={(v) => setView(v as "pitch" | "list")}>
+        <TabsList className="border-[#17307C] bg-[#0B1543]/58">
+          <TabsTrigger value="pitch"><LayoutGrid className="w-3.5 h-3.5 mr-1.5" />Pitch View</TabsTrigger>
+          <TabsTrigger value="list"><List className="w-3.5 h-3.5 mr-1.5" />List View</TabsTrigger>
+        </TabsList>
 
-      {/* Content */}
-      {view === "pitch" ? (
-        <>
-          <PitchView players={squad.players} formation={formation} />
-          {/* Starting XI legend */}
-          <div className="flex flex-wrap items-center gap-3 justify-center text-xs text-white/40">
-            {(["GK", "DEF", "MID", "FWD"] as const).map(pos => (
-              <span key={pos} className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: posColor[pos] }} />
-                {pos}
-              </span>
-            ))}
-          </div>
-        </>
-      ) : (
-        <ListView players={squad.players} />
-      )}
+        {view === "pitch" && (
+          <>
+            <PitchView players={squad.players} formation={formation} />
+            {/* Starting XI legend */}
+            <div className="flex flex-wrap items-center gap-3 justify-center text-xs text-white/40">
+              {(["GK", "DEF", "MID", "FWD"] as const).map(pos => (
+                <span key={pos} className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: posColor[pos] }} />
+                  {pos}
+                </span>
+              ))}
+            </div>
+          </>
+        )}
+
+        {view === "list" && (
+          <ListView players={squad.players} />
+        )}
+      </Tabs>
     </div>
   );
 }
