@@ -284,6 +284,7 @@ export default function Squad() {
     queryKey: ["squad", teamCode],
     queryFn: () => api.getSquad(teamCode!),
     enabled: !!teamCode,
+    staleTime: 24 * 60 * 60 * 1000, // 1 day — squad data is static
   });
 
   if (isLoading) {

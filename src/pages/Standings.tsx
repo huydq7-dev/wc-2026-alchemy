@@ -15,7 +15,7 @@ export default function Standings() {
   const { data: standings, isLoading: standingsLoading } = useQuery<StandingsData>({
     queryKey: ['standings'],
     queryFn: () => api.getStandings(),
-    staleTime: 15 * 60 * 1000, // 15min
+    staleTime: 24 * 60 * 60 * 1000, // 1 day — rarely changes
   })
   const { data: bracket, isLoading: bracketLoading } = useQuery<BracketData>({
     queryKey: ['bracket'],

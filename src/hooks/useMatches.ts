@@ -5,7 +5,7 @@ export function useMatches(params?: { status?: string; stage?: string }) {
   return useQuery({
     queryKey: ['matches', params],
     queryFn: () => api.getMatches(params),
-    staleTime: 2 * 60 * 60 * 1000, // 2h — schedule rarely changes
+    staleTime: 24 * 60 * 60 * 1000, // 1 day — schedule is fixed
   });
 }
 
