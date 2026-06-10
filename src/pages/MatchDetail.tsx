@@ -49,7 +49,7 @@ export default function MatchDetail() {
   const hasScore = match.score_a != null && match.score_b != null;
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto">
+    <div className="space-y-6 max-w-5xl mx-auto">
       <PageHeader
         title="Match Detail"
         icon={<MapPin className="w-7 h-7 text-[#60E6F6]" />}
@@ -163,98 +163,102 @@ export default function MatchDetail() {
         </Card>
       )}
 
-      {/* ── Live Data Panel (Highlightly) ── */}
-      {liveMatch.hlMatchId && (
-        <LiveMatchPanel
-          detail={liveMatch.detail}
-          lineups={liveMatch.lineups}
-          isLive={isLive || liveMatch.isLive}
-          isFetching={liveMatch.isFetching}
-        />
-      )}
+      {/* ── Live Data + Predictions (2-col on desktop) ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        {/* Live Data Panel */}
+        <div className="lg:col-span-3">
+          {liveMatch.hlMatchId ? (
+            <LiveMatchPanel
+              detail={liveMatch.detail}
+              lineups={liveMatch.lineups}
+              isLive={isLive || liveMatch.isLive}
+              isFetching={liveMatch.isFetching}
+            />
+          ) : !liveMatch.isLoading && (isLive || match.status === "upcoming") ? (
+            <Card>
+              <CardContent className="py-6 text-center">
+                <Radio className="w-5 h-5 text-white/15 mx-auto mb-2" />
+                <p className="text-xs text-white/30">Live data will appear here when available from Highlightly.</p>
+              </CardContent>
+            </Card>
+          ) : null}
+        </div>
 
-      {!liveMatch.hlMatchId && !liveMatch.isLoading && (isLive || match.status === "upcoming") && (
-        <Card>
-          <CardContent className="py-6 text-center">
-            <Radio className="w-5 h-5 text-white/15 mx-auto mb-2" />
-            <p className="text-xs text-white/30">Live data will appear here when available from Highlightly.</p>
-          </CardContent>
-        </Card>
-      )}
-
-      {match.predictions?.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-white font-display text-lg">
-              Who predicted what?
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {match.predictions.map((pred: any, i: number) => (
-                <div
-                  key={i}
-                  className={cn(
-                    "flex items-center justify-between rounded-2xl border p-3",
-                    pred.result === "win" &&
-                      "border-[#60E6F6]/14 bg-[#60E6F6]/[0.05]",
-                    pred.result === "lose" &&
-                      "border-[#F5A623]/14 bg-[#F5A623]/[0.05]",
-                    !pred.result && "border-white/6 bg-white/[0.02]",
-                  )}
-                >
-                  <div className="flex items-center gap-2">
-                    <span>{pred.avatar}</span>
-                    <Link
-                      to={`/user/${pred.user_id}`}
-                      className="text-sm text-white hover:underline"
+        {/* Predictions sidebar */}
+        <div className="lg:col-span-2">
+          {match.predictions?.length > 0 ? (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-white font-display text-lg">
+                  Who predicted what?
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {match.predictions.map((pred: any, i: number) => (
+                    <div
+                      key={i}
+                      className={cn(
+                        "flex items-center justify-between rounded-2xl border p-3",
+                        pred.result === "win" &&
+                          "border-[#60E6F6]/14 bg-[#60E6F6]/[0.05]",
+                        pred.result === "lose" &&
+                          "border-[#F5A623]/14 bg-[#F5A623]/[0.05]",
+                        !pred.result && "border-white/6 bg-white/[0.02]",
+                      )}
                     >
-                      {pred.name}
-                    </Link>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-white/45">
-                      <FlagImage
-                        code={
-                          pred.pick === "A"
-                            ? match.team_a_code
-                            : match.team_b_code
-                        }
-                        size={40}
-                        className="w-6 h-4 rounded-none object-cover inline-block"
-                      />
-                    </span>
-                    {pred.result && (
-                      <Badge
-                        className={cn(
-                          pred.result === "win" &&
-                            "border-[#60E6F6]/20 bg-[#60E6F6]/10 text-[#9DEFF9]",
-                          pred.result === "lose" &&
-                            "border-[#F5A623]/20 bg-[#F5A623]/10 text-[#FFD890]",
-                          pred.result === "draw" &&
-                            "border-white/12 bg-white/8 text-white/60",
+                      <div className="flex items-center gap-2">
+                        <span>{pred.avatar}</span>
+                        <Link
+                          to={`/user/${pred.user_id}`}
+                          className="text-sm text-white hover:underline"
+                        >
+                          {pred.name}
+                        </Link>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-white/45">
+                          <FlagImage
+                            code={
+                              pred.pick === "A"
+                                ? match.team_a_code
+                                : match.team_b_code
+                            }
+                            size={40}
+                            className="w-6 h-4 rounded-none object-cover inline-block"
+                          />
+                        </span>
+                        {pred.result && (
+                          <Badge
+                            className={cn(
+                              pred.result === "win" &&
+                                "border-[#60E6F6]/20 bg-[#60E6F6]/10 text-[#9DEFF9]",
+                              pred.result === "lose" &&
+                                "border-[#F5A623]/20 bg-[#F5A623]/10 text-[#FFD890]",
+                              pred.result === "draw" &&
+                                "border-white/12 bg-white/8 text-white/60",
+                            )}
+                          >
+                            {pred.result === "win"
+                              ? "+1"
+                              : pred.result === "lose"
+                                ? "-1"
+                                : "0"}
+                          </Badge>
                         )}
-                      >
-                        {pred.result === "win"
-                          ? "+1"
-                          : pred.result === "lose"
-                            ? "-1"
-                            : "0"}
-                      </Badge>
-                    )}
-                  </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {(!match.predictions || match.predictions.length === 0) && (
-        <p className="py-8 text-center text-sm text-white/45">
-          No predictions yet for this match.
-        </p>
-      )}
+              </CardContent>
+            </Card>
+          ) : (
+            <p className="py-8 text-center text-sm text-white/45">
+              No predictions yet for this match.
+            </p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
