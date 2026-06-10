@@ -1,19 +1,30 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { useEffect } from 'react'
+import { useEffect, lazy, Suspense } from 'react'
 import Layout from '@/components/Layout'
-import Dashboard from '@/pages/Dashboard'
-import Schedule from '@/pages/Schedule'
-import Leaderboard from '@/pages/Leaderboard'
-import MatchDetail from '@/pages/MatchDetail'
-import Rules from '@/pages/Rules'
-import Fund from '@/pages/Fund'
-import Standings from '@/pages/Standings'
-import Activity from '@/pages/Activity'
-import UserProfile from '@/pages/UserProfile'
-import Squad from '@/pages/Squad'
 import Login from '@/pages/Login'
 import { useGameStore } from '@/store/useGameStore'
 import { useUsers } from '@/hooks/useUsers'
+
+// Lazy-loaded pages — split into separate chunks
+const Dashboard = lazy(() => import('@/pages/Dashboard'))
+const Schedule = lazy(() => import('@/pages/Schedule'))
+const Leaderboard = lazy(() => import('@/pages/Leaderboard'))
+const MatchDetail = lazy(() => import('@/pages/MatchDetail'))
+const Rules = lazy(() => import('@/pages/Rules'))
+const Fund = lazy(() => import('@/pages/Fund'))
+const Standings = lazy(() => import('@/pages/Standings'))
+const Activity = lazy(() => import('@/pages/Activity'))
+const UserProfile = lazy(() => import('@/pages/UserProfile'))
+const Squad = lazy(() => import('@/pages/Squad'))
+
+function PageLoader() {
+  return (
+    <div className="space-y-4 animate-pulse">
+      <div className="h-8 w-40 bg-[#141929] rounded" />
+      <div className="h-64 bg-[#141929] rounded-xl" />
+    </div>
+  )
+}
 
 function ProtectedRoutes() {
   const isLoggedIn = useGameStore(s => s.isLoggedIn)
@@ -34,7 +45,6 @@ function ProtectedRoutes() {
           isAdmin: fresh.is_admin || fresh.isAdmin || false,
           pinChanged: currentUser.pinChanged,
         }
-        // Only update if something changed
         if (updated.name !== currentUser.name || updated.avatar !== currentUser.avatar || updated.isAdmin !== currentUser.isAdmin) {
           login(updated)
         }
@@ -48,19 +58,21 @@ function ProtectedRoutes() {
 
   return (
     <Layout>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/schedule" element={<Schedule />} />
-        <Route path="/leaderboard" element={<Leaderboard />} />
-        <Route path="/match/:id" element={<MatchDetail />} />
-        <Route path="/rules" element={<Rules />} />
-        <Route path="/fund" element={<Fund />} />
-        <Route path="/standings" element={<Standings />} />
-        <Route path="/activity" element={<Activity />} />
-        <Route path="/squad/:teamCode" element={<Squad />} />
-        <Route path="/user/:id" element={<UserProfile />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/schedule" element={<Schedule />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/match/:id" element={<MatchDetail />} />
+          <Route path="/rules" element={<Rules />} />
+          <Route path="/fund" element={<Fund />} />
+          <Route path="/standings" element={<Standings />} />
+          <Route path="/activity" element={<Activity />} />
+          <Route path="/squad/:teamCode" element={<Squad />} />
+          <Route path="/user/:id" element={<UserProfile />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
     </Layout>
   )
 }
