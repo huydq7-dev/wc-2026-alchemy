@@ -18,14 +18,14 @@ interface Player {
 const posColor: Record<string, string> = {
   GK: "#F5A623",
   DEF: "#60E6F6",
-  MID: "#9DEFF9",
+  MID: "#4ADE80",
   FWD: "#E63946",
 };
 
 const posBg: Record<string, string> = {
   GK: "bg-accent/12 border-accent/25 text-[#F5A623]",
   DEF: "bg-primary/10 border-primary/25 text-primary",
-  MID: "bg-primary/6 border-primary/20 text-primary-light",
+  MID: "bg-emerald-500/10 border-emerald-500/25 text-[#4ADE80]",
   FWD: "bg-danger/10 border-danger/25 text-danger",
 };
 
