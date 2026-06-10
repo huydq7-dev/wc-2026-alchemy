@@ -99,7 +99,7 @@ function PitchView({ players, formation }: { players: Player[]; formation: strin
   const starters = useMemo(() => layoutFormation(players, formation), [players, formation]);
 
   return (
-    <div className="relative mx-auto w-full max-w-[400px]">
+    <div className="relative mx-auto w-full max-w-[400px] sm:max-w-[480px]">
       {/* Pitch */}
       <svg
         viewBox="0 0 100 100"
@@ -129,13 +129,13 @@ function PitchView({ players, formation }: { players: Player[]; formation: strin
         <circle cx="50" cy="50" r="10" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="0.3" />
         <circle cx="50" cy="50" r="0.8" fill="rgba(255,255,255,0.5)" />
 
-        {/* Left penalty area */}
-        <rect x="3" y="22" width="16" height="56" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.25" />
-        <rect x="3" y="34" width="6" height="32" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.25" />
+        {/* Top penalty area */}
+        <rect x="22" y="2" width="56" height="16" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.25" />
+        <rect x="34" y="2" width="32" height="6" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.25" />
 
-        {/* Right penalty area */}
-        <rect x="81" y="22" width="16" height="56" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.25" />
-        <rect x="91" y="34" width="6" height="32" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.25" />
+        {/* Bottom penalty area */}
+        <rect x="22" y="82" width="56" height="16" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.25" />
+        <rect x="34" y="92" width="32" height="6" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.25" />
 
         {/* Goals */}
         <rect x="44" y="0" width="12" height="2.5" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="0.3" />
