@@ -177,7 +177,12 @@ export default function MatchDetail() {
                 >
                   <div className="flex items-center gap-2">
                     <span>{pred.avatar}</span>
-                    <span className="text-sm text-white">{pred.name}</span>
+                    <Link
+                      to={`/user/${pred.user_id}`}
+                      className="text-sm text-white hover:underline"
+                    >
+                      {pred.name}
+                    </Link>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-white/45">

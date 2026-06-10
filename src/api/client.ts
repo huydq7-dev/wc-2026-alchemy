@@ -22,6 +22,7 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
 export const api = {
   // Users
   getUsers: () => request<any[]>('/users'),
+  getUserProfile: (id: string) => request<any>(`/users/${id}`),
   updateUser: (id: string, data: { paid: boolean }) =>
     request(`/users/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
 

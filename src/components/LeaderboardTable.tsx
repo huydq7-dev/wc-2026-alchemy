@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import { X, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -16,6 +17,7 @@ interface Props {
 
 export default function LeaderboardTable({ entries }: Props) {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   return (
     <div>
@@ -44,7 +46,7 @@ export default function LeaderboardTable({ entries }: Props) {
                   "cursor-pointer border-b border-white/5 transition-colors hover:bg-white/[0.03]",
                   entry.rank === 1 && "bg-[#0B1543]/72",
                 )}
-                onClick={() => setSelectedUserId(entry.userId)}
+                onClick={() => navigate(`/user/${entry.userId}`)}
               >
                 <td className="py-3 px-4">
                   <RankBadge rank={entry.rank} />
@@ -94,27 +96,40 @@ export default function LeaderboardTable({ entries }: Props) {
                   {entry.winRate}%
                 </td>
                 <td className="py-3 px-4 text-center">
-                  {entry.debt > 0 ? (
-                    <Badge
-                      variant="outline"
-                      className={
-                        entry.debtPaid
-                          ? "border-[#60E6F6]/20 text-[#9DEFF9]"
-                          : "border-[#F5A623]/20 text-[#FFD890]"
-                      }
+                  <div className="flex items-center justify-center gap-2">
+                    {entry.debt > 0 ? (
+                      <Badge
+                        variant="outline"
+                        className={
+                          entry.debtPaid
+                            ? "border-[#60E6F6]/20 text-[#9DEFF9]"
+                            : "border-[#F5A623]/20 text-[#FFD890]"
+                        }
+                      >
+                        {entry.debtPaid
+                          ? "Done"
+                          : `${entry.debt.toLocaleString()}đ`}
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant="outline"
+                        className="border-white/6 text-white/32"
+                      >
+                        ---
+                      </Badge>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 text-white/20 hover:text-white/60"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedUserId(entry.userId);
+                      }}
                     >
-                      {entry.debtPaid
-                        ? "Done"
-                        : `${entry.debt.toLocaleString()}đ`}
-                    </Badge>
-                  ) : (
-                    <Badge
-                      variant="outline"
-                      className="border-white/6 text-white/32"
-                    >
-                      ---
-                    </Badge>
-                  )}
+                      <Info className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
                 </td>
               </motion.tr>
             ))}
@@ -132,7 +147,7 @@ export default function LeaderboardTable({ entries }: Props) {
               "app-panel cursor-pointer rounded-none p-4",
               entry.rank === 1 ? "border-[#17307C]" : "border-white/5",
             )}
-            onClick={() => setSelectedUserId(entry.userId)}
+            onClick={() => navigate(`/user/${entry.userId}`)}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -149,17 +164,30 @@ export default function LeaderboardTable({ entries }: Props) {
                   </div>
                 </div>
               </div>
-              <span
-                className={cn(
-                  "font-display text-xl font-bold",
-                  entry.totalPoints > 0 && "text-[#60E6F6]",
-                  entry.totalPoints < 0 && "text-[#FFD890]",
-                  entry.totalPoints === 0 && "text-white/42",
-                )}
-              >
-                {entry.totalPoints > 0 ? "+" : ""}
-                {entry.totalPoints}
-              </span>
+              <div className="flex items-center gap-2">
+                <span
+                  className={cn(
+                    "font-display text-xl font-bold",
+                    entry.totalPoints > 0 && "text-[#60E6F6]",
+                    entry.totalPoints < 0 && "text-[#FFD890]",
+                    entry.totalPoints === 0 && "text-white/42",
+                  )}
+                >
+                  {entry.totalPoints > 0 ? "+" : ""}
+                  {entry.totalPoints}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-white/20 hover:text-white/60"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedUserId(entry.userId);
+                  }}
+                >
+                  <Info className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
             <div className="mt-2">
               <Progress value={entry.progressPercent} className="h-1" />

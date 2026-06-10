@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { api } from "@/api/client";
 import PageHeader from "@/components/PageHeader";
 
@@ -149,9 +150,12 @@ export default function Activity() {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-white">
+                    <Link
+                      to={`/user/${log.user_id}`}
+                      className="text-sm font-semibold text-white hover:underline"
+                    >
                       {log.user_name}
-                    </span>
+                    </Link>
                     <span className={`app-meta ${color}`}>{label}</span>
                   </div>
                   <p className="mt-0.5 truncate text-xs text-white/36">

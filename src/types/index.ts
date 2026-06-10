@@ -186,3 +186,48 @@ export interface BracketRound {
 export interface BracketData {
   rounds: BracketRound[];
 }
+
+export interface UserProfileStats {
+  rank: number;
+  totalPoints: number;
+  wins: number;
+  losses: number;
+  draws: number;
+  pendingBets: number;
+  totalBets: number;
+  winRate: number;
+  debt: number;
+  debtPaid: boolean;
+  progressPercent: number;
+}
+
+export interface FavoriteTeam {
+  name: string;
+  flag: string;
+  count: number;
+}
+
+export interface BiggestWin {
+  matchId: string;
+  team_a_name: string;
+  team_b_name: string;
+  team_a_flag: string;
+  team_b_flag: string;
+  pickedTeam: string;
+  pickedFlag: string;
+  minorityPercent: number;
+  date: string;
+  stage: string;
+}
+
+export interface UserProfile {
+  user: User;
+  stats: UserProfileStats;
+  recentForm: string[];
+  streak: number;
+  favoriteTeam: FavoriteTeam | null;
+  underdogRate: number;
+  bestStage: string | null;
+  clutchRate: number;
+  biggestWin: BiggestWin | null;
+}

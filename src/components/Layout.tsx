@@ -1,4 +1,4 @@
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Calendar,
   BarChart3,
@@ -109,10 +109,10 @@ function UserMenu() {
 
   return (
     <div className="flex items-center gap-3">
-      <div className="hidden items-center gap-2 sm:flex">
+      <Link to={`/user/${user.id}`} className="hidden items-center gap-2 sm:flex hover:opacity-80 transition-opacity">
         <span className="text-xl">{user.avatar}</span>
         <span className="text-sm font-medium text-white">{user.name}</span>
-      </div>
+      </Link>
       <Button
         variant="ghost"
         size="sm"
