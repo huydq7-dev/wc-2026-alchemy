@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import type { StandingRow } from '@/types'
 import FlagImage from '@/components/FlagImage'
 import { cn } from '@/lib/utils'
@@ -40,10 +41,13 @@ export default function GroupTable({ group, teams }: Props) {
                 )}
               >
                 <td className="py-2 px-3">
-                  <div className="flex items-center gap-1.5">
+                  <Link
+                    to={`/squad/${row.code}`}
+                    className="flex items-center gap-1.5 hover:opacity-70 transition-opacity"
+                  >
                     <FlagImage code={row.code} size={40} className="w-5 h-3.5 rounded-none object-cover" />
                     <span className="text-white text-xs truncate max-w-[80px] sm:max-w-[100px]">{row.team}</span>
-                  </div>
+                  </Link>
                 </td>
                 <td className="text-center py-1.5 px-1 text-white/70 tabular-nums">{row.played}</td>
                 <td className="text-center py-1.5 px-1 text-white/70 tabular-nums hidden sm:table-cell">{row.won}</td>

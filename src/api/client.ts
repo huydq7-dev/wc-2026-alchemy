@@ -85,6 +85,10 @@ export const api = {
   getStandings: () => request<any>('/standings'),
   getBracket: () => request<any>('/bracket'),
 
+  // Teams & Squad
+  getTeams: () => request<{ teams: any[] }>('/teams'),
+  getSquad: (teamCode: string) => request<{ squad: any }>(`/teams/${teamCode}/squad`),
+
   // Activity
   getActivity: (params?: { page?: number; limit?: number; action?: string; userId?: string }) => {
     const sp = new URLSearchParams();

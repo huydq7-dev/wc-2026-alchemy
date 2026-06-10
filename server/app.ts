@@ -12,6 +12,7 @@ import syncRouter from './routes/sync.js';
 import standingsRouter from './routes/standings.js';
 import bracketRouter from './routes/bracket.js';
 import activityRouter from './routes/activity.js';
+import teamsRouter from './routes/teams.js';
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use('/api/matches/sync', syncRouter);
 app.use('/api/standings', standingsRouter);
 app.use('/api/bracket', bracketRouter);
 app.use('/api/activity', activityRouter);
+app.use('/api/teams', teamsRouter);
 
 // Health check
 app.get('/api/health', (_req, res) => {
