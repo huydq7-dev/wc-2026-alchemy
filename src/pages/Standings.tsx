@@ -15,10 +15,12 @@ export default function Standings() {
   const { data: standings, isLoading: standingsLoading } = useQuery<StandingsData>({
     queryKey: ['standings'],
     queryFn: () => api.getStandings(),
+    staleTime: 15 * 60 * 1000, // 15min
   })
   const { data: bracket, isLoading: bracketLoading } = useQuery<BracketData>({
     queryKey: ['bracket'],
     queryFn: () => api.getBracket(),
+    staleTime: 15 * 60 * 1000,
   })
 
   const groupKeys = standings?.groups ? Object.keys(standings.groups).sort() : []
