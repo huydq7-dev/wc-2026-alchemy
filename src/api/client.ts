@@ -89,6 +89,14 @@ export const api = {
   getTeams: () => request<{ teams: any[] }>('/teams'),
   getSquad: (teamCode: string) => request<{ squad: any }>(`/teams/${teamCode}/squad`),
 
+  // Live data (Highlightly proxy)
+  getLiveMatches: (date?: string) => {
+    const qs = date ? `?date=${date}` : "";
+    return request<{ matches: any[]; updated: string }>(`/live/matches${qs}`);
+  },
+  getLiveMatch: (id: string) => request<{ match: any; updated: string }>(`/live/match/${id}`),
+  getLiveLineups: (matchId: string) => request<{ lineups: any; updated: string }>(`/live/match/${matchId}/lineups`),
+
   // Activity
   getActivity: (params?: { page?: number; limit?: number; action?: string; userId?: string }) => {
     const sp = new URLSearchParams();

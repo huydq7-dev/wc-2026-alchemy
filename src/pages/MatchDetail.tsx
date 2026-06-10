@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, MapPin, Clock, HelpCircle } from "lucide-react";
+import { ArrowLeft, MapPin, Clock, HelpCircle, Radio } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,7 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import LiveBadge from "@/components/LiveBadge";
 import DealBadge from "@/components/DealBadge";
+import LiveMatchPanel from "@/components/LiveMatchPanel";
 import { useMatch } from "@/hooks/useMatches";
+import { useLiveMatch } from "@/hooks/useLiveMatch";
 import FlagImage from "@/components/FlagImage";
 import { cn } from "@/lib/utils";
 
@@ -38,6 +40,13 @@ export default function MatchDetail() {
   const isLive = match.status === "live";
   const isFinished = match.status === "finished";
   const hasScore = match.score_a != null && match.score_b != null;
+
+  // Live data from Highlightly (matched by team names + date)
+  const liveMatch = useLiveMatch({
+    teamA: match.team_a_name,
+    teamB: match.team_b_name,
+    date: match.date,
+  });
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
@@ -150,6 +159,25 @@ export default function MatchDetail() {
                 </span>
               </div>
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* ── Live Data Panel (Highlightly) ── */}
+      {liveMatch.hlMatchId && (
+        <LiveMatchPanel
+          detail={liveMatch.detail}
+          lineups={liveMatch.lineups}
+          isLive={isLive || liveMatch.isLive}
+          isFetching={liveMatch.isFetching}
+        />
+      )}
+
+      {!liveMatch.hlMatchId && !liveMatch.isLoading && (isLive || match.status === "upcoming") && (
+        <Card>
+          <CardContent className="py-6 text-center">
+            <Radio className="w-5 h-5 text-white/15 mx-auto mb-2" />
+            <p className="text-xs text-white/30">Live data will appear here when available from Highlightly.</p>
           </CardContent>
         </Card>
       )}
