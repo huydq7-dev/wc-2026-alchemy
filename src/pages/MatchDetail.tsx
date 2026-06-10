@@ -17,6 +17,13 @@ export default function MatchDetail() {
   const { id } = useParams<{ id: string }>();
   const { data: match, isLoading } = useMatch(id!);
 
+  // Live data from Highlightly — must be before any early return (Rules of Hooks)
+  const liveMatch = useLiveMatch({
+    teamA: match?.team_a_name ?? "",
+    teamB: match?.team_b_name ?? "",
+    date: match?.date ?? "",
+  });
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -40,13 +47,6 @@ export default function MatchDetail() {
   const isLive = match.status === "live";
   const isFinished = match.status === "finished";
   const hasScore = match.score_a != null && match.score_b != null;
-
-  // Live data from Highlightly (matched by team names + date)
-  const liveMatch = useLiveMatch({
-    teamA: match.team_a_name,
-    teamB: match.team_b_name,
-    date: match.date,
-  });
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">

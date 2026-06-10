@@ -8,12 +8,14 @@ interface MatchInfo {
 }
 
 export function useLiveMatch({ teamA, teamB, date }: MatchInfo) {
+  const hasTeams = !!teamA && !!teamB && !!date;
+
   // Step 1: fetch matches for the match date
   const matchesQuery = useQuery({
     queryKey: ["live", "matches", date],
     queryFn: () => api.getLiveMatches(date),
-    enabled: !!date,
-    refetchInterval: 60_000, // poll every 60s
+    enabled: hasTeams,
+    refetchInterval: 60_000,
   });
 
   // Step 2: find the matching Highlightly match by team names (fuzzy)
