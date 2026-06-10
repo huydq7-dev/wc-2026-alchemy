@@ -87,27 +87,27 @@ export default function Fund() {
               {fund.paidUsers.map((user: any) => (
                 <div
                   key={user.userId}
-                  className="app-panel-muted flex items-center justify-between rounded-2xl p-3"
+                  className="app-panel-muted flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-2xl p-3"
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">{user.avatar}</span>
-                    <div>
-                      <span className="text-sm text-white">{user.name}</span>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-xl shrink-0">{user.avatar}</span>
+                    <div className="min-w-0">
+                      <span className="text-sm text-white truncate block">{user.name}</span>
                       <p className="app-meta">{user.losses} losses</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-white/60">
+                  <div className="flex items-center gap-2 sm:ml-auto">
+                    <span className="text-sm font-medium text-white/60 shrink-0">
                       {user.debt.toLocaleString()} đ
                     </span>
-                    <Badge className="rounded-none border-primary/20 bg-primary/10 text-primary-light">
+                    <Badge className="rounded-none border-primary/20 bg-primary/10 text-primary-light shrink-0">
                       <Check className="w-3 h-3 mr-0.5" />
                       Paid
                     </Badge>
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-7 text-xs text-white/48"
+                      className="h-7 text-xs text-white/48 shrink-0"
                       onClick={() => handleTogglePaid(user.userId, true)}
                     >
                       Undo
@@ -127,29 +127,29 @@ export default function Fund() {
                 {fund.unpaidUsers.map((user: any) => (
                   <div
                     key={user.userId}
-                    className="flex items-center justify-between rounded-none border border-accent/18 bg-accent/6 p-3"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-none border border-accent/18 bg-accent/6 p-3"
                   >
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl">{user.avatar}</span>
-                      <div>
-                        <span className="text-sm text-white">{user.name}</span>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-xl shrink-0">{user.avatar}</span>
+                      <div className="min-w-0">
+                        <span className="text-sm text-white truncate block">{user.name}</span>
                         <p className="app-meta text-[#FFD890]">
                           {user.losses} losses
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-[#FFD890]">
+                    <div className="flex items-center gap-2 sm:ml-auto">
+                      <span className="text-sm font-semibold text-[#FFD890] shrink-0">
                         {user.debt.toLocaleString()} đ
                       </span>
-                      <Badge className="rounded-none border-accent/20 bg-accent/10 text-[#FFD890]">
+                      <Badge className="rounded-none border-accent/20 bg-accent/10 text-[#FFD890] shrink-0">
                         <AlertTriangle className="w-3 h-3 mr-0.5" />
                         Unpaid
                       </Badge>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-6 text-xs text-primary"
+                        className="h-6 text-xs text-primary shrink-0"
                         onClick={() => handleTogglePaid(user.userId, false)}
                       >
                         Mark Paid

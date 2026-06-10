@@ -74,19 +74,18 @@ export default function Layout({ children }: { children: ReactNode }) {
 
       <nav className="pb-safe fixed bottom-0 left-0 right-0 z-50 border-t border-[#17307C] bg-[#08113E]/88 backdrop-blur-xl md:hidden">
         <div className="flex items-center justify-around px-2 py-2">
-          {navItems.map(({ to, icon: Icon, label }) => (
+          {navItems.map(({ to, icon: Icon, label: _label }) => (
             <NavLink
               key={to}
               to={to}
               className={cn(
-                "flex min-w-0 flex-col items-center gap-0.5 rounded-none px-3 py-1.5 text-xs font-medium transition-colors",
+                "flex min-w-0 items-center justify-center rounded-none p-3 text-xs font-medium transition-colors",
                 location.pathname === to
                   ? "bg-white text-[#09112B]"
                   : "text-white/40",
               )}
             >
-              <Icon className="w-5 h-5" />
-              <span className="truncate max-w-[64px]">{label}</span>
+              <Icon className="w-6 h-6" />
             </NavLink>
           ))}
         </div>
