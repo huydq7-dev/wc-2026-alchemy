@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api } from "@/api/client";
+import { useUsers } from "@/hooks/useUsers";
 import PageHeader from "@/components/PageHeader";
 
 const ACTIONS = [
@@ -69,11 +70,19 @@ function formatActivityTime(iso: string | null | undefined): string {
 export default function Activity() {
   const [page, setPage] = useState(1);
   const [filter, setFilter] = useState("");
+  const [userId, setUserId] = useState("");
+
+  const { data: users } = useUsers();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["activity", page, filter],
+    queryKey: ["activity", page, filter, userId],
     queryFn: () =>
-      api.getActivity({ page, limit: LIMIT, action: filter || undefined }),
+      api.getActivity({
+        page,
+        limit: LIMIT,
+        action: filter || undefined,
+        userId: userId || undefined,
+      }),
     refetchInterval: 30000,
   });
 
@@ -98,28 +107,50 @@ export default function Activity() {
         />
       </motion.div>
 
-      {/* Filter Chips */}
-      <div className="flex flex-wrap gap-1.5">
-        {ACTIONS.map(({ key, label, icon: Icon }) => {
-          const active = filter === key;
-          return (
-            <button
-              key={key}
-              onClick={() => {
-                setFilter(key);
-                setPage(1);
-              }}
-              className={`inline-flex items-center gap-1 rounded-none border px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em] transition-all ${
-                active
-                  ? "border-white bg-white text-[#09112B]"
-                  : "border-white/8 bg-white/[0.025] text-white/48 hover:border-white/20 hover:text-white"
-              }`}
-            >
-              <Icon className="w-3 h-3" />
-              {label}
-            </button>
-          );
-        })}
+      {/* Filters Row */}
+      <div className="flex flex-wrap items-center gap-3">
+        {/* Action filter chips */}
+        <div className="flex flex-wrap gap-1.5">
+          {ACTIONS.map(({ key, label, icon: Icon }) => {
+            const active = filter === key;
+            return (
+              <button
+                key={key}
+                onClick={() => {
+                  setFilter(key);
+                  setPage(1);
+                }}
+                className={`inline-flex items-center gap-1 rounded-none border px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em] transition-all ${
+                  active
+                    ? "border-white bg-white text-[#09112B]"
+                    : "border-white/8 bg-white/[0.025] text-white/48 hover:border-white/20 hover:text-white"
+                }`}
+              >
+                <Icon className="w-3 h-3" />
+                {label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* User filter dropdown */}
+        {users && users.length > 0 && (
+          <select
+            value={userId}
+            onChange={(e) => {
+              setUserId(e.target.value);
+              setPage(1);
+            }}
+            className="app-panel rounded-none px-3 py-1.5 text-xs text-white/70 border border-white/8 bg-[#0B1543]/58 focus:outline-none focus:border-white/20"
+          >
+            <option value="">All Players</option>
+            {users.map((u: any) => (
+              <option key={u.id} value={u.id}>
+                {u.name}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
 
       {/* Log List */}

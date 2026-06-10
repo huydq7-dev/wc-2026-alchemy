@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Trophy, LogIn, AlertCircle, KeyRound } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useGameStore } from "@/store/useGameStore";
+import { useUsers } from "@/hooks/useUsers";
 import { api } from "@/api/client";
 import { cn } from "@/lib/utils";
 
@@ -17,11 +17,7 @@ export default function Login() {
   const [needsPinChange, setNeedsPinChange] = useState(false);
   const [newPin, setNewPin] = useState("");
   const [confirmPin, setConfirmPin] = useState("");
-  const { data: users, isLoading: usersLoading } = useQuery({
-    queryKey: ["users"],
-    queryFn: () => api.getUsers(),
-    staleTime: 60000,
-  });
+  const { data: users, isLoading: usersLoading } = useUsers();
   const login = useGameStore((s) => s.login);
   const navigate = useNavigate();
 
