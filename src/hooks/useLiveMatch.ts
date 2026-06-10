@@ -48,7 +48,7 @@ export function useLiveMatch({ teamA, teamB, date }: MatchInfo) {
     isLoading: matchesQuery.isLoading,
     detail: detailQuery.data?.match ?? null,
     lineups: lineupsQuery.data?.lineups ?? null,
-    isLive: hlMatch?.status === "live" || hlMatch?.status === "1H" || hlMatch?.status === "2H" || hlMatch?.status === "HT",
+    isLive: ["1H", "2H", "HT", "Live", "live"].includes(hlMatch?.status ?? ""),
     isFetching: detailQuery.isFetching,
   };
 }
