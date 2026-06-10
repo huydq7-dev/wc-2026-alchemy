@@ -108,7 +108,7 @@ export default function LeaderboardTable({ entries }: Props) {
                       >
                         {entry.debtPaid
                           ? "Done"
-                          : `${entry.debt.toLocaleString()}đ`}
+                          : `${entry.debt.toLocaleString()} VND`}
                       </Badge>
                     ) : (
                       <Badge

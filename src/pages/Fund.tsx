@@ -55,7 +55,7 @@ export default function Fund() {
           <CardContent className="p-4">
             <PiggyBank className="mb-2 h-5 w-5 text-primary" />
             <p className="font-display text-2xl text-white">
-              {(fund?.totalFund || 0).toLocaleString()} đ
+              {(fund?.totalFund || 0).toLocaleString()} VND
             </p>
             <p className="app-meta">Est. Total Pool</p>
           </CardContent>
@@ -64,7 +64,7 @@ export default function Fund() {
           <CardContent className="p-4">
             <Banknote className="mb-2 h-5 w-5 text-accent" />
             <p className="font-display text-2xl text-white">
-              {(fund?.betAmount || 5000).toLocaleString()} đ
+              {(fund?.betAmount || 5000).toLocaleString()} VND
             </p>
             <p className="app-meta">Per Prediction</p>
           </CardContent>
@@ -77,7 +77,7 @@ export default function Fund() {
             <Wallet className="w-4 h-4 text-primary" />
             Individual Debts
             <span className="ml-auto text-xs font-normal text-white/40">
-              Each loss = {(fund?.betAmount || 5000).toLocaleString()} đ
+              Each loss = {(fund?.betAmount || 5000).toLocaleString()} VND
             </span>
           </CardTitle>
         </CardHeader>
@@ -98,7 +98,7 @@ export default function Fund() {
                   </div>
                   <div className="flex items-center gap-2 sm:ml-auto">
                     <span className="text-sm font-medium text-white/60 shrink-0">
-                      {user.debt.toLocaleString()} đ
+                      {user.debt.toLocaleString()} VND
                     </span>
                     <Badge className="rounded-none border-primary/20 bg-primary/10 text-primary-light shrink-0">
                       <Check className="w-3 h-3 mr-0.5" />
@@ -140,7 +140,7 @@ export default function Fund() {
                     </div>
                     <div className="flex items-center gap-2 sm:ml-auto">
                       <span className="text-sm font-semibold text-[#FFD890] shrink-0">
-                        {user.debt.toLocaleString()} đ
+                        {user.debt.toLocaleString()} VND
                       </span>
                       <Badge className="rounded-none border-accent/20 bg-accent/10 text-[#FFD890] shrink-0">
                         <AlertTriangle className="w-3 h-3 mr-0.5" />
@@ -212,7 +212,7 @@ export default function Fund() {
                   </div>
                   <div className="text-right">
                     <p className="font-display text-lg text-primary">
-                      {prize.amount.toLocaleString()} đ
+                      {prize.amount.toLocaleString()} VND
                     </p>
                     <p className="text-[10px] text-white/36">
                       {prize.percentage}% of pool

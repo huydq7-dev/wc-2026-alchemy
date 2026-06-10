@@ -120,7 +120,7 @@ export default function MatchCard({
                     setShowDealEditor(true);
                   }}
                   className="text-white/26 transition-colors hover:text-accent"
-                  title="Sửa deal"
+                  title="Edit deal"
                 >
                   <Pencil className="w-3 h-3" />
                 </button>

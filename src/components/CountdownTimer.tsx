@@ -21,10 +21,10 @@ export default function CountdownTimer({ date, time, label, className }: Props) 
   }
 
   const blocks = [
-    { value: days, label: 'NGÀY' },
-    { value: hours, label: 'GIỜ' },
-    { value: minutes, label: 'PHÚT' },
-    { value: seconds, label: 'GIÂY' },
+    { value: days, label: 'D' },
+    { value: hours, label: 'H' },
+    { value: minutes, label: 'M' },
+    { value: seconds, label: 'S' },
   ]
 
   return (

@@ -71,7 +71,7 @@ export function usePlacePrediction() {
       });
       queryClient.invalidateQueries({ queryKey: ['matches', variables.matchId] });
       queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
-      toast.success('Dự đoán thành công!');
+      toast.success('Prediction placed!');
     },
   });
 }

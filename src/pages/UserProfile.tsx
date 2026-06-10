@@ -176,7 +176,7 @@ export default function UserProfile() {
         <StatTile
           icon={Zap}
           label="Debt"
-          value={stats.debtPaid ? "Done" : `${stats.debt.toLocaleString()}đ`}
+          value={stats.debtPaid ? "Done" : `${stats.debt.toLocaleString()} VND`}
           color={stats.debtPaid ? "text-[#60E6F6]" : "text-[#FFD890]"}
         />
       </motion.div>
