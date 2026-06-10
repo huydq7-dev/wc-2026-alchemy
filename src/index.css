@@ -25,8 +25,17 @@ body {
   font-feature-settings: "tnum" 1, "ss01" 1;
   margin: 0;
   min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
   position: relative;
+}
+
+/* Safe-area padding for notched devices (PWA standalone mode) */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 body::before {

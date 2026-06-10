@@ -72,7 +72,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <div className="mx-auto max-w-7xl px-4 py-6 md:py-8">{children}</div>
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#17307C] bg-[#08113E]/88 backdrop-blur-xl md:hidden">
+      <nav className="pb-safe fixed bottom-0 left-0 right-0 z-50 border-t border-[#17307C] bg-[#08113E]/88 backdrop-blur-xl md:hidden">
         <div className="flex items-center justify-around px-2 py-2">
           {navItems.map(({ to, icon: Icon, label }) => (
             <NavLink

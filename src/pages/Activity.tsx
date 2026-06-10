@@ -47,6 +47,24 @@ const ACTIONS = [
 
 const LIMIT = 15;
 
+const TIME_FMT = new Intl.DateTimeFormat("en-US", {
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+  timeZone: "Asia/Bangkok",
+});
+
+function formatActivityTime(iso: string | null | undefined): string {
+  if (!iso) return "";
+  try {
+    return TIME_FMT.format(new Date(iso));
+  } catch {
+    return iso.slice(5, 16);
+  }
+}
+
 export default function Activity() {
   const [page, setPage] = useState(1);
   const [filter, setFilter] = useState("");
@@ -145,8 +163,8 @@ export default function Activity() {
                   </p>
                 </div>
 
-                <span className="shrink-0 text-[10px] text-white/28">
-                  {log.created_at?.slice(5, 16)?.replace(" ", " ")}
+                <span className="shrink-0 text-right text-[10px] text-white/28 leading-tight">
+                  {formatActivityTime(log.created_at)}
                 </span>
               </motion.div>
             );

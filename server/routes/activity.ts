@@ -27,10 +27,15 @@ router.get('/', async (req: Request, res: Response) => {
   const total = (countResult.rows[0] as any).total;
 
   const offset = (page - 1) * limit;
-  const logs = (await db.execute(
+  const rows = (await db.execute(
     `SELECT * FROM activity_log ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
     [...params, limit, offset],
   )).rows;
+
+  const logs = rows.map((r: any) => ({
+    ...r,
+    created_at: r.created_at ? r.created_at.replace(" ", "T") + "+07:00" : null,
+  }));
 
   res.json({ logs, total, page, totalPages: Math.ceil(total / limit) });
 });

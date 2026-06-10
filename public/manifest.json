@@ -1,0 +1,18 @@
+{
+  "name": "WC2026 Predictor - Alchemy",
+  "short_name": "WC2026",
+  "description": "World Cup 2026 Match Predictor",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0a0e1a",
+  "theme_color": "#1a1f3a",
+  "icons": [
+    {
+      "src": "/wc-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
