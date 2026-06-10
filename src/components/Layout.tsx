@@ -27,7 +27,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col bg-transparent">
-      <header className="sticky top-0 z-50 border-b border-[#17307C] bg-[#08113E]/84 backdrop-blur-xl">
+      <header className="pt-safe sticky top-0 z-50 border-b border-[#17307C] bg-[#08113E]/84 backdrop-blur-xl">
         <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4">
           <NavLink to="/" className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center">
