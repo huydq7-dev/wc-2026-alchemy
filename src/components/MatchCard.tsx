@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronRight, Pencil } from "lucide-react";
+import { ChevronRight, Pencil, Users, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import LiveBadge from "./LiveBadge";
@@ -9,6 +9,7 @@ import DealBadge from "./DealBadge";
 import DealEditor from "./DealEditor";
 import { useGameStore } from "@/store/useGameStore";
 import { usePlacePrediction } from "@/hooks/usePredictions";
+import { useLiveMatch } from "@/hooks/useLiveMatch";
 import { useQueryClient } from "@tanstack/react-query";
 import { api } from "@/api/client";
 import FlagImage from "@/components/FlagImage";
@@ -19,27 +20,32 @@ interface Props {
   match: Match;
   userPick?: "A" | "B" | null;
   showPickButtons?: boolean;
+  showOdds?: boolean;
+  pickStats?: { a: number; b: number; total: number; aPct: number; bPct: number } | null;
 }
 
 export default function MatchCard({
   match,
   userPick,
   showPickButtons = true,
+  showOdds = false,
+  pickStats,
 }: Readonly<Props>) {
   const currentUserId = useGameStore((s) => s.currentUser?.id || "");
   const isAdmin = useGameStore((s) => s.currentUser?.isAdmin || false);
   const placePrediction = usePlacePrediction();
   const queryClient = useQueryClient();
+  const isUpcoming = match.status === "upcoming";
   const isPicked = !!userPick;
   const [showDealEditor, setShowDealEditor] = useState(false);
 
-  const handleSaveDeal = async (deal: string, dealSide: "A" | "B") => {
-    await api.updateMatch(match.id, { deal, deal_side: dealSide });
-    await queryClient.invalidateQueries({ queryKey: ["matches"] });
-    setShowDealEditor(false);
-  };
-
-  const isUpcoming = match.status === "upcoming";
+  // Win probabilities from Highlightly — only fetch for upcoming (pre-match only)
+  const liveMatch = useLiveMatch({
+    teamA: (showOdds && isUpcoming) ? match.team_a_name : "",
+    teamB: (showOdds && isUpcoming) ? match.team_b_name : "",
+    date: (showOdds && isUpcoming) ? match.date : "",
+  });
+  const odds = liveMatch.detail?.predictions ?? null;
   const isLive = match.status === "live";
   const isFinished = match.status === "finished";
 
@@ -153,6 +159,63 @@ export default function MatchCard({
           </span>
         </div>
       </Link>
+
+      {/* Community Pick % */}
+      {pickStats && pickStats.total > 0 && isUpcoming && (
+        <div className="mt-2 pt-2 border-t border-white/5">
+          <div className="flex items-center gap-1.5 mb-1">
+            <Users className="w-3 h-3 text-white/20" />
+            <span className="text-[10px] text-white/30">Community</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-[10px]">
+            <span className="text-[#60E6F6] font-medium w-8 text-right">{pickStats.aPct}%</span>
+            <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-white/5 flex">
+              <div
+                className="h-full bg-[#60E6F6]/60 transition-all"
+                style={{ width: `${pickStats.aPct}%` }}
+              />
+              <div
+                className="h-full bg-[#F5A623]/60 transition-all"
+                style={{ width: `${pickStats.bPct}%` }}
+              />
+            </div>
+            <span className="text-[#F5A623] font-medium w-8">{pickStats.bPct}%</span>
+          </div>
+        </div>
+      )}
+
+      {/* Win Probabilities (Highlightly) */}
+      {odds && isUpcoming && (
+        <div className="mt-2 pt-2 border-t border-white/5">
+          <div className="flex items-center gap-1.5 mb-1">
+            <BarChart3 className="w-3 h-3 text-white/20" />
+            <span className="text-[10px] text-white/30">Win Probability</span>
+          </div>
+          <div className="flex items-center gap-1 text-[10px]">
+            <span className="text-white/50 w-8 text-right">{odds.home}%</span>
+            <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-white/5 flex">
+              <div
+                className="h-full bg-[#60E6F6]/60"
+                style={{ width: `${odds.home}%` }}
+              />
+              <div
+                className="h-full bg-white/15"
+                style={{ width: `${odds.draw}%` }}
+              />
+              <div
+                className="h-full bg-[#F5A623]/60"
+                style={{ width: `${odds.away}%` }}
+              />
+            </div>
+            <span className="text-white/50 w-8">{odds.away}%</span>
+          </div>
+          <div className="flex justify-between text-[9px] text-white/20 mt-0.5 px-9">
+            <span>{match.team_a_name.slice(0, 3).toUpperCase()}</span>
+            <span>D {odds.draw}%</span>
+            <span>{match.team_b_name.slice(0, 3).toUpperCase()}</span>
+          </div>
+        </div>
+      )}
 
       {/* Pick Buttons */}
       {showPickButtons && isUpcoming && (

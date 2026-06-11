@@ -314,8 +314,8 @@ export default function LiveMatchPanel({ detail, lineups, isLive, isFetching }: 
           </div>
         )}
 
-        {/* ── Match predictions ── */}
-        {detail?.predictions && (
+        {/* ── Match predictions (pre-match only) ── */}
+        {detail?.predictions && detail?.status === "Not Started" && (
           <div className="mt-4">
             <Card>
               <CardHeader>
