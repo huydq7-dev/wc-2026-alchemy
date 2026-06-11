@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Clock, HelpCircle, Radio } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, HelpCircle, Radio, DollarSign, TrendingDown } from 'lucide-react';
 import PageHeader from '@/components/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -120,6 +120,59 @@ export default function MatchDetail() {
           </p>
         </CardContent>
       </Card>
+
+      {/* Bet Info — only for upcoming matches */}
+      {match.status === 'upcoming' && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-white font-display text-lg flex items-center gap-2">
+              <DollarSign className="w-5 h-5 text-[#F5A623]" />
+              Bet Info
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="app-panel-muted rounded-2xl p-3 text-center">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-white/32">Stake</p>
+                <p className="font-display text-lg text-white mt-0.5">5,000đ</p>
+              </div>
+              <div className="app-panel-muted rounded-2xl p-3 text-center">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-white/32">Underdog</p>
+                <p className="font-display text-sm text-[#FFD890] mt-0.5 truncate">
+                  {match.deal && match.deal !== '+0' && match.deal !== '0'
+                    ? match.deal_side === 'A'
+                      ? match.team_a_name
+                      : match.team_b_name
+                    : 'Even'}
+                </p>
+              </div>
+            </div>
+            <div className="app-panel-muted rounded-2xl p-3">
+              <p className="text-[10px] uppercase tracking-[0.18em] text-white/32 mb-2">
+                Potential Outcomes
+              </p>
+              <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-[#4ADE80]" />
+                  <span className="text-white/70">Win</span>
+                </div>
+                <span className="text-[#4ADE80] font-medium">0đ</span>
+              </div>
+              <Separator className="my-2 bg-white/5" />
+              <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-1.5">
+                  <TrendingDown className="w-3 h-3 text-[#F5A623]" />
+                  <span className="text-white/70">Lose</span>
+                </div>
+                <span className="text-[#F5A623] font-medium">-5,000đ</span>
+              </div>
+              <p className="text-[9px] text-white/20 mt-2">
+                No draw — admin adjusts handicaps so there's always a winner.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {hasScore && match.dealInfo && (
         <Card>

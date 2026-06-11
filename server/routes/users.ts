@@ -89,13 +89,13 @@ router.get('/:id', async (req: Request, res: Response) => {
     }
   }
 
-  // --- Underdog rate ---
+  // --- Underdog rate (% of picks on the team receiving handicap) ---
   let underdogPicks = 0;
   let picksWithDeal = 0;
   for (const p of preds) {
     if (!p.deal_side) continue;
     picksWithDeal++;
-    if (p.pick !== p.deal_side) underdogPicks++;
+    if (p.pick === p.deal_side) underdogPicks++;
   }
   const underdogRate = picksWithDeal > 0 ? Math.round((underdogPicks / picksWithDeal) * 100) : 0;
 
