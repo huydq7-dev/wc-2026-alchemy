@@ -70,7 +70,7 @@ const rules = [
     id: "R01",
     title: "Prediction Deadline",
     content:
-      "Matches after 20:00 on day D → Deadline 17:30 on day D. Matches after 00:00 on day D (early morning) → Deadline 17:30 on day D-1.",
+      "Predictions are locked 30 minutes before each match kicks off. Make sure to place your pick before then.",
     order: 1,
   },
   {

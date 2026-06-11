@@ -38,7 +38,7 @@ router.post('/', async (req: Request, res: Response) => {
   const match = (await db.execute({ sql: 'SELECT * FROM matches WHERE id = ?', args: [matchId] })).rows[0] as any;
   if (!match) return res.status(404).json({ error: 'Match not found' });
   if (match.status !== 'upcoming') return res.status(400).json({ error: 'Match has already started or finished' });
-  if (!isPickAllowed(match.date, match.time)) return res.status(400).json({ error: 'Prediction deadline has passed (17:30)' });
+  if (!isPickAllowed(match.date, match.time)) return res.status(400).json({ error: 'Prediction deadline has passed (30 minutes before kickoff)' });
 
   const existing = (await db.execute({ sql: 'SELECT * FROM predictions WHERE user_id = ? AND match_id = ?', args: [userId, matchId] })).rows[0] as any;
   if (existing) {
@@ -55,6 +55,42 @@ router.post('/', async (req: Request, res: Response) => {
 
   const prediction = (await db.execute({ sql: 'SELECT * FROM predictions WHERE user_id = ? AND match_id = ?', args: [userId, matchId] })).rows[0];
   res.status(existing ? 200 : 201).json(prediction);
+});
+
+// Pick stats: { [matchId]: { a, b, total, aPct, bPct } }
+router.get('/pick-stats', async (req: Request, res: Response) => {
+  const matchIds = getSingleValue(req.query.matchIds);
+  if (!matchIds) return res.json({});
+
+  const ids = matchIds.split(",").map(s => s.trim()).filter(Boolean);
+  if (ids.length === 0) return res.json({});
+
+  const placeholders = ids.map(() => "?").join(",");
+  const rows = (await db.execute(
+    `SELECT match_id, pick, COUNT(*) as count
+     FROM predictions WHERE match_id IN (${placeholders})
+     GROUP BY match_id, pick`,
+    ids,
+  )).rows as any[];
+
+  const result: Record<string, { a: number; b: number; total: number; aPct: number; bPct: number }> = {};
+  for (const id of ids) result[id] = { a: 0, b: 0, total: 0, aPct: 0, bPct: 0 };
+
+  for (const row of rows) {
+    const m = result[row.match_id as string];
+    if (!m) continue;
+    if (row.pick === "A") m.a = row.count as number;
+    else if (row.pick === "B") m.b = row.count as number;
+  }
+
+  for (const id of ids) {
+    const m = result[id];
+    m.total = m.a + m.b;
+    m.aPct = m.total > 0 ? Math.round((m.a / m.total) * 100) : 0;
+    m.bPct = m.total > 0 ? Math.round((m.b / m.total) * 100) : 0;
+  }
+
+  res.json(result);
 });
 
 router.get('/user/:userId/history', async (req: Request, res: Response) => {

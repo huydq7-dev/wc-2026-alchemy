@@ -23,14 +23,8 @@ export function calculateResult(
 }
 
 export function isPickAllowed(matchDate: string, matchTime: string): boolean {
-  const matchHour = parseInt(matchTime.split(':')[0]);
   const matchDateObj = new Date(`${matchDate}T${matchTime}:00+07:00`);
-
-  let deadlineDate = new Date(matchDateObj);
-  if (matchHour < 6) {
-    deadlineDate.setDate(deadlineDate.getDate() - 1);
-  }
-  deadlineDate.setHours(17, 30, 0, 0);
-
+  // Deadline is 30 minutes before kickoff
+  const deadlineDate = new Date(matchDateObj.getTime() - 30 * 60 * 1000);
   return new Date() < deadlineDate;
 }
