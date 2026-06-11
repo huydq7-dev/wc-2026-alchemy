@@ -15,7 +15,7 @@ export function useLiveMatch({ teamA, teamB, date }: MatchInfo) {
     queryKey: ["live", "matches", date],
     queryFn: () => api.getLiveMatches(date),
     enabled: hasTeams,
-    refetchInterval: 60_000,
+    refetchInterval: 300_000, // 5 min — server caches, poll gently
   });
 
   // Step 2: find the matching Highlightly match by team names (fuzzy)
@@ -34,7 +34,7 @@ export function useLiveMatch({ teamA, teamB, date }: MatchInfo) {
     enabled: !!hlMatch?.id,
     refetchInterval: (query) => {
       const status = query.state.data?.match?.status;
-      return status === "live" || status === "1H" || status === "2H" || status === "HT" ? 30_000 : 120_000;
+      return status === "live" || status === "1H" || status === "2H" || status === "HT" ? 60_000 : 300_000;
     },
   });
 
@@ -42,7 +42,7 @@ export function useLiveMatch({ teamA, teamB, date }: MatchInfo) {
     queryKey: ["live", "lineups", hlMatch?.id],
     queryFn: () => api.getLiveLineups(hlMatch!.id),
     enabled: !!hlMatch?.id,
-    refetchInterval: 120_000,
+    refetchInterval: 300_000,
   });
 
   return {

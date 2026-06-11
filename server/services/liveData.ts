@@ -11,9 +11,9 @@ interface CacheEntry<T> { data: T; ts: number; }
 const cache = new Map<string, CacheEntry<any>>();
 
 const TTL = {
-  live: 30_000,
-  upcoming: 300_000,
-  finished: 600_000,
+  live: 60_000,
+  upcoming: 600_000,   // 10 min — odds don't change frequently
+  finished: 1_800_000, // 30 min — finished matches never change
 };
 
 // ── Actual API response shapes ──
@@ -122,7 +122,13 @@ function isStale(key: string): boolean {
   return Date.now() - entry.ts > (cache.get(key + ":ttl")?.data ?? TTL.upcoming);
 }
 
+let rateLimitedUntil: number | null = null;
+
 async function fetchHL<T>(path: string, params: Record<string, string> = {}): Promise<T> {
+  if (rateLimitedUntil && Date.now() < rateLimitedUntil) {
+    throw new Error("Highlightly rate limited — using cached data");
+  }
+
   const url = new URL(path, BASE);
   Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
 
@@ -131,10 +137,20 @@ async function fetchHL<T>(path: string, params: Record<string, string> = {}): Pr
   });
 
   if (!res.ok) {
+    if (res.status === 429) {
+      rateLimitedUntil = Date.now() + 60_000;
+    }
     throw new Error(`Highlightly API ${res.status}: ${res.statusText}`);
   }
 
-  return res.json();
+  // Detect rate-limit message in 200 response body (Highlightly quirk)
+  const json = await res.json();
+  if (json?.message?.includes("breached your daily request limits")) {
+    rateLimitedUntil = Date.now() + 300_000;
+    throw new Error("Highlightly rate limited — using cached data");
+  }
+
+  return json;
 }
 
 function parseScore(score: string | null): { home: string; away: string } {
@@ -218,16 +234,26 @@ export async function getMatches(date?: string): Promise<RawMatch[]> {
   const params: Record<string, string> = { leagueId: LEAGUE_ID };
   if (date) params.date = date;
 
-  const result = await fetchHL<{ data: HLMatch[] }>("/matches", params);
-  const matches = (result.data ?? []).map(normalizeMatch);
+  try {
+    const result = await fetchHL<{ data: HLMatch[] }>("/matches", params);
+    const matches = (result.data ?? []).map(normalizeMatch);
 
-  cache.set(key, { data: matches, ts: Date.now() });
-  const worstStatus = matches.length > 0
-    ? matches.some(m => isLiveStatus(m.status)) ? "live" : matches[0].status
-    : "upcoming";
-  cache.set(key + ":ttl", { data: ttlForStatus(worstStatus), ts: Date.now() });
+    if (matches.length > 0) {
+      cache.set(key, { data: matches, ts: Date.now() });
+      const worstStatus = matches.some(m => isLiveStatus(m.status)) ? "live" : matches[0].status;
+      cache.set(key + ":ttl", { data: ttlForStatus(worstStatus), ts: Date.now() });
+    }
 
-  return matches;
+    return matches;
+  } catch (err: any) {
+    // Serve stale cache if fetch fails (rate limit, network, etc.)
+    const cached = cache.get(key);
+    if (cached) {
+      console.warn("[liveData] matches fetch failed, serving cached:", err.message);
+      return cached.data;
+    }
+    throw err;
+  }
 }
 
 export async function getMatchDetail(matchId: string): Promise<MatchDetail | null> {
@@ -281,6 +307,12 @@ export async function getMatchDetail(matchId: string): Promise<MatchDetail | nul
 
     return detail;
   } catch (err: any) {
+    // Serve stale cache if fetch fails (rate limit, network, etc.)
+    const cached = cache.get(key);
+    if (cached) {
+      console.warn("[liveData] match detail fetch failed, serving cached:", err.message);
+      return cached.data;
+    }
     console.error("[liveData] match detail error:", err.message);
     return null;
   }
