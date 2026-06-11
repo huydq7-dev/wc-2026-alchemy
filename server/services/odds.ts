@@ -5,75 +5,75 @@ const API_KEY = process.env.ODDS_API_KEY;
 
 // Map common name variations between our DB and The Odds API
 const NAME_ALIASES: Record<string, string> = {
-  'USA': 'United States',
-  'KOR': 'South Korea',
-  'PRK': 'North Korea',
-  'CIV': "Côte d'Ivoire",
-  'IRN': 'Iran',
-  'NED': 'Netherlands',
-  'GER': 'Germany',
-  'NZL': 'New Zealand',
-  'CPV': 'Cape Verde',
-  'KSA': 'Saudi Arabia',
-  'URU': 'Uruguay',
-  'IRQ': 'Iraq',
-  'COD': 'DR Congo',
-  'ALG': 'Algeria',
-  'AUT': 'Austria',
-  'JOR': 'Jordan',
-  'UZB': 'Uzbekistan',
-  'COL': 'Colombia',
-  'CRO': 'Croatia',
-  'GHA': 'Ghana',
-  'PAN': 'Panama',
-  'ENG': 'England',
-  'SCO': 'Scotland',
-  'WAL': 'Wales',
-  'NIR': 'Northern Ireland',
-  'POR': 'Portugal',
-  'FRA': 'France',
-  'ESP': 'Spain',
-  'BEL': 'Belgium',
-  'ARG': 'Argentina',
-  'BRA': 'Brazil',
-  'JPN': 'Japan',
-  'AUS': 'Australia',
-  'MAR': 'Morocco',
-  'SEN': 'Senegal',
-  'TUN': 'Tunisia',
-  'EGY': 'Egypt',
-  'CAN': 'Canada',
-  'MEX': 'Mexico',
-  'QAT': 'Qatar',
-  'ECU': 'Ecuador',
-  'PAR': 'Paraguay',
-  'PER': 'Peru',
-  'CHI': 'Chile',
-  'BOL': 'Bolivia',
-  'VEN': 'Venezuela',
-  'SWE': 'Sweden',
-  'NOR': 'Norway',
-  'DEN': 'Denmark',
-  'POL': 'Poland',
-  'CZE': 'Czech Republic',
-  'SVK': 'Slovakia',
-  'HUN': 'Hungary',
-  'ROU': 'Romania',
-  'BUL': 'Bulgaria',
-  'SRB': 'Serbia',
-  'SLO': 'Slovenia',
-  'BIH': 'Bosnia and Herzegovina',
-  'GRE': 'Greece',
-  'TUR': 'Turkey',
-  'UKR': 'Ukraine',
-  'RUS': 'Russia',
-  'SUI': 'Switzerland',
-  'HAI': 'Haiti',
-  'JAM': 'Jamaica',
-  'CRC': 'Costa Rica',
-  'HON': 'Honduras',
-  'SLV': 'El Salvador',
-  'CUW': 'Curaçao',
+  USA: 'United States',
+  KOR: 'South Korea',
+  PRK: 'North Korea',
+  CIV: "Côte d'Ivoire",
+  IRN: 'Iran',
+  NED: 'Netherlands',
+  GER: 'Germany',
+  NZL: 'New Zealand',
+  CPV: 'Cape Verde',
+  KSA: 'Saudi Arabia',
+  URU: 'Uruguay',
+  IRQ: 'Iraq',
+  COD: 'DR Congo',
+  ALG: 'Algeria',
+  AUT: 'Austria',
+  JOR: 'Jordan',
+  UZB: 'Uzbekistan',
+  COL: 'Colombia',
+  CRO: 'Croatia',
+  GHA: 'Ghana',
+  PAN: 'Panama',
+  ENG: 'England',
+  SCO: 'Scotland',
+  WAL: 'Wales',
+  NIR: 'Northern Ireland',
+  POR: 'Portugal',
+  FRA: 'France',
+  ESP: 'Spain',
+  BEL: 'Belgium',
+  ARG: 'Argentina',
+  BRA: 'Brazil',
+  JPN: 'Japan',
+  AUS: 'Australia',
+  MAR: 'Morocco',
+  SEN: 'Senegal',
+  TUN: 'Tunisia',
+  EGY: 'Egypt',
+  CAN: 'Canada',
+  MEX: 'Mexico',
+  QAT: 'Qatar',
+  ECU: 'Ecuador',
+  PAR: 'Paraguay',
+  PER: 'Peru',
+  CHI: 'Chile',
+  BOL: 'Bolivia',
+  VEN: 'Venezuela',
+  SWE: 'Sweden',
+  NOR: 'Norway',
+  DEN: 'Denmark',
+  POL: 'Poland',
+  CZE: 'Czech Republic',
+  SVK: 'Slovakia',
+  HUN: 'Hungary',
+  ROU: 'Romania',
+  BUL: 'Bulgaria',
+  SRB: 'Serbia',
+  SLO: 'Slovenia',
+  BIH: 'Bosnia and Herzegovina',
+  GRE: 'Greece',
+  TUR: 'Turkey',
+  UKR: 'Ukraine',
+  RUS: 'Russia',
+  SUI: 'Switzerland',
+  HAI: 'Haiti',
+  JAM: 'Jamaica',
+  CRC: 'Costa Rica',
+  HON: 'Honduras',
+  SLV: 'El Salvador',
+  CUW: 'Curaçao',
 };
 
 function findTeamSide(
@@ -88,12 +88,22 @@ function findTeamSide(
   const aliasA = NAME_ALIASES[teamACode]?.toLowerCase();
   const aliasB = NAME_ALIASES[teamBCode]?.toLowerCase();
 
-  if (name === teamAName.toLowerCase() || name === aliasA || name === teamACode.toLowerCase()) return 'A';
-  if (name === teamBName.toLowerCase() || name === aliasB || name === teamBCode.toLowerCase()) return 'B';
+  if (name === teamAName.toLowerCase() || name === aliasA || name === teamACode.toLowerCase())
+    return 'A';
+  if (name === teamBName.toLowerCase() || name === aliasB || name === teamBCode.toLowerCase())
+    return 'B';
 
   // Fuzzy: check if outcome name contains the team name or vice versa
-  if (name.includes(teamAName.toLowerCase().slice(0, 4)) || teamAName.toLowerCase().includes(name.slice(0, 4))) return 'A';
-  if (name.includes(teamBName.toLowerCase().slice(0, 4)) || teamBName.toLowerCase().includes(name.slice(0, 4))) return 'B';
+  if (
+    name.includes(teamAName.toLowerCase().slice(0, 4)) ||
+    teamAName.toLowerCase().includes(name.slice(0, 4))
+  )
+    return 'A';
+  if (
+    name.includes(teamBName.toLowerCase().slice(0, 4)) ||
+    teamBName.toLowerCase().includes(name.slice(0, 4))
+  )
+    return 'B';
 
   return null;
 }
@@ -103,9 +113,11 @@ export async function syncOdds(): Promise<{ updated: number; message: string }> 
     throw new Error('ODDS_API_KEY not configured in .env');
   }
 
-  const upcoming = (await db.execute(
-    "SELECT * FROM matches WHERE status = 'upcoming' AND deal_manual = 0 ORDER BY date, time"
-  )).rows as any[];
+  const upcoming = (
+    await db.execute(
+      "SELECT * FROM matches WHERE status = 'upcoming' AND deal_manual = 0 ORDER BY date, time",
+    )
+  ).rows as any[];
 
   if (upcoming.length === 0) {
     return { updated: 0, message: 'No upcoming matches to sync odds for.' };
@@ -147,7 +159,7 @@ export async function syncOdds(): Promise<{ updated: number; message: string }> 
 
         // Get spreads from first bookmaker that has them
         const bookmaker = oddsEntry.bookmakers?.find((b: any) =>
-          b.markets?.find((m: any) => m.key === 'spreads')
+          b.markets?.find((m: any) => m.key === 'spreads'),
         );
         if (!bookmaker) continue;
 
@@ -163,18 +175,21 @@ export async function syncOdds(): Promise<{ updated: number; message: string }> 
 
         const side = findTeamSide(
           underdog.name,
-          match.team_a_name, match.team_a_code,
-          match.team_b_name, match.team_b_code,
+          match.team_a_name,
+          match.team_a_code,
+          match.team_b_name,
+          match.team_b_code,
         );
 
         if (!side) continue;
 
         const deal = point === 0 ? '+0' : `+${point}`;
 
-        await db.execute(
-          'UPDATE matches SET deal = ?, deal_side = ? WHERE id = ?',
-          [deal, side, match.id],
-        );
+        await db.execute('UPDATE matches SET deal = ?, deal_side = ? WHERE id = ?', [
+          deal,
+          side,
+          match.id,
+        ]);
         updated++;
       } catch {
         // Skip individual match errors
@@ -186,8 +201,9 @@ export async function syncOdds(): Promise<{ updated: number; message: string }> 
 
   return {
     updated,
-    message: updated > 0
-      ? `Updated handicap for ${updated} matches.`
-      : `No odds found. Errors: ${errors.join('; ') || 'none'}`,
+    message:
+      updated > 0
+        ? `Updated handicap for ${updated} matches.`
+        : `No odds found. Errors: ${errors.join('; ') || 'none'}`,
   };
 }

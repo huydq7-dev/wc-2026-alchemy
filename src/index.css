@@ -1,16 +1,16 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
-  --color-primary: #60E6F6;
-  --color-primary-light: #9DEFF9;
+  --color-primary: #60e6f6;
+  --color-primary-light: #9deff9;
   --color-secondary: #003087;
-  --color-accent: #F5A623;
-  --color-success: #00B140;
-  --color-danger: #E63946;
-  --color-neutral: #8E9AAF;
-  --color-bg-dark: #0A0E1A;
+  --color-accent: #f5a623;
+  --color-success: #00b140;
+  --color-danger: #e63946;
+  --color-neutral: #8e9aaf;
+  --color-bg-dark: #0a0e1a;
   --color-bg-card: #141929;
-  --color-text: #F0F4FF;
+  --color-text: #f0f4ff;
 }
 
 body {
@@ -19,10 +19,12 @@ body {
     radial-gradient(circle at top, rgba(25, 188, 255, 0.08), transparent 20%),
     radial-gradient(circle at 18% 24%, rgba(10, 84, 180, 0.1), transparent 22%),
     linear-gradient(180deg, #060d2f 0%, #08113e 54%, #070d25 100%);
-  color: #F0F4FF;
+  color: #f0f4ff;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: "tnum" 1, "ss01" 1;
+  font-feature-settings:
+    'tnum' 1,
+    'ss01' 1;
   margin: 0;
   min-height: 100vh;
   min-height: 100dvh;
@@ -39,7 +41,7 @@ body {
 }
 
 body::before {
-  content: "";
+  content: '';
   position: fixed;
   inset: 0;
   pointer-events: none;
@@ -50,12 +52,11 @@ body::before {
 }
 
 body::after {
-  content: "";
+  content: '';
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background:
-    linear-gradient(180deg, rgba(3, 6, 18, 0.08) 0%, rgba(3, 6, 18, 0.28) 100%);
+  background: linear-gradient(180deg, rgba(3, 6, 18, 0.08) 0%, rgba(3, 6, 18, 0.28) 100%);
   mix-blend-mode: normal;
 }
 

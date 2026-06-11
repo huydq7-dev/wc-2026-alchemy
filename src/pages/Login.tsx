@@ -1,37 +1,37 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Trophy, LogIn, AlertCircle, KeyRound } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useGameStore } from "@/store/useGameStore";
-import { useUsers } from "@/hooks/useUsers";
-import { api } from "@/api/client";
-import { cn } from "@/lib/utils";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Trophy, LogIn, AlertCircle, KeyRound } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useGameStore } from '@/store/useGameStore';
+import { useUsers } from '@/hooks/useUsers';
+import { api } from '@/api/client';
+import { cn } from '@/lib/utils';
 
 export default function Login() {
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
-  const [pin, setPin] = useState("");
-  const [error, setError] = useState("");
+  const [pin, setPin] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [needsPinChange, setNeedsPinChange] = useState(false);
-  const [newPin, setNewPin] = useState("");
-  const [confirmPin, setConfirmPin] = useState("");
+  const [newPin, setNewPin] = useState('');
+  const [confirmPin, setConfirmPin] = useState('');
   const { data: users, isLoading: usersLoading } = useUsers();
   const login = useGameStore((s) => s.login);
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     if (!selectedUser) {
-      setError("Please select a user");
+      setError('Please select a user');
       return;
     }
     if (!pin || pin.length < 4) {
-      setError("Please enter PIN (4 digits)");
+      setError('Please enter PIN (4 digits)');
       return;
     }
 
-    setError("");
+    setError('');
     setLoading(true);
 
     try {
@@ -40,10 +40,10 @@ export default function Login() {
       if (!user.pinChanged) {
         setNeedsPinChange(true);
       } else {
-        navigate("/");
+        navigate('/');
       }
     } catch (err: any) {
-      setError(err.message || "Login failed");
+      setError(err.message || 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -51,29 +51,29 @@ export default function Login() {
 
   const handleChangePin = async () => {
     if (!newPin || newPin.length < 4) {
-      setError("New PIN must be at least 4 digits");
+      setError('New PIN must be at least 4 digits');
       return;
     }
     if (newPin !== confirmPin) {
-      setError("PINs do not match");
+      setError('PINs do not match');
       return;
     }
 
-    setError("");
+    setError('');
     setLoading(true);
     try {
       await api.changePin(selectedUser!, pin, newPin);
       useGameStore.getState().setPinChanged();
-      navigate("/");
+      navigate('/');
     } catch (err: any) {
-      setError(err.message || "Failed to change PIN");
+      setError(err.message || 'Failed to change PIN');
     } finally {
       setLoading(false);
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       if (needsPinChange) {
         handleChangePin();
       } else {
@@ -113,8 +113,8 @@ export default function Login() {
               placeholder="New PIN (4-6 digits)"
               value={newPin}
               onChange={(e) => {
-                setNewPin(e.target.value.replace(/\D/g, ""));
-                setError("");
+                setNewPin(e.target.value.replace(/\D/g, ''));
+                setError('');
               }}
               className="h-14 rounded-2xl text-center text-xl tracking-[0.3em]"
               autoFocus
@@ -127,8 +127,8 @@ export default function Login() {
               placeholder="Confirm new PIN"
               value={confirmPin}
               onChange={(e) => {
-                setConfirmPin(e.target.value.replace(/\D/g, ""));
-                setError("");
+                setConfirmPin(e.target.value.replace(/\D/g, ''));
+                setError('');
               }}
               onKeyDown={handleKeyDown}
               className="h-14 rounded-2xl text-center text-xl tracking-[0.3em]"
@@ -150,11 +150,7 @@ export default function Login() {
               disabled={loading || newPin.length < 4 || confirmPin.length < 4}
               className="h-12 w-full rounded-2xl text-base"
             >
-              {loading ? (
-                <span className="animate-pulse">Saving...</span>
-              ) : (
-                "Set PIN & Continue"
-              )}
+              {loading ? <span className="animate-pulse">Saving...</span> : 'Set PIN & Continue'}
             </Button>
           </div>
         </motion.div>
@@ -174,7 +170,7 @@ export default function Login() {
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            transition={{ type: "spring", delay: 0.1 }}
+            transition={{ type: 'spring', delay: 0.1 }}
           >
             <div className="mx-auto mb-4 flex size-20 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]">
               <Trophy className="h-9 w-9 text-white" />
@@ -195,22 +191,20 @@ export default function Login() {
           </p>
           <div className="grid grid-cols-4 gap-2">
             {usersLoading ? (
-              <div className="col-span-4 py-4 text-center text-white/40">
-                Loading...
-              </div>
+              <div className="col-span-4 py-4 text-center text-white/40">Loading...</div>
             ) : users ? (
               users.map((user: any) => (
                 <button
                   key={user.id}
                   onClick={() => {
                     setSelectedUser(user.id);
-                    setError("");
+                    setError('');
                   }}
                   className={cn(
-                    "flex flex-col items-center gap-1 rounded-2xl border p-3 transition-all",
+                    'flex flex-col items-center gap-1 rounded-2xl border p-3 transition-all',
                     selectedUser === user.id
-                      ? "scale-[1.02] border-white/18 bg-white/12"
-                      : "border-white/8 bg-white/[0.03] hover:border-white/18 hover:bg-white/[0.06]",
+                      ? 'scale-[1.02] border-white/18 bg-white/12'
+                      : 'border-white/8 bg-white/[0.03] hover:border-white/18 hover:bg-white/[0.06]',
                   )}
                 >
                   <span className="text-3xl">{user.avatar}</span>
@@ -220,9 +214,7 @@ export default function Login() {
                 </button>
               ))
             ) : (
-              <div className="col-span-4 py-4 text-center text-white/40">
-                No users found
-              </div>
+              <div className="col-span-4 py-4 text-center text-white/40">No users found</div>
             )}
           </div>
         </div>
@@ -236,8 +228,8 @@ export default function Login() {
             placeholder="Enter PIN"
             value={pin}
             onChange={(e) => {
-              setPin(e.target.value.replace(/\D/g, ""));
-              setError("");
+              setPin(e.target.value.replace(/\D/g, ''));
+              setError('');
             }}
             onKeyDown={handleKeyDown}
             className="h-14 rounded-2xl text-center text-2xl tracking-[0.5em]"

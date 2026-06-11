@@ -23,20 +23,23 @@ router.get('/:id', async (req: Request, res: Response) => {
               m.team_b_name, m.team_b_flag, m.team_b_code,
               m.deal, m.deal_side, m.stage, m.status, m.score_a, m.score_b
        FROM predictions p JOIN matches m ON p.match_id = m.id
-       WHERE p.user_id = ? ORDER BY m.date DESC, m.time DESC`, [id]),
+       WHERE p.user_id = ? ORDER BY m.date DESC, m.time DESC`,
+      [id],
+    ),
     db.execute(
       `SELECT p.user_id, p.match_id, p.pick, p.result, p.points, m.deal_side, m.stage
-       FROM predictions p JOIN matches m ON p.match_id = m.id`),
+       FROM predictions p JOIN matches m ON p.match_id = m.id`,
+    ),
   ]);
 
   const preds = userPredsResult.rows as any[];
   const allPreds = allPredsResult.rows as any[];
 
   // --- Basic stats ---
-  const wins = preds.filter(p => p.result === 'win').length;
-  const losses = preds.filter(p => p.result === 'lose').length;
-  const draws = preds.filter(p => p.result === 'draw').length;
-  const pending = preds.filter(p => p.result === null).length;
+  const wins = preds.filter((p) => p.result === 'win').length;
+  const losses = preds.filter((p) => p.result === 'lose').length;
+  const draws = preds.filter((p) => p.result === 'draw').length;
+  const pending = preds.filter((p) => p.result === null).length;
   const totalPoints = wins - losses;
   const decided = wins + losses + draws;
   const winRate = decided > 0 ? Math.round((wins / decided) * 100) : 0;
@@ -53,18 +56,20 @@ router.get('/:id', async (req: Request, res: Response) => {
   const maxPoints = sorted.length > 0 ? Math.max(1, sorted[0][1]) : 1;
 
   // --- Recent form (last 5 decided) ---
-  const decidedPreds = preds.filter(p => p.result !== null);
-  const recentForm = decidedPreds.slice(0, 5).map(p =>
-    p.result === 'win' ? 'W' : p.result === 'lose' ? 'L' : 'D'
-  );
+  const decidedPreds = preds.filter((p) => p.result !== null);
+  const recentForm = decidedPreds
+    .slice(0, 5)
+    .map((p) => (p.result === 'win' ? 'W' : p.result === 'lose' ? 'L' : 'D'));
 
   // --- Streak ---
   let streak = 0;
   for (const p of decidedPreds) {
     if (p.result === 'win') {
-      if (streak >= 0) streak++; else break;
+      if (streak >= 0) streak++;
+      else break;
     } else if (p.result === 'lose') {
-      if (streak <= 0) streak--; else break;
+      if (streak <= 0) streak--;
+      else break;
     } else break;
   }
 
@@ -108,14 +113,18 @@ router.get('/:id', async (req: Request, res: Response) => {
   for (const [stage, s] of stageStats) {
     if (s.decided < 2) continue;
     const rate = s.wins / s.decided;
-    if (rate > bestStageRate) { bestStageRate = rate; bestStage = stage; }
+    if (rate > bestStageRate) {
+      bestStageRate = rate;
+      bestStage = stage;
+    }
   }
 
   // --- Clutch rate ---
   const matchPickCounts = new Map<string, { a: number; b: number }>();
   for (const p of allPreds) {
     const m = matchPickCounts.get(p.match_id) || { a: 0, b: 0 };
-    if (p.pick === 'A') m.a++; else m.b++;
+    if (p.pick === 'A') m.a++;
+    else m.b++;
     matchPickCounts.set(p.match_id, m);
   }
   let clutchWins = 0;
@@ -148,15 +157,42 @@ router.get('/:id', async (req: Request, res: Response) => {
       smallestMinority = minorityPct;
       const pickedTeam = p.pick === 'A' ? p.team_a_name : p.team_b_name;
       const pickedFlag = p.pick === 'A' ? p.team_a_flag : p.team_b_flag;
-      biggestWin = { matchId: p.match_id, team_a_name: p.team_a_name, team_b_name: p.team_b_name,
-        team_a_flag: p.team_a_flag, team_b_flag: p.team_b_flag,
-        pickedTeam, pickedFlag, minorityPercent: minorityPct, date: p.date, stage: p.stage };
+      biggestWin = {
+        matchId: p.match_id,
+        team_a_name: p.team_a_name,
+        team_b_name: p.team_b_name,
+        team_a_flag: p.team_a_flag,
+        team_b_flag: p.team_b_flag,
+        pickedTeam,
+        pickedFlag,
+        minorityPercent: minorityPct,
+        date: p.date,
+        stage: p.stage,
+      };
     }
   }
 
   res.json({
-    user: { id: user.id, name: user.name, avatar: user.avatar, paid: !!user.paid, created_at: user.created_at },
-    stats: { rank, totalPoints, wins, losses, draws, pendingBets: pending, totalBets: preds.length, winRate, debt, debtPaid: !!user.debt_paid, progressPercent: Math.max(0, Math.round((totalPoints / maxPoints) * 100)) },
+    user: {
+      id: user.id,
+      name: user.name,
+      avatar: user.avatar,
+      paid: !!user.paid,
+      created_at: user.created_at,
+    },
+    stats: {
+      rank,
+      totalPoints,
+      wins,
+      losses,
+      draws,
+      pendingBets: pending,
+      totalBets: preds.length,
+      winRate,
+      debt,
+      debtPaid: !!user.debt_paid,
+      progressPercent: Math.max(0, Math.round((totalPoints / maxPoints) * 100)),
+    },
     recentForm,
     streak,
     favoriteTeam,

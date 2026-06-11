@@ -1,35 +1,29 @@
-import {
-  Wallet,
-  Check,
-  AlertTriangle,
-  PiggyBank,
-  Banknote,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import PageHeader from "@/components/PageHeader";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/api/client";
-import { toast } from "sonner";
+import { Wallet, Check, AlertTriangle, PiggyBank, Banknote } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import PageHeader from '@/components/PageHeader';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { api } from '@/api/client';
+import { toast } from 'sonner';
 
 export default function Fund() {
   const queryClient = useQueryClient();
   const { data: fund, isLoading } = useQuery({
-    queryKey: ["fund"],
+    queryKey: ['fund'],
     queryFn: () => api.getFund(),
   });
 
   const handleTogglePaid = async (userId: string, currentPaid: boolean) => {
     try {
       await api.updateFundUser(userId, !currentPaid);
-      queryClient.invalidateQueries({ queryKey: ["fund"] });
-      queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
-      toast.success("Status updated");
+      queryClient.invalidateQueries({ queryKey: ['fund'] });
+      queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
+      toast.success('Status updated');
     } catch {
-      toast.error("Update failed");
+      toast.error('Update failed');
     }
   };
 
@@ -43,7 +37,7 @@ export default function Fund() {
   }
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto">
+    <div className="space-y-6">
       <PageHeader
         title="Prize Pool"
         icon={<Wallet className="w-7 h-7 text-primary" />}
@@ -120,9 +114,7 @@ export default function Fund() {
 
           {fund?.unpaidUsers?.length > 0 && (
             <>
-              {fund.paidUsers?.length > 0 && (
-                <Separator className="my-3 bg-white/5" />
-              )}
+              {fund.paidUsers?.length > 0 && <Separator className="my-3 bg-white/5" />}
               <div className="space-y-1">
                 {fund.unpaidUsers.map((user: any) => (
                   <div
@@ -133,9 +125,7 @@ export default function Fund() {
                       <span className="text-xl shrink-0">{user.avatar}</span>
                       <div className="min-w-0">
                         <span className="text-sm text-white truncate block">{user.name}</span>
-                        <p className="app-meta text-[#FFD890]">
-                          {user.losses} losses
-                        </p>
+                        <p className="app-meta text-[#FFD890]">{user.losses} losses</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 sm:ml-auto">
@@ -183,28 +173,28 @@ export default function Fund() {
                 <div
                   key={prize.rank}
                   className={cn(
-                    "flex items-center justify-between rounded-2xl border p-3",
-                    prize.rank === 1 && "border-[#17307C] bg-[#0B1543]/72",
-                    prize.rank !== 1 && "app-panel-muted",
+                    'flex items-center justify-between rounded-2xl border p-3',
+                    prize.rank === 1 && 'border-[#17307C] bg-[#0B1543]/72',
+                    prize.rank !== 1 && 'app-panel-muted',
                   )}
                 >
                   <div className="flex items-center gap-3">
                     <span className="font-display text-xl w-8 text-center">
                       {prize.rank === 1
-                        ? "🥇"
+                        ? '🥇'
                         : prize.rank === 2
-                          ? "🥈"
+                          ? '🥈'
                           : prize.rank === 3
-                            ? "🥉"
+                            ? '🥉'
                             : `#${prize.rank}`}
                     </span>
                     <div>
                       <p className="text-sm text-white font-semibold">
-                        {prize.user?.name || "TBD"}
+                        {prize.user?.name || 'TBD'}
                       </p>
                       {prize.user && (
                         <p className="text-xs text-white/36">
-                          {prize.user.totalPoints > 0 ? "+" : ""}
+                          {prize.user.totalPoints > 0 ? '+' : ''}
                           {prize.user.totalPoints} pts
                         </p>
                       )}
@@ -214,16 +204,13 @@ export default function Fund() {
                     <p className="font-display text-lg text-primary">
                       {prize.amount.toLocaleString()} VND
                     </p>
-                    <p className="text-[10px] text-white/36">
-                      {prize.percentage}% of pool
-                    </p>
+                    <p className="text-[10px] text-white/36">{prize.percentage}% of pool</p>
                   </div>
                 </div>
               ))}
             </div>
             <p className="mt-3 text-center text-xs text-white/36">
-              * Estimated based on current leaderboard. Total pool = sum of all
-              debts.
+              * Estimated based on current leaderboard. Total pool = sum of all debts.
             </p>
           </CardContent>
         </Card>

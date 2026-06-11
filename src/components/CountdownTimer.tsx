@@ -1,15 +1,15 @@
-import { useCountdown } from '@/hooks/useCountdown'
-import { cn } from '@/lib/utils'
+import { useCountdown } from '@/hooks/useCountdown';
+import { cn } from '@/lib/utils';
 
 interface Props {
-  date: string
-  time: string
-  label?: string
-  className?: string
+  date: string;
+  time: string;
+  label?: string;
+  className?: string;
 }
 
 export default function CountdownTimer({ date, time, label, className }: Props) {
-  const { days, hours, minutes, seconds, isExpired } = useCountdown(date, time)
+  const { days, hours, minutes, seconds, isExpired } = useCountdown(date, time);
 
   if (isExpired) {
     return (
@@ -17,7 +17,7 @@ export default function CountdownTimer({ date, time, label, className }: Props) 
         <p className="text-sm text-white/45">{label || 'Match'}</p>
         <p className="font-display text-2xl tracking-[0.2em] text-[#F87171]">LIVE</p>
       </div>
-    )
+    );
   }
 
   const blocks = [
@@ -25,7 +25,7 @@ export default function CountdownTimer({ date, time, label, className }: Props) 
     { value: hours, label: 'H' },
     { value: minutes, label: 'M' },
     { value: seconds, label: 'S' },
-  ]
+  ];
 
   return (
     <div className={cn('flex flex-col items-center', className)}>
@@ -38,10 +38,12 @@ export default function CountdownTimer({ date, time, label, className }: Props) 
                 {String(value).padStart(2, '0')}
               </span>
             </div>
-            <span className="mt-1 text-[10px] uppercase tracking-[0.22em] text-white/35">{label}</span>
+            <span className="mt-1 text-[10px] uppercase tracking-[0.22em] text-white/35">
+              {label}
+            </span>
           </div>
         ))}
       </div>
     </div>
-  )
+  );
 }

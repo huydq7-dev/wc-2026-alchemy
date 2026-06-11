@@ -5,7 +5,7 @@ const router = Router();
 
 // GET /api/teams - list all teams (for navigation)
 router.get('/', async (_req: Request, res: Response) => {
-  const teams = squads.map(s => ({
+  const teams = squads.map((s) => ({
     code: s.teamCode,
     name: s.teamName,
     flag: s.flag,
@@ -18,7 +18,7 @@ router.get('/', async (_req: Request, res: Response) => {
 // GET /api/teams/:code/squad
 router.get('/:code/squad', async (req: Request, res: Response) => {
   const code = req.params.code.toUpperCase();
-  const squad = squads.find(s => s.teamCode === code);
+  const squad = squads.find((s) => s.teamCode === code);
 
   if (!squad) {
     res.status(404).json({ error: 'Squad not found' });

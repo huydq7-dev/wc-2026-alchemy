@@ -81,7 +81,11 @@ export async function initDB() {
   `);
 
   const migrate = async (sql: string) => {
-    try { await client.execute(sql); } catch { /* column already exists */ }
+    try {
+      await client.execute(sql);
+    } catch {
+      /* column already exists */
+    }
   };
   await migrate('ALTER TABLE users ADD COLUMN pin TEXT NOT NULL DEFAULT "1234"');
   await migrate('ALTER TABLE users ADD COLUMN debt_paid INTEGER DEFAULT 0');

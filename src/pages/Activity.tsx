@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
 import {
   Clock,
   Target,
@@ -10,56 +10,56 @@ import {
   AlertCircle,
   ChevronLeft,
   ChevronRight,
-} from "lucide-react";
-import { Link } from "react-router-dom";
-import { api } from "@/api/client";
-import { useUsers } from "@/hooks/useUsers";
-import PageHeader from "@/components/PageHeader";
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { api } from '@/api/client';
+import { useUsers } from '@/hooks/useUsers';
+import PageHeader from '@/components/PageHeader';
 
 const ACTIONS = [
-  { key: "", label: "All", icon: Clock, color: "text-white/55" },
+  { key: '', label: 'All', icon: Clock, color: 'text-white/55' },
   {
-    key: "place_prediction",
-    label: "Predicted",
+    key: 'place_prediction',
+    label: 'Predicted',
     icon: Target,
-    color: "text-white/55",
+    color: 'text-white/55',
   },
   {
-    key: "change_prediction",
-    label: "Changed",
+    key: 'change_prediction',
+    label: 'Changed',
     icon: Edit3,
-    color: "text-white/55",
+    color: 'text-white/55',
   },
-  { key: "update_deal", label: "Deal", icon: Edit3, color: "text-white/55" },
-  { key: "update_result", label: "Result", icon: Flag, color: "text-white/55" },
+  { key: 'update_deal', label: 'Deal', icon: Edit3, color: 'text-white/55' },
+  { key: 'update_result', label: 'Result', icon: Flag, color: 'text-white/55' },
   {
-    key: "sync_matches",
-    label: "Sync",
+    key: 'sync_matches',
+    label: 'Sync',
     icon: RefreshCw,
-    color: "text-white/55",
+    color: 'text-white/55',
   },
-  { key: "sync_odds", label: "Odds", icon: RefreshCw, color: "text-white/55" },
+  { key: 'sync_odds', label: 'Odds', icon: RefreshCw, color: 'text-white/55' },
   {
-    key: "auto_loss",
-    label: "Auto-Loss",
+    key: 'auto_loss',
+    label: 'Auto-Loss',
     icon: AlertCircle,
-    color: "text-white/55",
+    color: 'text-white/55',
   },
 ];
 
 const LIMIT = 15;
 
-const TIME_FMT = new Intl.DateTimeFormat("en-US", {
-  month: "2-digit",
-  day: "2-digit",
-  hour: "2-digit",
-  minute: "2-digit",
+const TIME_FMT = new Intl.DateTimeFormat('en-US', {
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
   hour12: false,
-  timeZone: "Asia/Bangkok",
+  timeZone: 'Asia/Bangkok',
 });
 
 function formatActivityTime(iso: string | null | undefined): string {
-  if (!iso) return "";
+  if (!iso) return '';
   try {
     return TIME_FMT.format(new Date(iso));
   } catch {
@@ -69,13 +69,13 @@ function formatActivityTime(iso: string | null | undefined): string {
 
 export default function Activity() {
   const [page, setPage] = useState(1);
-  const [filter, setFilter] = useState("");
-  const [userId, setUserId] = useState("");
+  const [filter, setFilter] = useState('');
+  const [userId, setUserId] = useState('');
 
   const { data: users } = useUsers();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["activity", page, filter, userId],
+    queryKey: ['activity', page, filter, userId],
     queryFn: () =>
       api.getActivity({
         page,
@@ -91,22 +91,16 @@ export default function Activity() {
 
   const parseDetails = (details: any) => {
     if (!details) return null;
-    return typeof details === "string" ? JSON.parse(details) : details;
+    return typeof details === 'string' ? JSON.parse(details) : details;
   };
 
   return (
     <div className="space-y-6">
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <PageHeader
-          title="Recent Activity"
-          icon={<Clock className="w-7 h-7 text-[#60E6F6]" />}
-          description="A live feed of predictions, result updates, deal changes, and sync actions across the pool."
-        />
-      </motion.div>
-
+      <PageHeader
+        title="Recent Activity"
+        icon={<Clock className="w-7 h-7 text-[#60E6F6]" />}
+        description="A live feed of predictions, result updates, deal changes, and sync actions across the pool."
+      />
       {/* Filters Row */}
       <div className="flex flex-wrap items-center gap-3">
         {/* Action filter chips */}
@@ -122,8 +116,8 @@ export default function Activity() {
                 }}
                 className={`inline-flex items-center gap-1 rounded-none border px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em] transition-all ${
                   active
-                    ? "border-white bg-white text-[#09112B]"
-                    : "border-white/8 bg-white/[0.025] text-white/48 hover:border-white/20 hover:text-white"
+                    ? 'border-white bg-white text-[#09112B]'
+                    : 'border-white/8 bg-white/[0.025] text-white/48 hover:border-white/20 hover:text-white'
                 }`}
               >
                 <Icon className="w-3 h-3" />
@@ -163,7 +157,7 @@ export default function Activity() {
           {logs.map((log: any, i: number) => {
             const action = ACTIONS.find((a) => a.key === log.action);
             const Icon = action?.icon || Clock;
-            const color = action?.color || "text-gray-400";
+            const color = action?.color || 'text-gray-400';
             const label = action?.label || log.action;
             const details = parseDetails(log.details);
 
@@ -190,11 +184,10 @@ export default function Activity() {
                     <span className={`app-meta ${color}`}>{label}</span>
                   </div>
                   <p className="mt-0.5 truncate text-xs text-white/36">
-                    {details?.match || details?.matchId || ""}
+                    {details?.match || details?.matchId || ''}
                     {details?.team && ` → ${details.team}`}
                     {details?.status && ` (${details.status})`}
-                    {details?.score_a != null &&
-                      ` ${details.score_a}-${details.score_b}`}
+                    {details?.score_a != null && ` ${details.score_a}-${details.score_b}`}
                   </p>
                 </div>
 

@@ -101,6 +101,7 @@ export interface LeaderboardEntry {
   debtPaid: boolean;
   rank: number;
   progressPercent: number;
+  streak: number;
 }
 
 export interface LeaderboardData {

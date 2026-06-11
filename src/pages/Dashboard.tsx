@@ -1,29 +1,29 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Calendar, Trophy, Flame, ArrowRight, RefreshCw } from "lucide-react";
-import CountdownTimer from "@/components/CountdownTimer";
-import LiveBadge from "@/components/LiveBadge";
-import PageHeader from "@/components/PageHeader";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useNextMatch, useMatches } from "@/hooks/useMatches";
-import { useLeaderboard } from "@/hooks/useLeaderboard";
-import { usePredictions } from "@/hooks/usePredictions";
-import { useGameStore } from "@/store/useGameStore";
-import { api } from "@/api/client";
-import FlagImage from "@/components/FlagImage";
-import { cn } from "@/lib/utils";
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Calendar, Trophy, Flame, ArrowRight, RefreshCw } from 'lucide-react';
+import CountdownTimer from '@/components/CountdownTimer';
+import LiveBadge from '@/components/LiveBadge';
+import PageHeader from '@/components/PageHeader';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useNextMatch, useMatches } from '@/hooks/useMatches';
+import { useLeaderboard } from '@/hooks/useLeaderboard';
+import { usePredictions } from '@/hooks/usePredictions';
+import { useGameStore } from '@/store/useGameStore';
+import { api } from '@/api/client';
+import FlagImage from '@/components/FlagImage';
+import { cn } from '@/lib/utils';
 
 export default function Dashboard() {
-  const currentUserId = useGameStore((s) => s.currentUser?.id || "");
+  const currentUserId = useGameStore((s) => s.currentUser?.id || '');
   const isAdmin = useGameStore((s) => s.currentUser?.isAdmin || false);
   const { data: nextMatch } = useNextMatch();
   const { data: matches } = useMatches();
   const { data: leaderboardData } = useLeaderboard();
   const { data: predictions } = usePredictions({ userId: currentUserId });
 
-  const liveMatch = matches?.find((m: any) => m.status === "live");
+  const liveMatch = matches?.find((m: any) => m.status === 'live');
   const top3 = leaderboardData?.entries?.slice(0, 3) || [];
   const userPreds = predictions || [];
 
@@ -46,7 +46,7 @@ export default function Dashboard() {
       const res = await api.syncOdds();
       alert(res.message);
     } catch (err: any) {
-      alert(err.message || "Failed to sync odds");
+      alert(err.message || 'Failed to sync odds');
     } finally {
       setSyncingOdds(false);
     }
@@ -54,8 +54,7 @@ export default function Dashboard() {
 
   const stats = {
     totalMatches: matches?.length || 0,
-    finishedMatches:
-      matches?.filter((m: any) => m.status === "finished").length || 0,
+    finishedMatches: matches?.filter((m: any) => m.status === 'finished').length || 0,
     myPredictions: userPreds.length,
     pendingPredictions: userPreds.filter((p: any) => p.result === null).length,
   };
@@ -86,8 +85,8 @@ export default function Dashboard() {
             </div>
           </div>
           <p className="text-white/58 max-w-lg mb-6">
-            Predict World Cup 2026 results with the Alchemy crew. Make
-            predictions, climb the ranks, win prizes!
+            Predict World Cup 2026 results with the Alchemy crew. Make predictions, climb the ranks,
+            win prizes!
           </p>
 
           {nextMatch && (
@@ -99,24 +98,16 @@ export default function Dashboard() {
                   size={80}
                   className="w-8 h-5.5 rounded-sm object-cover"
                 />
-                <span className="font-display text-2xl text-white">
-                  {nextMatch.team_a_name}
-                </span>
+                <span className="font-display text-2xl text-white">{nextMatch.team_a_name}</span>
                 <span className="text-white/30 text-sm">vs</span>
-                <span className="font-display text-2xl text-white">
-                  {nextMatch.team_b_name}
-                </span>
+                <span className="font-display text-2xl text-white">{nextMatch.team_b_name}</span>
                 <FlagImage
                   code={nextMatch.team_b_code}
                   size={80}
                   className="w-8 h-5.5 rounded-sm object-cover"
                 />
               </div>
-              <CountdownTimer
-                date={nextMatch.date}
-                time={nextMatch.time}
-                label="Starts in"
-              />
+              <CountdownTimer date={nextMatch.date} time={nextMatch.time} label="Starts in" />
             </div>
           )}
 
@@ -142,10 +133,8 @@ export default function Dashboard() {
                   onClick={handleSync}
                   disabled={syncing}
                 >
-                  <RefreshCw
-                    className={cn("w-4 h-5 mr-1", syncing && "animate-spin")}
-                  />
-                  {syncing ? "Syncing..." : "Sync Data"}
+                  <RefreshCw className={cn('w-4 h-5 mr-1', syncing && 'animate-spin')} />
+                  {syncing ? 'Syncing...' : 'Sync Data'}
                 </Button>
                 <Button
                   variant="ghost"
@@ -154,13 +143,8 @@ export default function Dashboard() {
                   onClick={handleSyncOdds}
                   disabled={syncingOdds}
                 >
-                  <RefreshCw
-                    className={cn(
-                      "w-4 h-4 mr-1",
-                      syncingOdds && "animate-spin",
-                    )}
-                  />
-                  {syncingOdds ? "Fetching..." : "Sync Odds"}
+                  <RefreshCw className={cn('w-4 h-4 mr-1', syncingOdds && 'animate-spin')} />
+                  {syncingOdds ? 'Fetching...' : 'Sync Odds'}
                 </Button>
               </>
             )}
@@ -185,15 +169,11 @@ export default function Dashboard() {
               size={80}
               className="w-8 h-5.5 rounded-sm object-cover"
             />
-            <span className="font-display text-2xl text-white">
-              {liveMatch.team_a_name}
-            </span>
+            <span className="font-display text-2xl text-white">{liveMatch.team_a_name}</span>
             <span className="font-display text-3xl text-white tabular-nums">
               {liveMatch.score_a} - {liveMatch.score_b}
             </span>
-            <span className="font-display text-2xl text-white">
-              {liveMatch.team_b_name}
-            </span>
+            <span className="font-display text-2xl text-white">{liveMatch.team_b_name}</span>
             <FlagImage
               code={liveMatch.team_b_code}
               size={80}
@@ -212,11 +192,7 @@ export default function Dashboard() {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <StatCard
-          icon={Calendar}
-          label="Total Matches"
-          value={stats.totalMatches}
-        />
+        <StatCard icon={Calendar} label="Total Matches" value={stats.totalMatches} />
         <StatCard
           icon={Flame}
           label="Completed"
@@ -256,19 +232,17 @@ export default function Dashboard() {
               <div
                 key={entry.userId}
                 className={cn(
-                  "app-panel-muted flex items-center justify-between p-3",
-                  i === 0 && "border-[#17307C] bg-[#0B1543]/70",
+                  'app-panel-muted flex items-center justify-between p-3',
+                  i === 0 && 'border-[#17307C] bg-[#0B1543]/70',
                 )}
               >
                 <div className="flex items-center gap-3">
                   <span className="font-display text-xl w-8 text-center">
-                    {i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉"}
+                    {i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'}
                   </span>
                   <span className="text-2xl">{entry.avatar}</span>
                   <div>
-                    <p className="font-semibold text-white text-sm">
-                      {entry.name}
-                    </p>
+                    <p className="font-semibold text-white text-sm">{entry.name}</p>
                     <p className="text-xs text-white/36">
                       {entry.wins}W - {entry.losses}L - {entry.draws}D
                     </p>
@@ -276,11 +250,11 @@ export default function Dashboard() {
                 </div>
                 <span
                   className={cn(
-                    "font-display text-xl font-bold",
-                    entry.totalPoints > 0 && "text-primary",
+                    'font-display text-xl font-bold',
+                    entry.totalPoints > 0 && 'text-primary',
                   )}
                 >
-                  {entry.totalPoints > 0 ? "+" : ""}
+                  {entry.totalPoints > 0 ? '+' : ''}
                   {entry.totalPoints}
                 </span>
               </div>
@@ -305,7 +279,7 @@ function StatCard({
 }) {
   return (
     <div className="app-tile p-4">
-      <Icon className={cn("w-5 h-5 mb-2", color || "text-gray-400")} />
+      <Icon className={cn('w-5 h-5 mb-2', color || 'text-gray-400')} />
       <p className="font-display text-2xl text-white">{value}</p>
       <p className="app-meta">{label}</p>
     </div>

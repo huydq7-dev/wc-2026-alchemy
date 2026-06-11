@@ -1,25 +1,17 @@
-import { NavLink, Link, useLocation, useNavigate } from "react-router-dom";
-import {
-  Calendar,
-  BarChart3,
-  Wallet,
-  Home,
-  LogOut,
-  Swords,
-  Activity,
-} from "lucide-react";
-import { useGameStore } from "@/store/useGameStore";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import type { ReactNode } from "react";
+import { NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Calendar, BarChart3, Wallet, Home, LogOut, Swords, Activity } from 'lucide-react';
+import { useGameStore } from '@/store/useGameStore';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import type { ReactNode } from 'react';
 
 const navItems = [
-  { to: "/", icon: Home, label: "Home" },
-  { to: "/schedule", icon: Calendar, label: "Schedule" },
-  { to: "/leaderboard", icon: BarChart3, label: "Rank" },
-  { to: "/fund", icon: Wallet, label: "Prize" },
-  { to: "/standings", icon: Swords, label: "Standings" },
-  { to: "/activity", icon: Activity, label: "Activity" },
+  { to: '/', icon: Home, label: 'Home' },
+  { to: '/schedule', icon: Calendar, label: 'Schedule' },
+  { to: '/leaderboard', icon: BarChart3, label: 'Rank' },
+  { to: '/fund', icon: Wallet, label: 'Prize' },
+  { to: '/standings', icon: Swords, label: 'Standings' },
+  { to: '/activity', icon: Activity, label: 'Activity' },
 ];
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -51,10 +43,10 @@ export default function Layout({ children }: { children: ReactNode }) {
                 key={to}
                 to={to}
                 className={cn(
-                  "flex items-center gap-2 rounded-none px-3.5 py-2 text-sm font-medium transition-colors",
+                  'flex items-center gap-2 rounded-none px-3.5 py-2 text-sm font-medium transition-colors',
                   location.pathname === to
-                    ? "bg-white text-[#09112B]"
-                    : "text-white/50 hover:bg-white/6 hover:text-white",
+                    ? 'bg-white text-[#09112B]'
+                    : 'text-white/50 hover:bg-white/6 hover:text-white',
                 )}
               >
                 <Icon className="w-4 h-4" />
@@ -79,10 +71,8 @@ export default function Layout({ children }: { children: ReactNode }) {
               key={to}
               to={to}
               className={cn(
-                "flex min-w-0 items-center justify-center rounded-none p-3 text-xs font-medium transition-colors",
-                location.pathname === to
-                  ? "bg-white text-[#09112B]"
-                  : "text-white/40",
+                'flex min-w-0 items-center justify-center rounded-none p-3 text-xs font-medium transition-colors',
+                location.pathname === to ? 'bg-white text-[#09112B]' : 'text-white/40',
               )}
             >
               <Icon className="w-6 h-6" />
@@ -101,14 +91,17 @@ function UserMenu() {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate('/login');
   };
 
   if (!user) return null;
 
   return (
     <div className="flex items-center gap-3">
-      <Link to={`/user/${user.id}`} className="hidden items-center gap-2 sm:flex hover:opacity-80 transition-opacity">
+      <Link
+        to={`/user/${user.id}`}
+        className="hidden items-center gap-2 sm:flex hover:opacity-80 transition-opacity"
+      >
         <span className="text-xl">{user.avatar}</span>
         <span className="text-sm font-medium text-white">{user.name}</span>
       </Link>

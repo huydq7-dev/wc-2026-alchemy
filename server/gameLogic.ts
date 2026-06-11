@@ -3,7 +3,7 @@ export function calculateResult(
   scoreB: number,
   deal: string,
   dealSide: 'A' | 'B',
-  pick: 'A' | 'B'
+  pick: 'A' | 'B',
 ): 'win' | 'lose' | 'draw' {
   const dealValue = parseFloat(deal);
 

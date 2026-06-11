@@ -1,14 +1,14 @@
-import { useParams, Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { api } from "@/api/client";
-import { ArrowLeft, Users, Shirt, MapPin, LayoutGrid, List } from "lucide-react";
-import { useState, useMemo } from "react";
-import { cn } from "@/lib/utils";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useParams, Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '@/api/client';
+import { ArrowLeft, Users, Shirt, MapPin, LayoutGrid, List } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { cn } from '@/lib/utils';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface Player {
   name: string;
-  position: "GK" | "DEF" | "MID" | "FWD";
+  position: 'GK' | 'DEF' | 'MID' | 'FWD';
   number: number;
   club?: string;
   age?: number;
@@ -17,17 +17,17 @@ interface Player {
 
 // ── Position colors ──
 const posColor: Record<string, string> = {
-  GK: "#F5A623",
-  DEF: "#60E6F6",
-  MID: "#4ADE80",
-  FWD: "#E63946",
+  GK: '#F5A623',
+  DEF: '#60E6F6',
+  MID: '#4ADE80',
+  FWD: '#E63946',
 };
 
 const posBg: Record<string, string> = {
-  GK: "bg-accent/12 border-accent/25 text-[#F5A623]",
-  DEF: "bg-primary/10 border-primary/25 text-primary",
-  MID: "bg-emerald-500/10 border-emerald-500/25 text-[#4ADE80]",
-  FWD: "bg-danger/10 border-danger/25 text-danger",
+  GK: 'bg-accent/12 border-accent/25 text-[#F5A623]',
+  DEF: 'bg-primary/10 border-primary/25 text-primary',
+  MID: 'bg-emerald-500/10 border-emerald-500/25 text-[#4ADE80]',
+  FWD: 'bg-danger/10 border-danger/25 text-danger',
 };
 
 // ── Formation layout helper ──
@@ -37,19 +37,19 @@ interface PositionedPlayer extends Player {
 }
 
 function layoutFormation(players: Player[], formation: string): PositionedPlayer[] {
-  const lines = formation.split("-").map(Number);
+  const lines = formation.split('-').map(Number);
   // lines e.g. [4,3,3] for 4-3-3 or [4,4,2] for 4-4-2
 
-  const gk = players.filter(p => p.position === "GK");
-  const def = players.filter(p => p.position === "DEF");
-  const mid = players.filter(p => p.position === "MID");
-  const fwd = players.filter(p => p.position === "FWD");
+  const gk = players.filter((p) => p.position === 'GK');
+  const def = players.filter((p) => p.position === 'DEF');
+  const mid = players.filter((p) => p.position === 'MID');
+  const fwd = players.filter((p) => p.position === 'FWD');
 
   // Take only starters (first N per line + GK)
   const starters: PositionedPlayer[] = [];
 
   // GK (1)
-  gk.slice(0, 1).forEach(p => starters.push({ ...p, x: 50, y: 92 }));
+  gk.slice(0, 1).forEach((p) => starters.push({ ...p, x: 50, y: 92 }));
 
   // Defenders (lines[0])
   def.slice(0, lines[0]).forEach((p, i) => {
@@ -60,7 +60,7 @@ function layoutFormation(players: Player[], formation: string): PositionedPlayer
 
   // Midfielders - split into lines based on formation
   let midLines: number[];
-  if (formation === "4-2-3-1") {
+  if (formation === '4-2-3-1') {
     midLines = [2, 3];
   } else if (lines.length === 3) {
     midLines = [lines[1]];
@@ -105,7 +105,7 @@ function PitchView({ players, formation }: { players: Player[]; formation: strin
       <svg
         viewBox="0 0 100 100"
         className="w-full rounded-2xl border border-white/8 shadow-lg"
-        style={{ background: "linear-gradient(180deg, #0d8c2e 0%, #0a7025 50%, #0d8c2e 100%)" }}
+        style={{ background: 'linear-gradient(180deg, #0d8c2e 0%, #0a7025 50%, #0d8c2e 100%)' }}
       >
         {/* Grass texture lines */}
         <defs>
@@ -123,27 +123,96 @@ function PitchView({ players, formation }: { players: Player[]; formation: strin
         <rect width="100" height="100" fill="url(#spotlight)" />
 
         {/* Outer border */}
-        <rect x="3" y="2" width="94" height="96" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="0.3" rx="1" />
+        <rect
+          x="3"
+          y="2"
+          width="94"
+          height="96"
+          fill="none"
+          stroke="rgba(255,255,255,0.5)"
+          strokeWidth="0.3"
+          rx="1"
+        />
 
         {/* Halfway line */}
         <line x1="3" y1="50" x2="97" y2="50" stroke="rgba(255,255,255,0.5)" strokeWidth="0.3" />
-        <circle cx="50" cy="50" r="10" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="0.3" />
+        <circle
+          cx="50"
+          cy="50"
+          r="10"
+          fill="none"
+          stroke="rgba(255,255,255,0.5)"
+          strokeWidth="0.3"
+        />
         <circle cx="50" cy="50" r="0.8" fill="rgba(255,255,255,0.5)" />
 
         {/* Top penalty area */}
-        <rect x="22" y="2" width="56" height="16" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.25" />
-        <rect x="34" y="2" width="32" height="6" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.25" />
+        <rect
+          x="22"
+          y="2"
+          width="56"
+          height="16"
+          fill="none"
+          stroke="rgba(255,255,255,0.4)"
+          strokeWidth="0.25"
+        />
+        <rect
+          x="34"
+          y="2"
+          width="32"
+          height="6"
+          fill="none"
+          stroke="rgba(255,255,255,0.4)"
+          strokeWidth="0.25"
+        />
 
         {/* Bottom penalty area */}
-        <rect x="22" y="82" width="56" height="16" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.25" />
-        <rect x="34" y="92" width="32" height="6" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.25" />
+        <rect
+          x="22"
+          y="82"
+          width="56"
+          height="16"
+          fill="none"
+          stroke="rgba(255,255,255,0.4)"
+          strokeWidth="0.25"
+        />
+        <rect
+          x="34"
+          y="92"
+          width="32"
+          height="6"
+          fill="none"
+          stroke="rgba(255,255,255,0.4)"
+          strokeWidth="0.25"
+        />
 
         {/* Goals */}
-        <rect x="44" y="0" width="12" height="2.5" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="0.3" />
-        <rect x="44" y="97.5" width="12" height="2.5" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="0.3" />
+        <rect
+          x="44"
+          y="0"
+          width="12"
+          height="2.5"
+          fill="none"
+          stroke="rgba(255,255,255,0.5)"
+          strokeWidth="0.3"
+        />
+        <rect
+          x="44"
+          y="97.5"
+          width="12"
+          height="2.5"
+          fill="none"
+          stroke="rgba(255,255,255,0.5)"
+          strokeWidth="0.3"
+        />
 
         {/* Corner arcs */}
-        {[[3, 2], [97, 2], [3, 98], [97, 98]].map(([cx, cy], i) => (
+        {[
+          [3, 2],
+          [97, 2],
+          [3, 98],
+          [97, 98],
+        ].map(([cx, cy], i) => (
           <path
             key={i}
             d={`M ${cx} ${cy} A 2 2 0 0 ${i < 2 ? 1 : 0} ${i % 2 === 0 ? cx + 2 : cx - 2} ${i < 2 ? cy + 2 : cy - 2}`}
@@ -191,8 +260,25 @@ function PitchView({ players, formation }: { players: Player[]; formation: strin
         ))}
 
         {/* Formation label */}
-        <rect x="38" y="47.5" width="24" height="5" rx="2.5" fill="rgba(8,17,62,0.85)" stroke="rgba(255,255,255,0.2)" strokeWidth="0.25" />
-        <text x="50" y="50.9" textAnchor="middle" fill="white" fontSize="2.4" fontWeight="700" fontFamily="Archivo, sans-serif">
+        <rect
+          x="38"
+          y="47.5"
+          width="24"
+          height="5"
+          rx="2.5"
+          fill="rgba(8,17,62,0.85)"
+          stroke="rgba(255,255,255,0.2)"
+          strokeWidth="0.25"
+        />
+        <text
+          x="50"
+          y="50.9"
+          textAnchor="middle"
+          fill="white"
+          fontSize="2.4"
+          fontWeight="700"
+          fontFamily="Archivo, sans-serif"
+        >
           {formation}
         </text>
       </svg>
@@ -208,7 +294,10 @@ function PitchView({ players, formation }: { players: Player[]; formation: strin
             >
               <span className="font-bold text-white/50 w-4 text-center">{p.number}</span>
               <span className="text-white/70 truncate max-w-[80px]">{p.name}</span>
-              <span className="text-[10px] uppercase tracking-wider" style={{ color: posColor[p.position] }}>
+              <span
+                className="text-[10px] uppercase tracking-wider"
+                style={{ color: posColor[p.position] }}
+              >
                 {p.position}
               </span>
             </div>
@@ -220,26 +309,23 @@ function PitchView({ players, formation }: { players: Player[]; formation: strin
 }
 
 function ListView({ players }: { players: Player[] }) {
-  const positions = ["GK", "DEF", "MID", "FWD"] as const;
+  const positions = ['GK', 'DEF', 'MID', 'FWD'] as const;
   const posLabel: Record<string, string> = {
-    GK: "Goalkeepers",
-    DEF: "Defenders",
-    MID: "Midfielders",
-    FWD: "Forwards",
+    GK: 'Goalkeepers',
+    DEF: 'Defenders',
+    MID: 'Midfielders',
+    FWD: 'Forwards',
   };
 
   return (
     <div className="space-y-4">
-      {positions.map(pos => {
-        const group = players.filter(p => p.position === pos);
+      {positions.map((pos) => {
+        const group = players.filter((p) => p.position === pos);
         if (group.length === 0) return null;
         return (
           <div key={pos}>
             <div className="flex items-center gap-2 mb-2">
-              <div
-                className="w-2 h-2 rounded-full"
-                style={{ backgroundColor: posColor[pos] }}
-              />
+              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: posColor[pos] }} />
               <span className="app-kicker text-xs">{posLabel[pos]}</span>
               <span className="text-[10px] text-white/30">{group.length} players</span>
             </div>
@@ -248,13 +334,11 @@ function ListView({ players }: { players: Player[] }) {
                 <div
                   key={i}
                   className={cn(
-                    "flex items-center gap-3 rounded-xl border p-3 transition-colors hover:bg-white/[0.02]",
+                    'flex items-center gap-3 rounded-xl border p-3 transition-colors hover:bg-white/[0.02]',
                     posBg[pos],
                   )}
                 >
-                  <span className="font-display text-xl w-8 text-center font-bold">
-                    {p.number}
-                  </span>
+                  <span className="font-display text-xl w-8 text-center font-bold">{p.number}</span>
                   <div className="min-w-0">
                     <p className="text-sm text-white font-medium truncate">{p.name}</p>
                     {p.club && (
@@ -278,10 +362,10 @@ function ListView({ players }: { players: Player[] }) {
 
 export default function Squad() {
   const { teamCode } = useParams<{ teamCode: string }>();
-  const [view, setView] = useState<"pitch" | "list">("pitch");
+  const [view, setView] = useState<'pitch' | 'list'>('pitch');
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["squad", teamCode],
+    queryKey: ['squad', teamCode],
     queryFn: () => api.getSquad(teamCode!),
     enabled: !!teamCode,
     staleTime: 24 * 60 * 60 * 1000, // 1 day — squad data is static
@@ -328,7 +412,9 @@ export default function Squad() {
       <div className="flex items-center gap-4">
         <span className="text-5xl">{squad.flag}</span>
         <div>
-          <p className="app-kicker">Group {squad.group} · {squad.coach}</p>
+          <p className="app-kicker">
+            Group {squad.group} · {squad.coach}
+          </p>
           <h1 className="font-display text-3xl text-white tracking-wide">{squad.teamName}</h1>
           <div className="flex items-center gap-3 mt-1">
             <span className="flex items-center gap-1 text-xs text-white/40">
@@ -344,20 +430,29 @@ export default function Squad() {
       </div>
 
       {/* View Toggle */}
-      <Tabs value={view} onValueChange={(v) => setView(v as "pitch" | "list")}>
+      <Tabs value={view} onValueChange={(v) => setView(v as 'pitch' | 'list')}>
         <TabsList className="border-[#17307C] bg-[#0B1543]/58">
-          <TabsTrigger value="pitch"><LayoutGrid className="w-3.5 h-3.5 mr-1.5" />Pitch View</TabsTrigger>
-          <TabsTrigger value="list"><List className="w-3.5 h-3.5 mr-1.5" />List View</TabsTrigger>
+          <TabsTrigger value="pitch">
+            <LayoutGrid className="w-3.5 h-3.5 mr-1.5" />
+            Pitch View
+          </TabsTrigger>
+          <TabsTrigger value="list">
+            <List className="w-3.5 h-3.5 mr-1.5" />
+            List View
+          </TabsTrigger>
         </TabsList>
 
-        {view === "pitch" && (
+        {view === 'pitch' && (
           <>
             <PitchView players={squad.players} formation={formation} />
             {/* Starting XI legend */}
             <div className="flex flex-wrap items-center gap-3 justify-center text-xs text-white/40">
-              {(["GK", "DEF", "MID", "FWD"] as const).map(pos => (
+              {(['GK', 'DEF', 'MID', 'FWD'] as const).map((pos) => (
                 <span key={pos} className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: posColor[pos] }} />
+                  <span
+                    className="w-2.5 h-2.5 rounded-full"
+                    style={{ backgroundColor: posColor[pos] }}
+                  />
                   {pos}
                 </span>
               ))}
@@ -365,11 +460,8 @@ export default function Squad() {
           </>
         )}
 
-        {view === "list" && (
-          <ListView players={squad.players} />
-        )}
+        {view === 'list' && <ListView players={squad.players} />}
       </Tabs>
     </div>
   );
 }
-

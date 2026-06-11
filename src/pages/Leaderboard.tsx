@@ -1,8 +1,8 @@
-import { BarChart3, Trophy, Target } from "lucide-react";
-import PageHeader from "@/components/PageHeader";
-import LeaderboardTable from "@/components/LeaderboardTable";
-import { Card, CardContent } from "@/components/ui/card";
-import { useLeaderboard } from "@/hooks/useLeaderboard";
+import { BarChart3, Trophy, Target } from 'lucide-react';
+import PageHeader from '@/components/PageHeader';
+import LeaderboardTable from '@/components/LeaderboardTable';
+import { Card, CardContent } from '@/components/ui/card';
+import { useLeaderboard } from '@/hooks/useLeaderboard';
 
 export default function LeaderboardPage() {
   const { data, isLoading } = useLeaderboard();
@@ -10,10 +10,7 @@ export default function LeaderboardPage() {
   const maxPoints = data?.maxPoints || 1;
 
   const totalWins = entries.reduce((s: number, e: any) => s + e.wins, 0);
-  const totalPredictions = entries.reduce(
-    (s: number, e: any) => s + e.totalBets,
-    0,
-  );
+  const totalPredictions = entries.reduce((s: number, e: any) => s + e.totalBets, 0);
 
   return (
     <div className="space-y-6">
@@ -29,9 +26,7 @@ export default function LeaderboardPage() {
             <Trophy className="w-8 h-8 text-[#60E6F6]" />
             <div>
               <p className="app-meta">Leader</p>
-              <p className="font-display text-lg text-white">
-                {entries[0]?.name || "---"}
-              </p>
+              <p className="font-display text-lg text-white">{entries[0]?.name || '---'}</p>
             </div>
           </CardContent>
         </Card>
@@ -49,9 +44,7 @@ export default function LeaderboardPage() {
             <BarChart3 className="w-8 h-8 text-white/72" />
             <div>
               <p className="app-meta">Total Predictions</p>
-              <p className="font-display text-lg text-white">
-                {totalPredictions}
-              </p>
+              <p className="font-display text-lg text-white">{totalPredictions}</p>
             </div>
           </CardContent>
         </Card>

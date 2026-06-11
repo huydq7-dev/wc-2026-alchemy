@@ -1,24 +1,24 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { ChevronRight, Pencil, Users, BarChart3 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import LiveBadge from "./LiveBadge";
-import DealBadge from "./DealBadge";
-import DealEditor from "./DealEditor";
-import { useGameStore } from "@/store/useGameStore";
-import { usePlacePrediction } from "@/hooks/usePredictions";
-import { useLiveMatch } from "@/hooks/useLiveMatch";
-import { useQueryClient } from "@tanstack/react-query";
-import { api } from "@/api/client";
-import FlagImage from "@/components/FlagImage";
-import { cn } from "@/lib/utils";
-import type { Match } from "@/types";
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { ChevronRight, Pencil, Users, BarChart3 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import LiveBadge from './LiveBadge';
+import DealBadge from './DealBadge';
+import DealEditor from './DealEditor';
+import { useGameStore } from '@/store/useGameStore';
+import { usePlacePrediction } from '@/hooks/usePredictions';
+import { useLiveMatch } from '@/hooks/useLiveMatch';
+import { useQueryClient } from '@tanstack/react-query';
+import { api } from '@/api/client';
+import FlagImage from '@/components/FlagImage';
+import { cn } from '@/lib/utils';
+import type { Match } from '@/types';
 
 interface Props {
   match: Match;
-  userPick?: "A" | "B" | null;
+  userPick?: 'A' | 'B' | null;
   showPickButtons?: boolean;
   showOdds?: boolean;
   pickStats?: { a: number; b: number; total: number; aPct: number; bPct: number } | null;
@@ -31,25 +31,25 @@ export default function MatchCard({
   showOdds = false,
   pickStats,
 }: Readonly<Props>) {
-  const currentUserId = useGameStore((s) => s.currentUser?.id || "");
+  const currentUserId = useGameStore((s) => s.currentUser?.id || '');
   const isAdmin = useGameStore((s) => s.currentUser?.isAdmin || false);
   const placePrediction = usePlacePrediction();
   const queryClient = useQueryClient();
-  const isUpcoming = match.status === "upcoming";
+  const isUpcoming = match.status === 'upcoming';
   const isPicked = !!userPick;
   const [showDealEditor, setShowDealEditor] = useState(false);
 
   // Win probabilities from Highlightly — only fetch for upcoming (pre-match only)
   const liveMatch = useLiveMatch({
-    teamA: (showOdds && isUpcoming) ? match.team_a_name : "",
-    teamB: (showOdds && isUpcoming) ? match.team_b_name : "",
-    date: (showOdds && isUpcoming) ? match.date : "",
+    teamA: showOdds && isUpcoming ? match.team_a_name : '',
+    teamB: showOdds && isUpcoming ? match.team_b_name : '',
+    date: showOdds && isUpcoming ? match.date : '',
   });
   const odds = liveMatch.detail?.predictions ?? null;
-  const isLive = match.status === "live";
-  const isFinished = match.status === "finished";
+  const isLive = match.status === 'live';
+  const isFinished = match.status === 'finished';
 
-  const handlePick = (pick: "A" | "B") => {
+  const handlePick = (pick: 'A' | 'B') => {
     if (!isUpcoming) return;
     placePrediction.mutate({ userId: currentUserId, matchId: match.id, pick });
   };
@@ -64,11 +64,11 @@ export default function MatchCard({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
-        "app-panel relative rounded-none p-4 transition-all",
-        isLive && "border-[#17307C] shadow-lg shadow-primary/10",
-        isFinished && "border-white/5 opacity-80",
-        isUpcoming && "border-white/10 hover:border-white/20",
-        isPicked && "ring-1 ring-primary/25",
+        'app-panel relative rounded-none p-4 transition-all',
+        isLive && 'border-[#17307C] shadow-lg shadow-primary/10',
+        isFinished && 'border-white/5 opacity-80',
+        isUpcoming && 'border-white/10 hover:border-white/20',
+        isPicked && 'ring-1 ring-primary/25',
       )}
     >
       {/* Status Badge */}
@@ -76,10 +76,7 @@ export default function MatchCard({
         {isLive && <LiveBadge />}
         {isFinished && <Badge variant="secondary">FT</Badge>}
         {isUpcoming && (
-          <Badge
-            variant="secondary"
-            className="border-[#17307C] bg-[#0B1543] text-white/78"
-          >
+          <Badge variant="secondary" className="border-[#17307C] bg-[#0B1543] text-white/78">
             {match.date} {match.time}
           </Badge>
         )}
@@ -87,7 +84,7 @@ export default function MatchCard({
 
       {/* Stage */}
       <p className="mb-3 flex items-center text-[10px] uppercase tracking-[0.18em] text-white/42">
-        {match.stage} -{" "}
+        {match.stage} -{' '}
         {match.venue && (
           <span className="ml-1 inline-flex items-center gap-1 text-white/30 normal-case tracking-normal">
             {match.venue}
@@ -116,7 +113,7 @@ export default function MatchCard({
             <div className="flex items-center gap-1">
               <DealBadge
                 deal={match.deal}
-                dealSide={match.deal_side as "A" | "B"}
+                dealSide={match.deal_side as 'A' | 'B'}
                 teamAName={match.team_a_name}
               />
               {isAdmin && (
@@ -132,9 +129,7 @@ export default function MatchCard({
                 </button>
               )}
             </div>
-            <span className="font-display text-2xl tracking-wider text-white">
-              {scoreDisplay}
-            </span>
+            <span className="font-display text-2xl tracking-wider text-white">{scoreDisplay}</span>
           </div>
 
           {/* Team B */}
@@ -194,18 +189,9 @@ export default function MatchCard({
           <div className="flex items-center gap-1 text-[10px]">
             <span className="text-white/50 w-8 text-right">{odds.home}%</span>
             <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-white/5 flex">
-              <div
-                className="h-full bg-[#60E6F6]/60"
-                style={{ width: `${odds.home}%` }}
-              />
-              <div
-                className="h-full bg-white/15"
-                style={{ width: `${odds.draw}%` }}
-              />
-              <div
-                className="h-full bg-[#F5A623]/60"
-                style={{ width: `${odds.away}%` }}
-              />
+              <div className="h-full bg-[#60E6F6]/60" style={{ width: `${odds.home}%` }} />
+              <div className="h-full bg-white/15" style={{ width: `${odds.draw}%` }} />
+              <div className="h-full bg-[#F5A623]/60" style={{ width: `${odds.away}%` }} />
             </div>
             <span className="text-white/50 w-8">{odds.away}%</span>
           </div>
@@ -222,44 +208,34 @@ export default function MatchCard({
         <div className="mt-3 pt-3 border-t border-white/5">
           <div className="flex gap-2">
             <Button
-              variant={userPick === "A" ? "default" : "outline"}
+              variant={userPick === 'A' ? 'default' : 'outline'}
               size="sm"
               className={cn(
-                "flex-1 text-xs font-semibold",
-                userPick === "A" && "bg-white text-[#09112B] hover:bg-white/92",
-                userPick !== "A" &&
-                  "border-white/10 text-white/55 hover:text-white",
+                'flex-1 text-xs font-semibold',
+                userPick === 'A' && 'bg-white text-[#09112B] hover:bg-white/92',
+                userPick !== 'A' && 'border-white/10 text-white/55 hover:text-white',
               )}
               disabled={placePrediction.isPending}
-              onClick={() => handlePick("A")}
+              onClick={() => handlePick('A')}
             >
-              <FlagImage
-                code={match.team_a_code}
-                size={40}
-                className="w-4 h-3 inline-block"
-              />{" "}
+              <FlagImage code={match.team_a_code} size={40} className="w-4 h-3 inline-block" />{' '}
               {match.team_a_name}
-              {userPick === "A" && " ✓"}
+              {userPick === 'A' && ' ✓'}
             </Button>
             <Button
-              variant={userPick === "B" ? "default" : "outline"}
+              variant={userPick === 'B' ? 'default' : 'outline'}
               size="sm"
               className={cn(
-                "flex-1 text-xs font-semibold",
-                userPick === "B" && "bg-white text-[#09112B] hover:bg-white/92",
-                userPick !== "B" &&
-                  "border-white/10 text-white/55 hover:text-white",
+                'flex-1 text-xs font-semibold',
+                userPick === 'B' && 'bg-white text-[#09112B] hover:bg-white/92',
+                userPick !== 'B' && 'border-white/10 text-white/55 hover:text-white',
               )}
               disabled={placePrediction.isPending}
-              onClick={() => handlePick("B")}
+              onClick={() => handlePick('B')}
             >
-              <FlagImage
-                code={match.team_b_code}
-                size={40}
-                className="w-4 h-3 inline-block"
-              />{" "}
+              <FlagImage code={match.team_b_code} size={40} className="w-4 h-3 inline-block" />{' '}
               {match.team_b_name}
-              {userPick === "B" && " ✓"}
+              {userPick === 'B' && ' ✓'}
             </Button>
           </div>
         </div>
@@ -270,7 +246,7 @@ export default function MatchCard({
         <div className="flex items-center justify-center gap-2 mt-3 pt-3 border-t border-white/5">
           <span className="flex items-center justify-center gap-1 text-xs text-white/38">
             <FlagImage
-              code={userPick === "A" ? match.team_a_code : match.team_b_code}
+              code={userPick === 'A' ? match.team_a_code : match.team_b_code}
               size={40}
               className="w-4 h-3 inline-block"
             />

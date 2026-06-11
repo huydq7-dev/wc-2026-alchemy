@@ -2,17 +2,20 @@
 // World Cup 2026 league ID: 1635
 // Actual API base: soccer.highlightly.net (RapidAPI key works here too)
 
-const BASE = "https://soccer.highlightly.net";
-const LEAGUE_ID = "1635";
-const API_KEY = process.env.HIGHLIGHTLY_API_KEY || "";
+const BASE = 'https://soccer.highlightly.net';
+const LEAGUE_ID = '1635';
+const API_KEY = process.env.HIGHLIGHTLY_API_KEY || '';
 
-interface CacheEntry<T> { data: T; ts: number; }
+interface CacheEntry<T> {
+  data: T;
+  ts: number;
+}
 
 const cache = new Map<string, CacheEntry<any>>();
 
 const TTL = {
   live: 60_000,
-  upcoming: 600_000,   // 10 min — odds don't change frequently
+  upcoming: 600_000, // 10 min — odds don't change frequently
   finished: 1_800_000, // 30 min — finished matches never change
 };
 
@@ -22,14 +25,23 @@ interface HLMatch {
   id: number;
   date: string; // ISO
   round?: string;
-  state: { clock: number | null; score: { current: string | null; penalties: string | null }; description: string };
+  state: {
+    clock: number | null;
+    score: { current: string | null; penalties: string | null };
+    description: string;
+  };
   homeTeam: { id: number; name: string; logo: string | null };
   awayTeam: { id: number; name: string; logo: string | null };
   league: { id: number; name: string; season: number };
 }
 
 interface HLMatchDetail extends HLMatch {
-  venue?: { city: string | null; name: string | null; country: string | null; capacity: string | null };
+  venue?: {
+    city: string | null;
+    name: string | null;
+    country: string | null;
+    capacity: string | null;
+  };
   referee?: { name: string | null; nationality: string | null };
   forecast?: { status: string | null; temperature: string | null };
   events: any[];
@@ -80,8 +92,8 @@ export interface LineupPlayer {
 }
 
 export interface MatchLineups {
-  home: { formation: string; starters: LineupPlayer[]; substitutes: LineupPlayer[]; };
-  away: { formation: string; starters: LineupPlayer[]; substitutes: LineupPlayer[]; };
+  home: { formation: string; starters: LineupPlayer[]; substitutes: LineupPlayer[] };
+  away: { formation: string; starters: LineupPlayer[]; substitutes: LineupPlayer[] };
 }
 
 export interface MatchDetail {
@@ -107,33 +119,33 @@ export interface MatchDetail {
 // ── Helpers ──
 
 function isLiveStatus(s: string) {
-  return s === "1H" || s === "2H" || s === "HT" || s === "live" || s === "Live";
+  return s === '1H' || s === '2H' || s === 'HT' || s === 'live' || s === 'Live';
 }
 
 function ttlForStatus(status: string): number {
   if (isLiveStatus(status)) return TTL.live;
-  if (status === "Finished" || status === "finished") return TTL.finished;
+  if (status === 'Finished' || status === 'finished') return TTL.finished;
   return TTL.upcoming;
 }
 
 function isStale(key: string): boolean {
   const entry = cache.get(key);
   if (!entry) return true;
-  return Date.now() - entry.ts > (cache.get(key + ":ttl")?.data ?? TTL.upcoming);
+  return Date.now() - entry.ts > (cache.get(key + ':ttl')?.data ?? TTL.upcoming);
 }
 
 let rateLimitedUntil: number | null = null;
 
 async function fetchHL<T>(path: string, params: Record<string, string> = {}): Promise<T> {
   if (rateLimitedUntil && Date.now() < rateLimitedUntil) {
-    throw new Error("Highlightly rate limited — using cached data");
+    throw new Error('Highlightly rate limited — using cached data');
   }
 
   const url = new URL(path, BASE);
   Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
 
   const res = await fetch(url.toString(), {
-    headers: { "x-rapidapi-key": API_KEY },
+    headers: { 'x-rapidapi-key': API_KEY },
   });
 
   if (!res.ok) {
@@ -145,18 +157,18 @@ async function fetchHL<T>(path: string, params: Record<string, string> = {}): Pr
 
   // Detect rate-limit message in 200 response body (Highlightly quirk)
   const json = await res.json();
-  if (json?.message?.includes("breached your daily request limits")) {
+  if (json?.message?.includes('breached your daily request limits')) {
     rateLimitedUntil = Date.now() + 300_000;
-    throw new Error("Highlightly rate limited — using cached data");
+    throw new Error('Highlightly rate limited — using cached data');
   }
 
   return json;
 }
 
 function parseScore(score: string | null): { home: string; away: string } {
-  if (!score) return { home: "0", away: "0" };
-  const parts = score.split("-").map(s => s.trim());
-  return { home: parts[0] ?? "0", away: parts[1] ?? "0" };
+  if (!score) return { home: '0', away: '0' };
+  const parts = score.split('-').map((s) => s.trim());
+  return { home: parts[0] ?? '0', away: parts[1] ?? '0' };
 }
 
 function formatDate(iso: string): string {
@@ -174,8 +186,8 @@ function normalizeMatch(m: HLMatch): RawMatch {
     away: m.awayTeam.name,
     home_score: score.home,
     away_score: score.away,
-    home_logo: m.homeTeam.logo ?? "",
-    away_logo: m.awayTeam.logo ?? "",
+    home_logo: m.homeTeam.logo ?? '',
+    away_logo: m.awayTeam.logo ?? '',
     league: m.league.name,
     round: m.round,
   };
@@ -183,10 +195,10 @@ function normalizeMatch(m: HLMatch): RawMatch {
 
 function normalizeEvents(raw: any[]): MatchEvent[] {
   return raw.map((e: any) => ({
-    time: String(e.time ?? e.minute ?? ""),
-    type: e.type ?? e.event ?? "",
-    player: e.player ?? e.player_name ?? "",
-    team: e.team ?? e.team_name ?? "",
+    time: String(e.time ?? e.minute ?? ''),
+    type: e.type ?? e.event ?? '',
+    player: e.player ?? e.player_name ?? '',
+    team: e.team ?? e.team_name ?? '',
     assist: e.assist ?? undefined,
     substituted: e.substituted ?? undefined,
   }));
@@ -201,33 +213,33 @@ function normalizeStats(raw: { statistics: any[]; team: { name: string } }[]): M
   return homeStats.map((hs: any, i: number) => {
     const as = awayStats[i] ?? {};
     return {
-      type: hs.type ?? hs.name ?? "",
-      home: String(hs.home ?? hs.value ?? "0"),
-      away: String(as.away ?? as.value ?? "0"),
+      type: hs.type ?? hs.name ?? '',
+      home: String(hs.home ?? hs.value ?? '0'),
+      away: String(as.away ?? as.value ?? '0'),
     };
   });
 }
 
-function normalizeLineup(raw: any): MatchLineups["home"] {
+function normalizeLineup(raw: any): MatchLineups['home'] {
   const starters = (raw.initialLineup ?? raw.starters ?? raw.startingXI ?? []).map((p: any) => ({
-    name: p.name ?? p.player ?? p.player_name ?? "",
+    name: p.name ?? p.player ?? p.player_name ?? '',
     number: Number(p.number ?? p.jersey ?? p.shirt ?? 0),
-    position: p.position ?? p.pos ?? p.role ?? "",
+    position: p.position ?? p.pos ?? p.role ?? '',
   }));
 
   const substitutes = (raw.substitutes ?? raw.subs ?? raw.bench ?? []).map((p: any) => ({
-    name: p.name ?? p.player ?? p.player_name ?? "",
+    name: p.name ?? p.player ?? p.player_name ?? '',
     number: Number(p.number ?? p.jersey ?? p.shirt ?? 0),
-    position: p.position ?? p.pos ?? p.role ?? "",
+    position: p.position ?? p.pos ?? p.role ?? '',
   }));
 
-  return { formation: raw.formation ?? "4-4-2", starters, substitutes };
+  return { formation: raw.formation ?? '4-4-2', starters, substitutes };
 }
 
 // ── Public API ──
 
 export async function getMatches(date?: string): Promise<RawMatch[]> {
-  const key = `matches:${date || "today"}`;
+  const key = `matches:${date || 'today'}`;
 
   if (!isStale(key)) return cache.get(key)!.data;
 
@@ -235,13 +247,13 @@ export async function getMatches(date?: string): Promise<RawMatch[]> {
   if (date) params.date = date;
 
   try {
-    const result = await fetchHL<{ data: HLMatch[] }>("/matches", params);
+    const result = await fetchHL<{ data: HLMatch[] }>('/matches', params);
     const matches = (result.data ?? []).map(normalizeMatch);
 
     if (matches.length > 0) {
       cache.set(key, { data: matches, ts: Date.now() });
-      const worstStatus = matches.some(m => isLiveStatus(m.status)) ? "live" : matches[0].status;
-      cache.set(key + ":ttl", { data: ttlForStatus(worstStatus), ts: Date.now() });
+      const worstStatus = matches.some((m) => isLiveStatus(m.status)) ? 'live' : matches[0].status;
+      cache.set(key + ':ttl', { data: ttlForStatus(worstStatus), ts: Date.now() });
     }
 
     return matches;
@@ -249,7 +261,7 @@ export async function getMatches(date?: string): Promise<RawMatch[]> {
     // Serve stale cache if fetch fails (rate limit, network, etc.)
     const cached = cache.get(key);
     if (cached) {
-      console.warn("[liveData] matches fetch failed, serving cached:", err.message);
+      console.warn('[liveData] matches fetch failed, serving cached:', err.message);
       return cached.data;
     }
     throw err;
@@ -271,49 +283,51 @@ export async function getMatchDetail(matchId: string): Promise<MatchDetail | nul
     const score = parseScore(m.state?.score?.current ?? null);
 
     // Extract win probabilities from the latest prematch prediction
-    let predictions: MatchDetail["predictions"] | undefined;
+    let predictions: MatchDetail['predictions'] | undefined;
     const pre = m.predictions?.prematch;
     if (pre && pre.length > 0) {
       const latest = pre[pre.length - 1];
       predictions = {
-        home: latest.probabilities?.home ?? "",
-        draw: latest.probabilities?.draw ?? "",
-        away: latest.probabilities?.away ?? "",
+        home: latest.probabilities?.home ?? '',
+        draw: latest.probabilities?.draw ?? '',
+        away: latest.probabilities?.away ?? '',
       };
     }
 
     const detail: MatchDetail = {
       id: String(m.id ?? matchId),
-      date: formatDate(m.date ?? ""),
-      status: m.state?.description ?? "",
-      home: m.homeTeam?.name ?? "",
-      away: m.awayTeam?.name ?? "",
+      date: formatDate(m.date ?? ''),
+      status: m.state?.description ?? '',
+      home: m.homeTeam?.name ?? '',
+      away: m.awayTeam?.name ?? '',
       home_score: score.home,
       away_score: score.away,
-      home_logo: m.homeTeam?.logo ?? "",
-      away_logo: m.awayTeam?.logo ?? "",
-      league: m.league?.name ?? "",
+      home_logo: m.homeTeam?.logo ?? '',
+      away_logo: m.awayTeam?.logo ?? '',
+      league: m.league?.name ?? '',
       round: m.round,
       venue: m.venue?.name ?? undefined,
       referee: m.referee?.name ?? undefined,
-      forecast: m.forecast?.temperature ? { temperature: m.forecast.temperature, status: m.forecast.status ?? "" } : undefined,
+      forecast: m.forecast?.temperature
+        ? { temperature: m.forecast.temperature, status: m.forecast.status ?? '' }
+        : undefined,
       events: normalizeEvents(m.events ?? []),
       statistics: normalizeStats(m.statistics ?? []),
       predictions,
     };
 
     cache.set(key, { data: detail, ts: Date.now() });
-    cache.set(key + ":ttl", { data: ttlForStatus(detail.status), ts: Date.now() });
+    cache.set(key + ':ttl', { data: ttlForStatus(detail.status), ts: Date.now() });
 
     return detail;
   } catch (err: any) {
     // Serve stale cache if fetch fails (rate limit, network, etc.)
     const cached = cache.get(key);
     if (cached) {
-      console.warn("[liveData] match detail fetch failed, serving cached:", err.message);
+      console.warn('[liveData] match detail fetch failed, serving cached:', err.message);
       return cached.data;
     }
-    console.error("[liveData] match detail error:", err.message);
+    console.error('[liveData] match detail error:', err.message);
     return null;
   }
 }
@@ -332,11 +346,11 @@ export async function getLineups(matchId: string): Promise<MatchLineups | null> 
     };
 
     cache.set(key, { data: lineups, ts: Date.now() });
-    cache.set(key + ":ttl", { data: TTL.live, ts: Date.now() });
+    cache.set(key + ':ttl', { data: TTL.live, ts: Date.now() });
 
     return lineups;
   } catch (err: any) {
-    console.error("[liveData] lineups error:", err.message);
+    console.error('[liveData] lineups error:', err.message);
     return null;
   }
 }
@@ -345,8 +359,8 @@ export async function getLineups(matchId: string): Promise<MatchLineups | null> 
 setInterval(() => {
   const now = Date.now();
   for (const [key, entry] of cache) {
-    if (key.endsWith(":ttl")) continue;
-    const ttl = cache.get(key + ":ttl")?.data ?? TTL.finished;
+    if (key.endsWith(':ttl')) continue;
+    const ttl = cache.get(key + ':ttl')?.data ?? TTL.finished;
     if (now - entry.ts > ttl * 4) cache.delete(key);
   }
 }, 600_000).unref();

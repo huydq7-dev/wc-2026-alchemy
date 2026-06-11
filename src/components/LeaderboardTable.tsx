@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, Info } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { useUserHistory } from "@/hooks/usePredictions";
-import { cn } from "@/lib/utils";
-import FlagImage from "@/components/FlagImage";
-import type { LeaderboardEntry } from "@/types";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Info, Flame } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { useUserHistory } from '@/hooks/usePredictions';
+import { cn } from '@/lib/utils';
+import FlagImage from '@/components/FlagImage';
+import type { LeaderboardEntry } from '@/types';
 
 interface Props {
   entries: LeaderboardEntry[];
@@ -43,8 +43,8 @@ export default function LeaderboardTable({ entries }: Props) {
                 key={entry.userId}
                 layout
                 className={cn(
-                  "cursor-pointer border-b border-white/5 transition-colors hover:bg-white/[0.03]",
-                  entry.rank === 1 && "bg-[#0B1543]/72",
+                  'cursor-pointer border-b border-white/5 transition-colors hover:bg-white/[0.03]',
+                  entry.rank === 1 && 'bg-[#0B1543]/72',
                 )}
                 onClick={() => navigate(`/user/${entry.userId}`)}
               >
@@ -55,14 +55,17 @@ export default function LeaderboardTable({ entries }: Props) {
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{entry.avatar}</span>
                     <div>
-                      <p className="font-semibold text-white text-sm">
+                      <p className="font-semibold text-white text-sm inline-flex items-center gap-1.5">
                         {entry.name}
+                        {entry.streak >= 3 && (
+                          <span className="inline-flex items-center gap-0.5 text-[10px] text-[#F5A623]">
+                            <Flame className="w-3 h-3" />
+                            {entry.streak}
+                          </span>
+                        )}
                       </p>
                       <div className="mt-1 w-24">
-                        <Progress
-                          value={entry.progressPercent}
-                          className="h-1"
-                        />
+                        <Progress value={entry.progressPercent} className="h-1" />
                       </div>
                     </div>
                   </div>
@@ -70,31 +73,21 @@ export default function LeaderboardTable({ entries }: Props) {
                 <td className="py-3 px-4 text-center">
                   <span
                     className={cn(
-                      "font-display text-xl font-bold",
-                      entry.totalPoints > 0 && "text-[#60E6F6]",
-                      entry.totalPoints < 0 && "text-[#FFD890]",
-                      entry.totalPoints === 0 && "text-white/42",
+                      'font-display text-xl font-bold',
+                      entry.totalPoints > 0 && 'text-[#60E6F6]',
+                      entry.totalPoints < 0 && 'text-[#FFD890]',
+                      entry.totalPoints === 0 && 'text-white/42',
                     )}
                   >
-                    {entry.totalPoints > 0 ? "+" : ""}
+                    {entry.totalPoints > 0 ? '+' : ''}
                     {entry.totalPoints}
                   </span>
                 </td>
-                <td className="py-3 px-4 text-center text-[#60E6F6] text-sm">
-                  {entry.wins}
-                </td>
-                <td className="py-3 px-4 text-center text-[#FFD890] text-sm">
-                  {entry.losses}
-                </td>
-                <td className="py-3 px-4 text-center text-white/40 text-sm">
-                  {entry.draws}
-                </td>
-                <td className="py-3 px-4 text-center text-white/72 text-sm">
-                  {entry.pendingBets}
-                </td>
-                <td className="py-3 px-4 text-center text-white/48 text-sm">
-                  {entry.winRate}%
-                </td>
+                <td className="py-3 px-4 text-center text-[#60E6F6] text-sm">{entry.wins}</td>
+                <td className="py-3 px-4 text-center text-[#FFD890] text-sm">{entry.losses}</td>
+                <td className="py-3 px-4 text-center text-white/40 text-sm">{entry.draws}</td>
+                <td className="py-3 px-4 text-center text-white/72 text-sm">{entry.pendingBets}</td>
+                <td className="py-3 px-4 text-center text-white/48 text-sm">{entry.winRate}%</td>
                 <td className="py-3 px-4 text-center">
                   <div className="flex items-center justify-center gap-2">
                     {entry.debt > 0 ? (
@@ -102,19 +95,14 @@ export default function LeaderboardTable({ entries }: Props) {
                         variant="outline"
                         className={
                           entry.debtPaid
-                            ? "border-[#60E6F6]/20 text-[#9DEFF9]"
-                            : "border-[#F5A623]/20 text-[#FFD890]"
+                            ? 'border-[#60E6F6]/20 text-[#9DEFF9]'
+                            : 'border-[#F5A623]/20 text-[#FFD890]'
                         }
                       >
-                        {entry.debtPaid
-                          ? "Done"
-                          : `${entry.debt.toLocaleString()} VND`}
+                        {entry.debtPaid ? 'Done' : `${entry.debt.toLocaleString()} VND`}
                       </Badge>
                     ) : (
-                      <Badge
-                        variant="outline"
-                        className="border-white/6 text-white/32"
-                      >
+                      <Badge variant="outline" className="border-white/6 text-white/32">
                         ---
                       </Badge>
                     )}
@@ -144,8 +132,8 @@ export default function LeaderboardTable({ entries }: Props) {
             key={entry.userId}
             layout
             className={cn(
-              "app-panel cursor-pointer rounded-none p-4",
-              entry.rank === 1 ? "border-[#17307C]" : "border-white/5",
+              'app-panel cursor-pointer rounded-none p-4',
+              entry.rank === 1 ? 'border-[#17307C]' : 'border-white/5',
             )}
             onClick={() => navigate(`/user/${entry.userId}`)}
           >
@@ -154,8 +142,14 @@ export default function LeaderboardTable({ entries }: Props) {
                 <RankBadge rank={entry.rank} />
                 <span className="text-2xl">{entry.avatar}</span>
                 <div>
-                  <p className="font-semibold text-white text-sm">
+                  <p className="font-semibold text-white text-sm inline-flex items-center gap-1.5">
                     {entry.name}
+                    {entry.streak >= 3 && (
+                      <span className="inline-flex items-center gap-0.5 text-[10px] text-[#F5A623]">
+                        <Flame className="w-3 h-3" />
+                        {entry.streak}
+                      </span>
+                    )}
                   </p>
                   <div className="mt-0.5 flex gap-2 text-xs text-white/36">
                     <span className="text-[#60E6F6]">{entry.wins}W</span>
@@ -167,13 +161,13 @@ export default function LeaderboardTable({ entries }: Props) {
               <div className="flex items-center gap-2">
                 <span
                   className={cn(
-                    "font-display text-xl font-bold",
-                    entry.totalPoints > 0 && "text-[#60E6F6]",
-                    entry.totalPoints < 0 && "text-[#FFD890]",
-                    entry.totalPoints === 0 && "text-white/42",
+                    'font-display text-xl font-bold',
+                    entry.totalPoints > 0 && 'text-[#60E6F6]',
+                    entry.totalPoints < 0 && 'text-[#FFD890]',
+                    entry.totalPoints === 0 && 'text-white/42',
                   )}
                 >
-                  {entry.totalPoints > 0 ? "+" : ""}
+                  {entry.totalPoints > 0 ? '+' : ''}
                   {entry.totalPoints}
                 </span>
                 <Button
@@ -199,10 +193,7 @@ export default function LeaderboardTable({ entries }: Props) {
       {/* User History Modal */}
       <AnimatePresence>
         {selectedUserId && (
-          <UserHistoryModal
-            userId={selectedUserId}
-            onClose={() => setSelectedUserId(null)}
-          />
+          <UserHistoryModal userId={selectedUserId} onClose={() => setSelectedUserId(null)} />
         )}
       </AnimatePresence>
     </div>
@@ -210,22 +201,13 @@ export default function LeaderboardTable({ entries }: Props) {
 }
 
 function RankBadge({ rank }: { rank: number }) {
-  if (rank === 1)
-    return <span className="font-display text-xl text-[#F5A623]">🥇</span>;
-  if (rank === 2)
-    return <span className="font-display text-xl text-gray-300">🥈</span>;
-  if (rank === 3)
-    return <span className="font-display text-xl text-amber-700">🥉</span>;
+  if (rank === 1) return <span className="font-display text-xl text-[#F5A623]">🥇</span>;
+  if (rank === 2) return <span className="font-display text-xl text-gray-300">🥈</span>;
+  if (rank === 3) return <span className="font-display text-xl text-amber-700">🥉</span>;
   return <span className="text-sm text-gray-500 font-medium">{rank}</span>;
 }
 
-function UserHistoryModal({
-  userId,
-  onClose,
-}: {
-  userId: string;
-  onClose: () => void;
-}) {
+function UserHistoryModal({ userId, onClose }: { userId: string; onClose: () => void }) {
   const { data, isLoading } = useUserHistory(userId);
 
   return (
@@ -244,15 +226,8 @@ function UserHistoryModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
-            <h3 className="font-display text-xl tracking-[0.14em] text-white">
-            Prediction History
-          </h3>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="text-white/45"
-          >
+          <h3 className="font-display text-xl tracking-[0.14em] text-white">Prediction History</h3>
+          <Button variant="ghost" size="icon" onClick={onClose} className="text-white/45">
             <X className="w-4 h-4" />
           </Button>
         </div>
@@ -266,19 +241,11 @@ function UserHistoryModal({
               <div className="grid grid-cols-4 gap-2 mb-4">
                 <StatBox label="Total" value={data.stats.total} />
                 <StatBox label="Wins" value={data.stats.wins} color="text-[#60E6F6]" />
-                <StatBox
-                  label="Losses"
-                  value={data.stats.losses}
-                  color="text-[#FFD890]"
-                />
+                <StatBox label="Losses" value={data.stats.losses} color="text-[#FFD890]" />
                 <StatBox
                   label="Points"
-                  value={`${data.stats.totalPoints > 0 ? "+" : ""}${data.stats.totalPoints}`}
-                  color={
-                    data.stats.totalPoints >= 0
-                      ? "text-[#60E6F6]"
-                      : "text-[#FFD890]"
-                  }
+                  value={`${data.stats.totalPoints > 0 ? '+' : ''}${data.stats.totalPoints}`}
+                  color={data.stats.totalPoints >= 0 ? 'text-[#60E6F6]' : 'text-[#FFD890]'}
                 />
               </div>
             )}
@@ -290,28 +257,16 @@ function UserHistoryModal({
                   className="flex items-center justify-between rounded-none border border-white/5 bg-white/[0.02] p-3"
                 >
                   <div className="flex items-center gap-2">
-                    <FlagImage
-                      code={pred.team_a_code}
-                      size={40}
-                      className="w-4 h-3 object-cover"
-                    />
+                    <FlagImage code={pred.team_a_code} size={40} className="w-4 h-3 object-cover" />
                     <span className="text-xs text-white/48">
                       {pred.team_a_name} vs {pred.team_b_name}
                     </span>
-                    <FlagImage
-                      code={pred.team_b_code}
-                      size={40}
-                      className="w-4 h-3 object-cover"
-                    />
+                    <FlagImage code={pred.team_b_code} size={40} className="w-4 h-3 object-cover" />
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-white/36">
                       <FlagImage
-                        code={
-                          pred.pick === "A"
-                            ? pred.team_a_code
-                            : pred.team_b_code
-                        }
+                        code={pred.pick === 'A' ? pred.team_a_code : pred.team_b_code}
                         size={40}
                         className="w-4 h-3 object-cover inline-block"
                       />
@@ -320,20 +275,13 @@ function UserHistoryModal({
                       <Badge
                         variant="outline"
                         className={cn(
-                          "",
-                          pred.result === "win" &&
-                            "border-[#60E6F6]/20 text-[#9DEFF9]",
-                          pred.result === "lose" &&
-                            "border-[#F5A623]/20 text-[#FFD890]",
-                          pred.result === "draw" &&
-                            "border-white/12 text-white/55",
+                          '',
+                          pred.result === 'win' && 'border-[#60E6F6]/20 text-[#9DEFF9]',
+                          pred.result === 'lose' && 'border-[#F5A623]/20 text-[#FFD890]',
+                          pred.result === 'draw' && 'border-white/12 text-white/55',
                         )}
                       >
-                        {pred.result === "win"
-                          ? "+1"
-                          : pred.result === "lose"
-                            ? "-1"
-                            : "0"}
+                        {pred.result === 'win' ? '+1' : pred.result === 'lose' ? '-1' : '0'}
                       </Badge>
                     )}
                   </div>
@@ -361,9 +309,7 @@ function StatBox({
   return (
     <div className="rounded-2xl bg-white/[0.03] p-2 text-center">
       <p className="text-[10px] uppercase tracking-[0.18em] text-white/36">{label}</p>
-      <p className={cn("font-display text-lg", color || "text-white")}>
-        {value}
-      </p>
+      <p className={cn('font-display text-lg', color || 'text-white')}>{value}</p>
     </div>
   );
 }

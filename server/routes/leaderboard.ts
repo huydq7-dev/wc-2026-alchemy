@@ -8,18 +8,16 @@ router.get('/', async (_req: Request, res: Response) => {
     const users = (await db.execute('SELECT * FROM users')).rows as any[];
     const predictions = (await db.execute('SELECT * FROM predictions')).rows as any[];
 
-    const entries = users.map(user => {
-      const userPreds = predictions.filter(p => p.user_id === user.id);
-      const wins = userPreds.filter(p => p.result === 'win').length;
-      const losses = userPreds.filter(p => p.result === 'lose').length;
-      const draws = userPreds.filter(p => p.result === 'draw').length;
-      const pending = userPreds.filter(p => p.result === null).length;
+    const entries = users.map((user) => {
+      const userPreds = predictions.filter((p) => p.user_id === user.id);
+      const wins = userPreds.filter((p) => p.result === 'win').length;
+      const losses = userPreds.filter((p) => p.result === 'lose').length;
+      const draws = userPreds.filter((p) => p.result === 'draw').length;
+      const pending = userPreds.filter((p) => p.result === null).length;
       const totalPoints = wins - losses;
       const debt = losses * 5000;
 
-      const decided = userPreds
-        .filter(p => p.result !== null)
-        .sort((a, b) => b.id - a.id);
+      const decided = userPreds.filter((p) => p.result !== null).sort((a, b) => b.id - a.id);
       let streak = 0;
       for (const p of decided) {
         if (p.result === 'win') streak++;
@@ -39,9 +37,10 @@ router.get('/', async (_req: Request, res: Response) => {
         debt,
         debtPaid: !!user.debt_paid,
         streak,
-        winRate: userPreds.filter(p => p.result !== null).length > 0
-          ? Math.round((wins / (wins + losses + draws)) * 100)
-          : 0,
+        winRate:
+          userPreds.filter((p) => p.result !== null).length > 0
+            ? Math.round((wins / (wins + losses + draws)) * 100)
+            : 0,
       };
     });
 

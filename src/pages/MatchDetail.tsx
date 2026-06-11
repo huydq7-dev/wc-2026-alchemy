@@ -1,17 +1,17 @@
-import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, MapPin, Clock, HelpCircle, Radio } from "lucide-react";
-import PageHeader from "@/components/PageHeader";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import LiveBadge from "@/components/LiveBadge";
-import DealBadge from "@/components/DealBadge";
-import LiveMatchPanel from "@/components/LiveMatchPanel";
-import { useMatch } from "@/hooks/useMatches";
-import { useLiveMatch } from "@/hooks/useLiveMatch";
-import FlagImage from "@/components/FlagImage";
-import { cn } from "@/lib/utils";
+import { useParams, Link } from 'react-router-dom';
+import { ArrowLeft, MapPin, Clock, HelpCircle, Radio } from 'lucide-react';
+import PageHeader from '@/components/PageHeader';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import LiveBadge from '@/components/LiveBadge';
+import DealBadge from '@/components/DealBadge';
+import LiveMatchPanel from '@/components/LiveMatchPanel';
+import { useMatch } from '@/hooks/useMatches';
+import { useLiveMatch } from '@/hooks/useLiveMatch';
+import FlagImage from '@/components/FlagImage';
+import { cn } from '@/lib/utils';
 
 export default function MatchDetail() {
   const { id } = useParams<{ id: string }>();
@@ -19,9 +19,9 @@ export default function MatchDetail() {
 
   // Live data from Highlightly — must be before any early return (Rules of Hooks)
   const liveMatch = useLiveMatch({
-    teamA: match?.team_a_name ?? "",
-    teamB: match?.team_b_name ?? "",
-    date: match?.date ?? "",
+    teamA: match?.team_a_name ?? '',
+    teamB: match?.team_b_name ?? '',
+    date: match?.date ?? '',
   });
 
   if (isLoading) {
@@ -44,8 +44,8 @@ export default function MatchDetail() {
     );
   }
 
-  const isLive = match.status === "live";
-  const isFinished = match.status === "finished";
+  const isLive = match.status === 'live';
+  const isFinished = match.status === 'finished';
   const hasScore = match.score_a != null && match.score_b != null;
 
   return (
@@ -68,9 +68,7 @@ export default function MatchDetail() {
           <div className="flex items-center justify-center gap-2 mb-4">
             {isLive && <LiveBadge />}
             {isFinished && <Badge variant="secondary">Finished</Badge>}
-            {match.status === "upcoming" && (
-              <Badge variant="secondary">Upcoming</Badge>
-            )}
+            {match.status === 'upcoming' && <Badge variant="secondary">Upcoming</Badge>}
           </div>
 
           <p className="mb-4 text-center text-xs text-white/80">
@@ -95,13 +93,11 @@ export default function MatchDetail() {
                   {match.score_a} - {match.score_b}
                 </span>
               ) : (
-                <span className="font-display text-2xl text-white">
-                  {match.time}
-                </span>
+                <span className="font-display text-2xl text-white">{match.time}</span>
               )}
               <DealBadge
                 deal={match.deal}
-                dealSide={match.deal_side as "A" | "B"}
+                dealSide={match.deal_side as 'A' | 'B'}
                 teamAName={match.team_a_name}
               />
             </div>
@@ -134,29 +130,23 @@ export default function MatchDetail() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm leading-relaxed text-white/62">
-              {match.dealInfo.summary}
-            </p>
+            <p className="text-sm leading-relaxed text-white/62">{match.dealInfo.summary}</p>
             <div className="app-panel-muted mt-3 rounded-2xl p-3">
               <div className="flex justify-between text-sm">
                 <span className="text-white">
                   {match.team_a_name} ({match.score_a})
-                  {match.deal_side === "A" && ` + (${match.deal})`}
+                  {match.deal_side === 'A' && ` + (${match.deal})`}
                 </span>
                 <span className="text-white">
                   {match.team_b_name} ({match.score_b})
-                  {match.deal_side === "B" && ` + (${match.deal})`}
+                  {match.deal_side === 'B' && ` + (${match.deal})`}
                 </span>
               </div>
               <Separator className="my-2 bg-white/5" />
               <div className="flex justify-between text-sm">
-                <span className="text-white font-semibold">
-                  {match.dealInfo.adjustedA}
-                </span>
+                <span className="text-white font-semibold">{match.dealInfo.adjustedA}</span>
                 <span className="text-white/36">After Deal</span>
-                <span className="text-white font-semibold">
-                  {match.dealInfo.adjustedB}
-                </span>
+                <span className="text-white font-semibold">{match.dealInfo.adjustedB}</span>
               </div>
             </div>
           </CardContent>
@@ -174,11 +164,13 @@ export default function MatchDetail() {
               isLive={isLive || liveMatch.isLive}
               isFetching={liveMatch.isFetching}
             />
-          ) : !liveMatch.isLoading && (isLive || match.status === "upcoming") ? (
+          ) : !liveMatch.isLoading && (isLive || match.status === 'upcoming') ? (
             <Card>
               <CardContent className="py-6 text-center">
                 <Radio className="w-5 h-5 text-white/15 mx-auto mb-2" />
-                <p className="text-xs text-white/30">Live data will appear here when available from Highlightly.</p>
+                <p className="text-xs text-white/30">
+                  Live data will appear here when available from Highlightly.
+                </p>
               </CardContent>
             </Card>
           ) : null}
@@ -199,12 +191,10 @@ export default function MatchDetail() {
                     <div
                       key={i}
                       className={cn(
-                        "flex items-center justify-between rounded-2xl border p-3",
-                        pred.result === "win" &&
-                          "border-[#60E6F6]/14 bg-[#60E6F6]/[0.05]",
-                        pred.result === "lose" &&
-                          "border-[#F5A623]/14 bg-[#F5A623]/[0.05]",
-                        !pred.result && "border-white/6 bg-white/[0.02]",
+                        'flex items-center justify-between rounded-2xl border p-3',
+                        pred.result === 'win' && 'border-[#60E6F6]/14 bg-[#60E6F6]/[0.05]',
+                        pred.result === 'lose' && 'border-[#F5A623]/14 bg-[#F5A623]/[0.05]',
+                        !pred.result && 'border-white/6 bg-white/[0.02]',
                       )}
                     >
                       <div className="flex items-center gap-2">
@@ -219,11 +209,7 @@ export default function MatchDetail() {
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-white/45">
                           <FlagImage
-                            code={
-                              pred.pick === "A"
-                                ? match.team_a_code
-                                : match.team_b_code
-                            }
+                            code={pred.pick === 'A' ? match.team_a_code : match.team_b_code}
                             size={40}
                             className="w-6 h-4 rounded-none object-cover inline-block"
                           />
@@ -231,19 +217,14 @@ export default function MatchDetail() {
                         {pred.result && (
                           <Badge
                             className={cn(
-                              pred.result === "win" &&
-                                "border-[#60E6F6]/20 bg-[#60E6F6]/10 text-[#9DEFF9]",
-                              pred.result === "lose" &&
-                                "border-[#F5A623]/20 bg-[#F5A623]/10 text-[#FFD890]",
-                              pred.result === "draw" &&
-                                "border-white/12 bg-white/8 text-white/60",
+                              pred.result === 'win' &&
+                                'border-[#60E6F6]/20 bg-[#60E6F6]/10 text-[#9DEFF9]',
+                              pred.result === 'lose' &&
+                                'border-[#F5A623]/20 bg-[#F5A623]/10 text-[#FFD890]',
+                              pred.result === 'draw' && 'border-white/12 bg-white/8 text-white/60',
                             )}
                           >
-                            {pred.result === "win"
-                              ? "+1"
-                              : pred.result === "lose"
-                                ? "-1"
-                                : "0"}
+                            {pred.result === 'win' ? '+1' : pred.result === 'lose' ? '-1' : '0'}
                           </Badge>
                         )}
                       </div>

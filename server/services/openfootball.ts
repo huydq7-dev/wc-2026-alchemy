@@ -86,7 +86,9 @@ async function processMatchResult(
 ) {
   // Insert auto-loss for users who didn't predict
   const allUsers = (await db.execute('SELECT id FROM users')).rows as any[];
-  const existingPreds = (await db.execute('SELECT user_id FROM predictions WHERE match_id = ?', [matchId])).rows as any[];
+  const existingPreds = (
+    await db.execute('SELECT user_id FROM predictions WHERE match_id = ?', [matchId])
+  ).rows as any[];
   const predictedIds = new Set(existingPreds.map((p: any) => p.user_id));
   const missingUsers = allUsers.filter((u: any) => !predictedIds.has(u.id));
 
@@ -122,7 +124,7 @@ export async function syncMatches(): Promise<{ synced: number; message: string }
   // 1. Fetch teams
   const teamsRes = await fetch(`${BASE}/worldcup.teams.json`);
   if (!teamsRes.ok) throw new Error(`Failed to fetch teams: ${teamsRes.status}`);
-  const teams = await teamsRes.json() as OFTeam[];
+  const teams = (await teamsRes.json()) as OFTeam[];
 
   const teamMap = new Map<string, OFTeam>();
   for (const t of teams) {
@@ -131,7 +133,7 @@ export async function syncMatches(): Promise<{ synced: number; message: string }
 
   // Persist teams
   await db.batch(
-    teams.map(t => ({
+    teams.map((t) => ({
       sql: 'INSERT OR REPLACE INTO teams (name, fifa_code, flag_icon, group_name) VALUES (?, ?, ?, ?)',
       args: [t.name, t.fifa_code, t.flag_icon, t.group],
     })),
@@ -141,7 +143,7 @@ export async function syncMatches(): Promise<{ synced: number; message: string }
   // 2. Fetch matches
   const matchesRes = await fetch(`${BASE}/worldcup.json`);
   if (!matchesRes.ok) throw new Error(`Failed to fetch matches: ${matchesRes.status}`);
-  const data = await matchesRes.json() as { matches: OFMatch[] };
+  const data = (await matchesRes.json()) as { matches: OFMatch[] };
   const ofMatches: OFMatch[] = data.matches;
 
   // 3. Get existing match IDs to distinguish insert vs update
@@ -169,10 +171,12 @@ export async function syncMatches(): Promise<{ synced: number; message: string }
     if (existingIds.has(id)) {
       if (hasScores) {
         const match = (await db.execute('SELECT * FROM matches WHERE id = ?', [id])).rows[0] as any;
-        await db.execute(
-          'UPDATE matches SET status = ?, score_a = ?, score_b = ? WHERE id = ?',
-          ['finished', m.score1!, m.score2!, id],
-        );
+        await db.execute('UPDATE matches SET status = ?, score_a = ?, score_b = ? WHERE id = ?', [
+          'finished',
+          m.score1!,
+          m.score2!,
+          id,
+        ]);
         updated++;
 
         // Recalculate predictions + auto-loss for missed picks
@@ -189,13 +193,22 @@ export async function syncMatches(): Promise<{ synced: number; message: string }
         sql: `INSERT OR IGNORE INTO matches (id, date, time, team_a_name, team_a_code, team_a_flag, team_b_name, team_b_code, team_b_flag, deal, deal_side, venue, stage, status, score_a, score_b)
               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         args: [
-          id, vn.date, vn.time,
-          m.team1, team_a_code, team_a_flag,
-          m.team2, team_b_code, team_b_flag,
-          '+0', 'A',
-          m.ground || null, stage,
+          id,
+          vn.date,
+          vn.time,
+          m.team1,
+          team_a_code,
+          team_a_flag,
+          m.team2,
+          team_b_code,
+          team_b_flag,
+          '+0',
+          'A',
+          m.ground || null,
+          stage,
           hasScores ? 'finished' : 'upcoming',
-          m.score1 ?? null, m.score2 ?? null,
+          m.score1 ?? null,
+          m.score2 ?? null,
         ],
       });
       inserted++;

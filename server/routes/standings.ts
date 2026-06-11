@@ -19,9 +19,11 @@ interface StandingRow {
 
 router.get('/', async (_req: Request, res: Response) => {
   const teams = (await db.execute('SELECT * FROM teams ORDER BY group_name')).rows as any[];
-  const matches = (await db.execute(
-    "SELECT * FROM matches WHERE stage = 'Group Stage' AND status = 'finished' AND score_a IS NOT NULL AND score_b IS NOT NULL"
-  )).rows as any[];
+  const matches = (
+    await db.execute(
+      "SELECT * FROM matches WHERE stage = 'Group Stage' AND status = 'finished' AND score_a IS NOT NULL AND score_b IS NOT NULL",
+    )
+  ).rows as any[];
 
   // Init standings for all teams
   const map = new Map<string, StandingRow>();
@@ -47,13 +49,27 @@ router.get('/', async (_req: Request, res: Response) => {
     const b = map.get(m.team_b_name);
     if (!a || !b) continue;
 
-    a.played++; b.played++;
-    a.gf += m.score_a; a.ga += m.score_b;
-    b.gf += m.score_b; b.ga += m.score_a;
+    a.played++;
+    b.played++;
+    a.gf += m.score_a;
+    a.ga += m.score_b;
+    b.gf += m.score_b;
+    b.ga += m.score_a;
 
-    if (m.score_a > m.score_b) { a.won++; a.pts += 3; b.lost++; }
-    else if (m.score_b > m.score_a) { b.won++; b.pts += 3; a.lost++; }
-    else { a.drawn++; b.drawn++; a.pts += 1; b.pts += 1; }
+    if (m.score_a > m.score_b) {
+      a.won++;
+      a.pts += 3;
+      b.lost++;
+    } else if (m.score_b > m.score_a) {
+      b.won++;
+      b.pts += 3;
+      a.lost++;
+    } else {
+      a.drawn++;
+      b.drawn++;
+      a.pts += 1;
+      b.pts += 1;
+    }
   }
 
   for (const row of map.values()) {

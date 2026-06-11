@@ -37,7 +37,7 @@ router.get('/', async (req: Request, res: Response) => {
 router.get('/next', async (_req: Request, res: Response) => {
   try {
     const result = await db.execute(
-      "SELECT * FROM matches WHERE status = 'upcoming' ORDER BY date, time LIMIT 1"
+      "SELECT * FROM matches WHERE status = 'upcoming' ORDER BY date, time LIMIT 1",
     );
     res.json(result.rows[0] || null);
   } catch (err: any) {
@@ -52,12 +52,14 @@ router.get('/:id', async (req: Request, res: Response) => {
     const match = (await db.execute('SELECT * FROM matches WHERE id = ?', [id])).rows[0];
     if (!match) return res.status(404).json({ error: 'Match not found' });
 
-    const predictions = (await db.execute(
-      `SELECT p.*, u.name, u.avatar FROM predictions p
+    const predictions = (
+      await db.execute(
+        `SELECT p.*, u.name, u.avatar FROM predictions p
        JOIN users u ON p.user_id = u.id
        WHERE p.match_id = ?`,
-      [id],
-    )).rows;
+        [id],
+      )
+    ).rows;
 
     const dealInfo = generateDealExplanation(match);
 
@@ -108,12 +110,21 @@ router.patch('/:id', requireAdmin, async (req: Request, res: Response) => {
     const dealChanged = deal !== undefined || deal_side !== undefined;
     await db.execute(
       `UPDATE matches SET status = ?, score_a = ?, score_b = ?, deal = ?, deal_side = ?${dealChanged ? ', deal_manual = 1' : ''} WHERE id = ?`,
-      [status || match.status, score_a ?? match.score_a, score_b ?? match.score_b, newDeal, newDealSide, id],
+      [
+        status || match.status,
+        score_a ?? match.score_a,
+        score_b ?? match.score_b,
+        newDeal,
+        newDealSide,
+        id,
+      ],
     );
 
     if (status === 'finished' && score_a != null && score_b != null) {
       const allUsers = (await db.execute('SELECT id, name FROM users')).rows as any[];
-      const existingPreds = (await db.execute('SELECT user_id FROM predictions WHERE match_id = ?', [id])).rows as any[];
+      const existingPreds = (
+        await db.execute('SELECT user_id FROM predictions WHERE match_id = ?', [id])
+      ).rows as any[];
       const predictedIds = new Set(existingPreds.map((p: any) => p.user_id));
       const missingUsers = allUsers.filter((u: any) => !predictedIds.has(u.id));
 
@@ -144,18 +155,24 @@ router.patch('/:id', requireAdmin, async (req: Request, res: Response) => {
       await recalculateAllPredictions(id, match.score_a, match.score_b, newDeal, newDealSide);
     }
 
-    const admin = (await db.execute('SELECT name FROM users WHERE id = ?', [adminId])).rows[0] as any;
+    const admin = (await db.execute('SELECT name FROM users WHERE id = ?', [adminId]))
+      .rows[0] as any;
     const changedFields: string[] = [];
     if (deal !== undefined) changedFields.push('deal');
     if (status !== undefined) changedFields.push('status');
     if (score_a !== undefined) changedFields.push('score');
     if (changedFields.length > 0) {
-      await logActivity(adminId, admin?.name || adminId, status === 'finished' ? 'update_result' : 'update_deal', {
-        matchId: id,
-        match: `${match.team_a_name} vs ${match.team_b_name}`,
-        ...(deal !== undefined && { deal: newDeal, dealSide: newDealSide }),
-        ...(status !== undefined && { status, score_a, score_b }),
-      });
+      await logActivity(
+        adminId,
+        admin?.name || adminId,
+        status === 'finished' ? 'update_result' : 'update_deal',
+        {
+          matchId: id,
+          match: `${match.team_a_name} vs ${match.team_b_name}`,
+          ...(deal !== undefined && { deal: newDeal, dealSide: newDealSide }),
+          ...(status !== undefined && { status, score_a, score_b }),
+        },
+      );
     }
 
     const updated = (await db.execute('SELECT * FROM matches WHERE id = ?', [id])).rows[0];
@@ -212,7 +229,9 @@ router.post('/sync-odds', requireAdmin, async (req: Request, res: Response) => {
   try {
     const { syncOdds } = await import('../services/odds.js');
     const result = await syncOdds();
-    const admin = (await db.execute('SELECT name FROM users WHERE id = ?', [req.headers['x-user-id'] as string])).rows[0] as any;
+    const admin = (
+      await db.execute('SELECT name FROM users WHERE id = ?', [req.headers['x-user-id'] as string])
+    ).rows[0] as any;
     await logActivity(req.headers['x-user-id'] as string, admin?.name || 'Admin', 'sync_odds', {
       updated: result.updated,
     });

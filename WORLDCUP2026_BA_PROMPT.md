@@ -1,4 +1,5 @@
 # 🏆 BA DOCUMENT + AI PROMPT — WORLD CUP 2026 PREDICTION SYSTEM
+
 **Dự án:** Alchemy Group — World Cup 2026 Prediction Web  
 **Phiên bản:** 2.0  
 **Mục tiêu:** Thay thế file Excel bằng nền tảng Web hiện đại, tương tác thời gian thực, có Leaderboard động.
@@ -20,6 +21,7 @@
 ## 1. TỔNG QUAN
 
 Hệ thống cho phép các thành viên nhóm:
+
 - Xem **lịch thi đấu** World Cup 2026
 - **Đặt cược** (dự đoán đội thắng) dựa trên tỉ lệ chấp (Deal)
 - Theo dõi **Leaderboard** tự động cập nhật theo kết quả thực tế
@@ -33,14 +35,49 @@ Hệ thống cho phép các thành viên nhóm:
 
 ```json
 [
-  { "id": "U01", "name": "Minh Anh",   "avatar": "🦅", "paid": true,  "totalPoints": 0, "balance": 0 },
-  { "id": "U02", "name": "Tuấn Kiệt",  "avatar": "🐯", "paid": true,  "totalPoints": 0, "balance": 0 },
-  { "id": "U03", "name": "Hải Đăng",   "avatar": "🦁", "paid": false, "totalPoints": 0, "balance": -50000 },
-  { "id": "U04", "name": "Thu Hà",     "avatar": "🦊", "paid": true,  "totalPoints": 0, "balance": 0 },
-  { "id": "U05", "name": "Quang Huy",  "avatar": "🐉", "paid": true,  "totalPoints": 0, "balance": 0 },
-  { "id": "U06", "name": "Lan Phương", "avatar": "🦋", "paid": false, "totalPoints": 0, "balance": -50000 },
-  { "id": "U07", "name": "Trọng Nghĩa","avatar": "🐺", "paid": true,  "totalPoints": 0, "balance": 0 },
-  { "id": "U08", "name": "Bích Ngọc",  "avatar": "🦚", "paid": true,  "totalPoints": 0, "balance": 0 }
+  { "id": "U01", "name": "Minh Anh", "avatar": "🦅", "paid": true, "totalPoints": 0, "balance": 0 },
+  {
+    "id": "U02",
+    "name": "Tuấn Kiệt",
+    "avatar": "🐯",
+    "paid": true,
+    "totalPoints": 0,
+    "balance": 0
+  },
+  {
+    "id": "U03",
+    "name": "Hải Đăng",
+    "avatar": "🦁",
+    "paid": false,
+    "totalPoints": 0,
+    "balance": -50000
+  },
+  { "id": "U04", "name": "Thu Hà", "avatar": "🦊", "paid": true, "totalPoints": 0, "balance": 0 },
+  {
+    "id": "U05",
+    "name": "Quang Huy",
+    "avatar": "🐉",
+    "paid": true,
+    "totalPoints": 0,
+    "balance": 0
+  },
+  {
+    "id": "U06",
+    "name": "Lan Phương",
+    "avatar": "🦋",
+    "paid": false,
+    "totalPoints": 0,
+    "balance": -50000
+  },
+  {
+    "id": "U07",
+    "name": "Trọng Nghĩa",
+    "avatar": "🐺",
+    "paid": true,
+    "totalPoints": 0,
+    "balance": 0
+  },
+  { "id": "U08", "name": "Bích Ngọc", "avatar": "🦚", "paid": true, "totalPoints": 0, "balance": 0 }
 ]
 ```
 
@@ -52,8 +89,8 @@ Hệ thống cho phép các thành viên nhóm:
     "id": "M001",
     "date": "2026-06-11",
     "time": "20:00",
-    "teamA": { "name": "Mexico",    "code": "MX", "flag": "🇲🇽" },
-    "teamB": { "name": "USA",       "code": "US", "flag": "🇺🇸" },
+    "teamA": { "name": "Mexico", "code": "MX", "flag": "🇲🇽" },
+    "teamB": { "name": "USA", "code": "US", "flag": "🇺🇸" },
     "deal": "+0.5",
     "dealSide": "A",
     "venue": "SoFi Stadium, Los Angeles",
@@ -66,8 +103,8 @@ Hệ thống cho phép các thành viên nhóm:
     "id": "M002",
     "date": "2026-06-12",
     "time": "02:00",
-    "teamA": { "name": "Brazil",    "code": "BR", "flag": "🇧🇷" },
-    "teamB": { "name": "Croatia",   "code": "HR", "flag": "🇭🇷" },
+    "teamA": { "name": "Brazil", "code": "BR", "flag": "🇧🇷" },
+    "teamB": { "name": "Croatia", "code": "HR", "flag": "🇭🇷" },
     "deal": "-1",
     "dealSide": "A",
     "venue": "MetLife Stadium, New York",
@@ -81,7 +118,7 @@ Hệ thống cho phép các thành viên nhóm:
     "date": "2026-06-12",
     "time": "20:00",
     "teamA": { "name": "Argentina", "code": "AR", "flag": "🇦🇷" },
-    "teamB": { "name": "Nigeria",   "code": "NG", "flag": "🇳🇬" },
+    "teamB": { "name": "Nigeria", "code": "NG", "flag": "🇳🇬" },
     "deal": "-1.5",
     "dealSide": "A",
     "venue": "Rose Bowl, Pasadena",
@@ -94,8 +131,8 @@ Hệ thống cho phép các thành viên nhóm:
     "id": "M004",
     "date": "2026-06-13",
     "time": "03:00",
-    "teamA": { "name": "France",    "code": "FR", "flag": "🇫🇷" },
-    "teamB": { "name": "Germany",   "code": "DE", "flag": "🇩🇪" },
+    "teamA": { "name": "France", "code": "FR", "flag": "🇫🇷" },
+    "teamB": { "name": "Germany", "code": "DE", "flag": "🇩🇪" },
     "deal": "-0.5",
     "dealSide": "A",
     "venue": "AT&T Stadium, Dallas",
@@ -108,8 +145,8 @@ Hệ thống cho phép các thành viên nhóm:
     "id": "M005",
     "date": "2026-06-13",
     "time": "20:00",
-    "teamA": { "name": "Spain",     "code": "ES", "flag": "🇪🇸" },
-    "teamB": { "name": "Japan",     "code": "JP", "flag": "🇯🇵" },
+    "teamA": { "name": "Spain", "code": "ES", "flag": "🇪🇸" },
+    "teamB": { "name": "Japan", "code": "JP", "flag": "🇯🇵" },
     "deal": "-1",
     "dealSide": "A",
     "venue": "Levi's Stadium, San Jose",
@@ -122,8 +159,8 @@ Hệ thống cho phép các thành viên nhóm:
     "id": "M006",
     "date": "2026-06-14",
     "time": "02:00",
-    "teamA": { "name": "England",   "code": "GB-ENG", "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
-    "teamB": { "name": "Portugal",  "code": "PT", "flag": "🇵🇹" },
+    "teamA": { "name": "England", "code": "GB-ENG", "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
+    "teamB": { "name": "Portugal", "code": "PT", "flag": "🇵🇹" },
     "deal": "+0.5",
     "dealSide": "B",
     "venue": "Gillette Stadium, Boston",
@@ -196,42 +233,42 @@ Hệ thống cho phép các thành viên nhóm:
 ```typescript
 // === MATCH ===
 interface Match {
-  id: string;               // "M001"
-  date: string;             // "YYYY-MM-DD"
-  time: string;             // "HH:MM" (Vietnam time, UTC+7)
+  id: string; // "M001"
+  date: string; // "YYYY-MM-DD"
+  time: string; // "HH:MM" (Vietnam time, UTC+7)
   teamA: Team;
   teamB: Team;
-  deal: string;             // "-1", "+0.5", "0"
-  dealSide: "A" | "B";     // Deal áp dụng cho đội nào
+  deal: string; // "-1", "+0.5", "0"
+  dealSide: 'A' | 'B'; // Deal áp dụng cho đội nào
   venue: string;
-  stage: string;            // "Group A", "Round of 16", "Semi-final", "Final"
-  status: "upcoming" | "live" | "finished";
+  stage: string; // "Group A", "Round of 16", "Semi-final", "Final"
+  status: 'upcoming' | 'live' | 'finished';
   scoreA: number | null;
   scoreB: number | null;
 }
 
 interface Team {
   name: string;
-  code: string;             // ISO country code
-  flag: string;             // Emoji flag
+  code: string; // ISO country code
+  flag: string; // Emoji flag
 }
 
 // === USER ===
 interface User {
   id: string;
   name: string;
-  avatar: string;           // Emoji
+  avatar: string; // Emoji
   paid: boolean;
-  totalPoints: number;      // Tự tính từ predictions
-  balance: number;          // Dương = được nhận, Âm = còn nợ (VNĐ)
+  totalPoints: number; // Tự tính từ predictions
+  balance: number; // Dương = được nhận, Âm = còn nợ (VNĐ)
 }
 
 // === PREDICTION ===
 interface Prediction {
   userId: string;
   matchId: string;
-  pick: "A" | "B";
-  result: "win" | "lose" | "draw" | null;  // null = chưa có kết quả
+  pick: 'A' | 'B';
+  result: 'win' | 'lose' | 'draw' | null; // null = chưa có kết quả
   points: 1 | -1 | 0 | null;
 }
 
@@ -245,8 +282,8 @@ interface LeaderboardEntry {
   wins: number;
   losses: number;
   draws: number;
-  pendingBets: number;      // Số trận đã cược chưa có kết quả
-  trend: "up" | "down" | "same";  // So với kỳ trước
+  pendingBets: number; // Số trận đã cược chưa có kết quả
+  trend: 'up' | 'down' | 'same'; // So với kỳ trước
   isPaid: boolean;
 }
 ```
@@ -269,26 +306,26 @@ function calculateResult(
   scoreA: number,
   scoreB: number,
   deal: string,
-  dealSide: "A" | "B",
-  pick: "A" | "B"
-): "win" | "lose" | "draw" {
+  dealSide: 'A' | 'B',
+  pick: 'A' | 'B',
+): 'win' | 'lose' | 'draw' {
   const dealValue = parseFloat(deal);
-  
+
   // Áp dụng deal vào điểm
   let adjustedA = scoreA;
   let adjustedB = scoreB;
-  if (dealSide === "A") adjustedA += dealValue;
+  if (dealSide === 'A') adjustedA += dealValue;
   else adjustedB += dealValue;
 
   // Xác định đội thắng sau deal
-  let dealWinner: "A" | "B" | "draw";
-  if (adjustedA > adjustedB) dealWinner = "A";
-  else if (adjustedB > adjustedA) dealWinner = "B";
-  else dealWinner = "draw";
+  let dealWinner: 'A' | 'B' | 'draw';
+  if (adjustedA > adjustedB) dealWinner = 'A';
+  else if (adjustedB > adjustedA) dealWinner = 'B';
+  else dealWinner = 'draw';
 
-  if (dealWinner === "draw") return "draw";        // 0 điểm
-  if (dealWinner === pick) return "win";            // +1 điểm
-  return "lose";                                    // -1 điểm
+  if (dealWinner === 'draw') return 'draw'; // 0 điểm
+  if (dealWinner === pick) return 'win'; // +1 điểm
+  return 'lose'; // -1 điểm
 }
 ```
 
@@ -301,7 +338,7 @@ function calculateResult(
  * Hoặc 17:30 ngày hôm trước (nếu trận đấu 00:00 - 06:00 sáng hôm sau)
  */
 function isPickAllowed(matchDate: string, matchTime: string): boolean {
-  const matchHour = parseInt(matchTime.split(":")[0]);
+  const matchHour = parseInt(matchTime.split(':')[0]);
   const matchDateObj = new Date(`${matchDate}T${matchTime}:00+07:00`);
 
   let deadlineDate = new Date(matchDateObj);
@@ -320,12 +357,12 @@ function isPickAllowed(matchDate: string, matchTime: string): boolean {
 ```typescript
 function buildLeaderboard(users: User[], predictions: Prediction[]): LeaderboardEntry[] {
   return users
-    .map(user => {
-      const userPreds = predictions.filter(p => p.userId === user.id);
-      const wins   = userPreds.filter(p => p.result === "win").length;
-      const losses = userPreds.filter(p => p.result === "lose").length;
-      const draws  = userPreds.filter(p => p.result === "draw").length;
-      const pending = userPreds.filter(p => p.result === null).length;
+    .map((user) => {
+      const userPreds = predictions.filter((p) => p.userId === user.id);
+      const wins = userPreds.filter((p) => p.result === 'win').length;
+      const losses = userPreds.filter((p) => p.result === 'lose').length;
+      const draws = userPreds.filter((p) => p.result === 'draw').length;
+      const pending = userPreds.filter((p) => p.result === null).length;
       const totalPoints = wins - losses; // draws = 0 điểm
 
       return {
@@ -338,7 +375,7 @@ function buildLeaderboard(users: User[], predictions: Prediction[]): Leaderboard
         losses,
         draws,
         pendingBets: pending,
-        trend: "same",
+        trend: 'same',
         isPaid: user.paid,
       };
     })
@@ -352,12 +389,14 @@ function buildLeaderboard(users: User[], predictions: Prediction[]): Leaderboard
 ## 5. TÍNH NĂNG
 
 ### 5.1 Dashboard (Trang chủ)
+
 - **Hero Section**: Countdown đến trận đấu tiếp theo
 - **Live Match Banner**: Nổi bật khi có trận đang diễn ra (animation nhấp nháy)
 - **Mini Leaderboard**: Top 3 người dẫn đầu
 - **Thống kê nhanh**: Tổng số trận, số đã có kết quả, số trận người dùng đã cược
 
 ### 5.2 Trang Lịch & Cược (`/schedule`)
+
 - Lọc theo: Tất cả / Hôm nay / Sắp diễn ra / Đã kết thúc
 - Mỗi Match Card hiển thị:
   - Cờ + Tên 2 đội
@@ -371,13 +410,14 @@ function buildLeaderboard(users: User[], predictions: Prediction[]): Leaderboard
 
 **Bảng xếp hạng đầy đủ với:**
 
-| # | Avatar | Tên | Điểm | Thắng | Thua | Hòa | Đang chờ | Trạng thái |
-|---|--------|-----|------|-------|------|-----|----------|------------|
-| 1 | 🦅 | Minh Anh | +3 | 3 | 0 | 0 | 1 | ✅ Đã đóng |
-| 2 | 🐯 | Tuấn Kiệt | +1 | 1 | 0 | 0 | 0 | ✅ Đã đóng |
+| #   | Avatar | Tên       | Điểm | Thắng | Thua | Hòa | Đang chờ | Trạng thái |
+| --- | ------ | --------- | ---- | ----- | ---- | --- | -------- | ---------- |
+| 1   | 🦅     | Minh Anh  | +3   | 3     | 0    | 0   | 1        | ✅ Đã đóng |
+| 2   | 🐯     | Tuấn Kiệt | +1   | 1     | 0    | 0   | 0        | ✅ Đã đóng |
 | ... |
 
 **Tính năng Leaderboard:**
+
 - Sắp xếp theo: Điểm / Tỉ lệ thắng / Số trận đã cược
 - Highlight hàng của người dùng hiện tại
 - Mũi tên xu hướng: ▲ lên / ▼ xuống / ─ giữ nguyên (so với trận trước)
@@ -386,15 +426,18 @@ function buildLeaderboard(users: User[], predictions: Prediction[]): Leaderboard
 - Click vào tên → mở modal xem toàn bộ lịch sử cược của người đó
 
 ### 5.4 Chi tiết trận đấu (`/match/:id`)
+
 - Tỉ số đầy đủ
 - Bảng "Ai đoán gì?" — hiển thị pick của tất cả thành viên
-- Giải thích kết quả Deal bằng text dễ hiểu: *"France thắng 2-1, với deal -0.5, France thắng deal → Người chọn France: +1 điểm"*
+- Giải thích kết quả Deal bằng text dễ hiểu: _"France thắng 2-1, với deal -0.5, France thắng deal → Người chọn France: +1 điểm"_
 
 ### 5.5 Trang Luật chơi (`/rules`)
+
 - Accordion đẹp mắt cho từng điều luật
 - Ví dụ minh họa tương tác cho cách tính Deal
 
-### 5.6 Quản lý quỹ (`/fund`) *(Admin only)*
+### 5.6 Quản lý quỹ (`/fund`) _(Admin only)_
+
 - Danh sách đã đóng / chưa đóng
 - Tổng quỹ hiện tại
 - Dự kiến phần thưởng theo thứ hạng hiện tại
@@ -404,26 +447,29 @@ function buildLeaderboard(users: User[], predictions: Prediction[]): Leaderboard
 ## 6. UI/UX GUIDELINES
 
 ### Màu sắc (World Cup 2026 Brand)
+
 ```css
 :root {
-  --primary:    #C8102E;   /* Đỏ FIFA */
-  --secondary:  #003087;   /* Xanh đậm */
-  --accent:     #F5A623;   /* Vàng gold */
-  --success:    #00B140;   /* Xanh lá thắng */
-  --danger:     #E63946;   /* Đỏ thua */
-  --neutral:    #8E9AAF;   /* Xám hòa */
-  --bg-dark:    #0A0E1A;   /* Nền tối */
-  --bg-card:    #141929;   /* Card tối */
-  --text:       #F0F4FF;
+  --primary: #c8102e; /* Đỏ FIFA */
+  --secondary: #003087; /* Xanh đậm */
+  --accent: #f5a623; /* Vàng gold */
+  --success: #00b140; /* Xanh lá thắng */
+  --danger: #e63946; /* Đỏ thua */
+  --neutral: #8e9aaf; /* Xám hòa */
+  --bg-dark: #0a0e1a; /* Nền tối */
+  --bg-card: #141929; /* Card tối */
+  --text: #f0f4ff;
 }
 ```
 
 ### Typography
+
 - Display font: `Bebas Neue` hoặc `Barlow Condensed` — cho số điểm, tên đội
 - Body font: `Inter` hoặc `Outfit` — cho nội dung thường
 - Số điểm lớn, bold, có màu xanh (dương) hoặc đỏ
 
 ### Components ưu tiên
+
 - **Match Card**: Glassmorphism với border gradient khi được chọn
 - **Leaderboard Row**: Highlight với glow effect cho Top 1
 - **Deal Badge**: Pill với màu nổi bật, font mono
@@ -431,11 +477,13 @@ function buildLeaderboard(users: User[], predictions: Prediction[]): Leaderboard
 - **Live Badge**: Dot nhấp nháy màu đỏ
 
 ### Responsive
+
 - **Mobile-first**: Card stack, bottom navigation
 - **Desktop**: Sidebar leaderboard + main content
 - **Breakpoints**: `sm: 640px`, `md: 768px`, `lg: 1024px`
 
 ### Interactions
+
 - SPA (không reload trang)
 - Optimistic UI: Click chọn đội → hiện ngay, xác nhận sau
 - Toast notification khi đặt cược thành công/thất bại
@@ -452,7 +500,7 @@ function buildLeaderboard(users: User[], predictions: Prediction[]): Leaderboard
 ### 🚀 PROMPT ĐẦY ĐỦ (Dành cho Claude / ChatGPT)
 
 ```
-Bạn là một senior frontend developer. Hãy build một ứng dụng React (Vite + TypeScript + Tailwind CSS) 
+Bạn là một senior frontend developer. Hãy build một ứng dụng React (Vite + TypeScript + Tailwind CSS)
 hoàn chỉnh cho hệ thống dự đoán World Cup 2026 của một nhóm bạn bè.
 
 ## YÊU CẦU KỸ THUẬT
@@ -500,7 +548,7 @@ Sử dụng JSON data sau đây (copy từ file BA):
 - Hiển thị "Cược của bạn" khác biệt với cược của người khác
 
 Hãy bắt đầu với file cấu trúc thư mục, sau đó viết từng file theo thứ tự:
-src/data/mockData.ts → src/types/index.ts → src/utils/gameLogic.ts → 
+src/data/mockData.ts → src/types/index.ts → src/utils/gameLogic.ts →
 src/store/useGameStore.ts → src/components/ → src/pages/
 ```
 
@@ -511,18 +559,18 @@ src/store/useGameStore.ts → src/components/ → src/pages/
 ```
 Build a dark-themed React World Cup 2026 prediction app for a friend group.
 
-Pages: Dashboard (countdown + live match + top3), Schedule (match cards with betting), 
-Leaderboard (full table with trend arrows + progress bars + user history modal), 
+Pages: Dashboard (countdown + live match + top3), Schedule (match cards with betting),
+Leaderboard (full table with trend arrows + progress bars + user history modal),
 Match Detail, Rules.
 
 Data: 8 players, 6 matches (upcoming/live/finished), predictions per user.
-Logic: Deal handicap system (e.g. "-1" means team must win by more than 1 goal), 
+Logic: Deal handicap system (e.g. "-1" means team must win by more than 1 goal),
 deadline lock at 17:30.
 
 Leaderboard table columns: Rank, Avatar(emoji), Name, Points, W/L/D, Pending, Payment status.
 Top 1 gets golden glow. Mobile = card stack. Click user = modal with their full bet history.
 
-Design: Dark bg (#0A0E1A), red/blue/gold palette, Bebas Neue display font, 
+Design: Dark bg (#0A0E1A), red/blue/gold palette, Bebas Neue display font,
 glassmorphism cards, animated LIVE badge.
 
 Use mock JSON data inline, Zustand for state, Framer Motion for animations.
@@ -532,14 +580,14 @@ Use mock JSON data inline, Zustand for state, Framer Motion for animations.
 
 ## 📝 GHI CHÚ TRIỂN KHAI
 
-| Giai đoạn | Việc cần làm | Công cụ gợi ý |
-|-----------|-------------|---------------|
-| MVP | UI tĩnh với mock data | React + Tailwind |
-| V1 | Lưu state local | Zustand + localStorage |
-| V2 | Multi-user thực | Supabase (auth + realtime DB) |
-| V3 | Thông báo | Supabase Realtime → Push notification |
-| V4 | Admin panel | Thêm trang quản lý kết quả |
+| Giai đoạn | Việc cần làm          | Công cụ gợi ý                         |
+| --------- | --------------------- | ------------------------------------- |
+| MVP       | UI tĩnh với mock data | React + Tailwind                      |
+| V1        | Lưu state local       | Zustand + localStorage                |
+| V2        | Multi-user thực       | Supabase (auth + realtime DB)         |
+| V3        | Thông báo             | Supabase Realtime → Push notification |
+| V4        | Admin panel           | Thêm trang quản lý kết quả            |
 
 ---
 
-*File được tạo bởi Alchemy Group · World Cup 2026 · Cập nhật: 2026*
+_File được tạo bởi Alchemy Group · World Cup 2026 · Cập nhật: 2026_

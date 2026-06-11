@@ -36,8 +36,16 @@ export const api = {
   },
   getNextMatch: () => request<any | null>('/matches/next'),
   getMatch: (id: string) => request<any>(`/matches/${id}`),
-  updateMatch: (id: string, data: { status?: string; score_a?: number; score_b?: number; deal?: string; deal_side?: string }) =>
-    request(`/matches/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  updateMatch: (
+    id: string,
+    data: {
+      status?: string;
+      score_a?: number;
+      score_b?: number;
+      deal?: string;
+      deal_side?: string;
+    },
+  ) => request(`/matches/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   getMatchPickable: (id: string) => request<{ pickable: boolean }>(`/matches/${id}/pickable`),
 
   // Predictions
@@ -48,6 +56,10 @@ export const api = {
     const qs = sp.toString();
     return request<any[]>(`/predictions${qs ? `?${qs}` : ''}`);
   },
+  getPickStats: (matchIds: string[]) =>
+    request<Record<string, { a: number; b: number; total: number; aPct: number; bPct: number }>>(
+      `/predictions/pick-stats?matchIds=${matchIds.join(',')}`,
+    ),
   placePrediction: (data: { userId: string; matchId: string; pick: 'A' | 'B' }) =>
     request('/predictions', { method: 'POST', body: JSON.stringify(data) }),
   getUserHistory: (userId: string) =>
@@ -63,14 +75,25 @@ export const api = {
 
   // Auth
   login: (userId: string, pin: string) =>
-    request<{ id: string; name: string; avatar: string; paid: boolean; debtPaid: boolean; isAdmin: boolean; pinChanged: boolean }>(
-      '/auth/login',
-      { method: 'POST', body: JSON.stringify({ userId, pin }) }
-    ),
+    request<{
+      id: string;
+      name: string;
+      avatar: string;
+      paid: boolean;
+      debtPaid: boolean;
+      isAdmin: boolean;
+      pinChanged: boolean;
+    }>('/auth/login', { method: 'POST', body: JSON.stringify({ userId, pin }) }),
   changePin: (userId: string, oldPin: string, newPin: string) =>
-    request<{ success: boolean; message: string }>('/auth/change-pin', { method: 'POST', body: JSON.stringify({ userId, oldPin, newPin }) }),
+    request<{ success: boolean; message: string }>('/auth/change-pin', {
+      method: 'POST',
+      body: JSON.stringify({ userId, oldPin, newPin }),
+    }),
   resetPin: (userId: string) =>
-    request<{ success: boolean; message: string }>('/auth/reset-pin', { method: 'POST', body: JSON.stringify({ userId }) }),
+    request<{ success: boolean; message: string }>('/auth/reset-pin', {
+      method: 'POST',
+      body: JSON.stringify({ userId }),
+    }),
 
   // Rules
   getRules: () => request<any[]>('/rules'),
@@ -93,11 +116,12 @@ export const api = {
 
   // Live data (Highlightly proxy)
   getLiveMatches: (date?: string) => {
-    const qs = date ? `?date=${date}` : "";
+    const qs = date ? `?date=${date}` : '';
     return request<{ matches: any[]; updated: string }>(`/live/matches${qs}`);
   },
   getLiveMatch: (id: string) => request<{ match: any; updated: string }>(`/live/match/${id}`),
-  getLiveLineups: (matchId: string) => request<{ lineups: any; updated: string }>(`/live/match/${matchId}/lineups`),
+  getLiveLineups: (matchId: string) =>
+    request<{ lineups: any; updated: string }>(`/live/match/${matchId}/lineups`),
 
   // Activity
   getActivity: (params?: { page?: number; limit?: number; action?: string; userId?: string }) => {

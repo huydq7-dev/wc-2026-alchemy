@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import type { ReactNode } from 'react';
+import { cn } from '@/lib/utils';
 
 interface Props {
   title: string;
@@ -12,10 +12,7 @@ interface Props {
 export default function PageHeader({ title, actions, className }: Props) {
   return (
     <div
-      className={cn(
-        "flex flex-col gap-4 md:flex-row md:items-end md:justify-between",
-        className,
-      )}
+      className={cn('flex flex-col gap-4 md:flex-row md:items-end md:justify-between', className)}
     >
       <div className="space-y-2">
         <div className="flex items-center gap-3">
@@ -37,9 +34,7 @@ export default function PageHeader({ title, actions, className }: Props) {
           </p>
         )} */}
       </div>
-      {actions ? (
-        <div className="flex flex-wrap items-center gap-2">{actions}</div>
-      ) : null}
+      {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
     </div>
   );
 }

@@ -1,22 +1,17 @@
-import * as React from "react";
-import { Clock3, Trophy } from "lucide-react";
-import FlagImage from "@/components/FlagImage";
-import { cn } from "@/lib/utils";
-import type { BracketData, BracketMatch, BracketRound } from "@/types";
+import * as React from 'react';
+import { Clock3, Trophy } from 'lucide-react';
+import FlagImage from '@/components/FlagImage';
+import { cn } from '@/lib/utils';
+import type { BracketData, BracketMatch, BracketRound } from '@/types';
 
 interface Props {
   data: BracketData;
 }
 
-const SIDE_ROUND_ORDER = [
-  "Round of 32",
-  "Round of 16",
-  "Quarter-final",
-  "Semi-final",
-] as const;
+const SIDE_ROUND_ORDER = ['Round of 32', 'Round of 16', 'Quarter-final', 'Semi-final'] as const;
 
 const WORLD_CUP_2026_EMBLEM =
-  "https://png.pngtree.com/png-vector/20250923/ourmid/pngtree-the-fifa-world-cup-trophy-png-image_17551611.webp";
+  'https://png.pngtree.com/png-vector/20250923/ourmid/pngtree-the-fifa-world-cup-trophy-png-image_17551611.webp';
 
 const COLUMN_WIDTH = 188;
 const CONNECTOR_WIDTH = 36;
@@ -37,17 +32,13 @@ export default function BracketView({ data }: Props) {
   });
 
   if (!data.rounds || data.rounds.length === 0) {
-    return (
-      <p className="text-gray-500 text-sm text-center py-8">
-        No knockout data yet.
-      </p>
-    );
+    return <p className="text-gray-500 text-sm text-center py-8">No knockout data yet.</p>;
   }
 
   const roundsByName = new Map(data.rounds.map((round) => [round.name, round]));
-  const sideRounds = SIDE_ROUND_ORDER.map((name) =>
-    roundsByName.get(name),
-  ).filter((round): round is BracketRound => Boolean(round));
+  const sideRounds = SIDE_ROUND_ORDER.map((name) => roundsByName.get(name)).filter(
+    (round): round is BracketRound => Boolean(round),
+  );
 
   const leftRounds = sideRounds
     .map((round) => ({
@@ -63,8 +54,8 @@ export default function BracketView({ data }: Props) {
     }))
     .filter((round) => round.matches.length > 0);
 
-  const finalMatch = roundsByName.get("Final")?.matches[0] ?? null;
-  const thirdPlaceMatch = roundsByName.get("Third Place")?.matches[0] ?? null;
+  const finalMatch = roundsByName.get('Final')?.matches[0] ?? null;
+  const thirdPlaceMatch = roundsByName.get('Third Place')?.matches[0] ?? null;
   const bracketLaneCount = Math.max(
     leftRounds[0]?.matches.length ?? rightRounds[0]?.matches.length ?? 1,
     1,
@@ -113,9 +104,7 @@ export default function BracketView({ data }: Props) {
   return (
     <section className="overflow-hidden border border-[#1A2A66] bg-[#07103A]">
       <div className="border-b border-[#17307C] px-4 py-4 sm:px-5">
-        <p className="text-[11px] uppercase tracking-[0.3em] text-white/45">
-          Knockout Stage
-        </p>
+        <p className="text-[11px] uppercase tracking-[0.3em] text-white/45">Knockout Stage</p>
         <div className="mt-2 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
           <div>
             <h2 className="font-display text-2xl tracking-[0.18em] text-white sm:text-3xl">
@@ -156,33 +145,22 @@ export default function BracketView({ data }: Props) {
   );
 }
 
-function BracketSide({
-  side,
-  rounds,
-}: {
-  side: "left" | "right";
-  rounds: BracketRound[];
-}) {
+function BracketSide({ side, rounds }: { side: 'left' | 'right'; rounds: BracketRound[] }) {
   const firstRoundCount = rounds[0]?.matches.length ?? 0;
   const trackHeight = Math.max(firstRoundCount, 1) * LANE_HEIGHT;
 
   return (
     <div className="shrink-0">
       <div className="mb-2 px-1 text-[10px] uppercase tracking-[0.24em] text-white/38">
-        {side === "left" ? "Left Bracket" : "Right Bracket"}
+        {side === 'left' ? 'Left Bracket' : 'Right Bracket'}
       </div>
 
-      <div
-        className={cn(
-          "flex items-start",
-          side === "right" && "flex-row-reverse",
-        )}
-      >
+      <div className={cn('flex items-start', side === 'right' && 'flex-row-reverse')}>
         {rounds.map((round, index) => {
           const nextRound = rounds[index + 1];
           return (
             <div key={`${side}-${round.name}`} className="flex items-start">
-              {side === "right" && nextRound && (
+              {side === 'right' && nextRound && (
                 <div
                   className="flex items-start"
                   style={{
@@ -191,23 +169,19 @@ function BracketSide({
                     height: trackHeight + ROUND_LABEL_HEIGHT + TRACK_TOP_GAP,
                   }}
                 >
-                  <Connector
-                    toCount={nextRound.matches.length}
-                    totalCount={firstRoundCount}
-                    flip
-                  />
+                  <Connector toCount={nextRound.matches.length} totalCount={firstRoundCount} flip />
                 </div>
               )}
 
               <RoundColumn
                 round={round}
-                align={side === "left" ? "left" : "right"}
+                align={side === 'left' ? 'left' : 'right'}
                 side={side}
                 firstRoundCount={firstRoundCount}
                 trackHeight={trackHeight}
               />
 
-              {side === "left" && nextRound && (
+              {side === 'left' && nextRound && (
                 <div
                   className="flex items-start"
                   style={{
@@ -216,10 +190,7 @@ function BracketSide({
                     height: trackHeight + ROUND_LABEL_HEIGHT + TRACK_TOP_GAP,
                   }}
                 >
-                  <Connector
-                    toCount={nextRound.matches.length}
-                    totalCount={firstRoundCount}
-                  />
+                  <Connector toCount={nextRound.matches.length} totalCount={firstRoundCount} />
                 </div>
               )}
             </div>
@@ -238,8 +209,8 @@ function RoundColumn({
   trackHeight,
 }: {
   round: BracketRound;
-  align: "left" | "right";
-  side: "left" | "right";
+  align: 'left' | 'right';
+  side: 'left' | 'right';
   firstRoundCount: number;
   trackHeight: number;
 }) {
@@ -255,9 +226,9 @@ function RoundColumn({
     >
       <div
         className={cn(
-          "flex h-5 items-center px-1 text-[10px] uppercase tracking-[0.24em]",
-          side === "left" ? "text-white/40" : "text-cyan-300/75",
-          align === "right" && "justify-end text-right",
+          'flex h-5 items-center px-1 text-[10px] uppercase tracking-[0.24em]',
+          side === 'left' ? 'text-white/40' : 'text-cyan-300/75',
+          align === 'right' && 'justify-end text-right',
         )}
         style={{ height: ROUND_LABEL_HEIGHT }}
       >
@@ -289,52 +260,27 @@ function RoundColumn({
   );
 }
 
-function MatchCard({
-  match,
-  side,
-}: {
-  match: BracketMatch;
-  side: "left" | "right";
-}) {
+function MatchCard({ match, side }: { match: BracketMatch; side: 'left' | 'right' }) {
   const hasScore = match.score_a != null && match.score_b != null;
   const teamAWon = hasScore && match.score_a! > match.score_b!;
   const teamBWon = hasScore && match.score_b! > match.score_a!;
   const cardTone =
-    side === "left"
-      ? "border-[#9FAEB6] bg-[#B6C0C4] text-[#09112B]"
-      : "border-[#14B9E6] bg-[#1BB7DF] text-[#041633]";
+    side === 'left'
+      ? 'border-[#9FAEB6] bg-[#B6C0C4] text-[#09112B]'
+      : 'border-[#14B9E6] bg-[#1BB7DF] text-[#041633]';
 
   return (
-    <article
-      className={cn(
-        "h-full border shadow-[0_0_0_1px_rgba(255,255,255,0.02)]",
-        cardTone,
-      )}
-    >
-      <TeamLine
-        team={match.team_a}
-        score={match.score_a}
-        isWinner={teamAWon}
-        side={side}
-      />
+    <article className={cn('h-full border shadow-[0_0_0_1px_rgba(255,255,255,0.02)]', cardTone)}>
+      <TeamLine team={match.team_a} score={match.score_a} isWinner={teamAWon} side={side} />
       <div className="h-px bg-black/10" />
-      <TeamLine
-        team={match.team_b}
-        score={match.score_b}
-        isWinner={teamBWon}
-        side={side}
-      />
+      <TeamLine team={match.team_b} score={match.score_b} isWinner={teamBWon} side={side} />
       <div className="flex items-center justify-between border-t border-black/10 px-2 py-1 text-[9px] uppercase tracking-[0.14em] text-black/55">
         <span>
-          {match.status === "finished"
-            ? "Finished"
-            : match.status === "live"
-              ? "Live"
-              : "Upcoming"}
+          {match.status === 'finished' ? 'Finished' : match.status === 'live' ? 'Live' : 'Upcoming'}
         </span>
         <span className="flex items-center gap-1">
           <Clock3 className="h-2.5 w-2.5" />
-          {match.time || "--:--"}
+          {match.time || '--:--'}
         </span>
       </div>
     </article>
@@ -347,35 +293,28 @@ function TeamLine({
   isWinner,
   side,
 }: {
-  team: BracketMatch["team_a"];
+  team: BracketMatch['team_a'];
   score: number | null;
   isWinner: boolean;
-  side: "left" | "right";
+  side: 'left' | 'right';
 }) {
   return (
     <div
       className={cn(
-        "flex items-center gap-2 px-2 py-2",
-        isWinner && (side === "left" ? "bg-white/30" : "bg-white/18"),
+        'flex items-center gap-2 px-2 py-2',
+        isWinner && (side === 'left' ? 'bg-white/30' : 'bg-white/18'),
       )}
     >
-      <FlagImage
-        code={team.code}
-        size={48}
-        alt={team.name}
-        className="h-4 w-6 object-cover"
-      />
+      <FlagImage code={team.code} size={48} alt={team.name} className="h-4 w-6 object-cover" />
       <span
         className={cn(
-          "min-w-0 flex-1 truncate text-[12px] font-medium uppercase",
-          isWinner && "font-semibold",
+          'min-w-0 flex-1 truncate text-[12px] font-medium uppercase',
+          isWinner && 'font-semibold',
         )}
       >
         {slotLabel(team.name)}
       </span>
-      <span className="text-[12px] font-semibold tabular-nums">
-        {score ?? "-"}
-      </span>
+      <span className="text-[12px] font-semibold tabular-nums">{score ?? '-'}</span>
     </div>
   );
 }
@@ -411,9 +350,7 @@ function CenterColumn({
 
       <div className="border border-[#2A3F84] bg-[#111A48] p-3 text-white">
         <div className="mb-2.5 flex items-center justify-between">
-          <span className="text-[10px] uppercase tracking-[0.22em] text-white/55">
-            Final
-          </span>
+          <span className="text-[10px] uppercase tracking-[0.22em] text-white/55">Final</span>
           <Trophy className="h-3.5 w-3.5 text-[#F5A623]" />
         </div>
         {finalMatch ? (
@@ -437,15 +374,9 @@ function CenterColumn({
   );
 }
 
-function FinalCard({
-  match,
-  compact = false,
-}: {
-  match: BracketMatch;
-  compact?: boolean;
-}) {
+function FinalCard({ match, compact = false }: { match: BracketMatch; compact?: boolean }) {
   return (
-    <div className={cn("space-y-1.5", compact && "space-y-1")}>
+    <div className={cn('space-y-1.5', compact && 'space-y-1')}>
       <CenterTeam team={match.team_a} score={match.score_a} />
       <CenterTeam team={match.team_b} score={match.score_b} />
       <div className="pt-1 text-center text-[9px] uppercase tracking-[0.14em] text-white/45">
@@ -455,27 +386,14 @@ function FinalCard({
   );
 }
 
-function CenterTeam({
-  team,
-  score,
-}: {
-  team: BracketMatch["team_a"];
-  score: number | null;
-}) {
+function CenterTeam({ team, score }: { team: BracketMatch['team_a']; score: number | null }) {
   return (
     <div className="flex items-center gap-2 border border-[#30437F] bg-[#0A1235] px-2 py-2">
-      <FlagImage
-        code={team.code}
-        size={56}
-        alt={team.name}
-        className="h-4 w-6.5 object-cover"
-      />
+      <FlagImage code={team.code} size={56} alt={team.name} className="h-4 w-6.5 object-cover" />
       <span className="min-w-0 flex-1 truncate text-[12px] font-medium text-white uppercase">
         {slotLabel(team.name)}
       </span>
-      <span className="text-[12px] font-semibold tabular-nums text-white">
-        {score ?? "-"}
-      </span>
+      <span className="text-[12px] font-semibold tabular-nums text-white">{score ?? '-'}</span>
     </div>
   );
 }
@@ -493,7 +411,7 @@ function Connector({
 
   return (
     <svg
-      className={cn("h-full w-full overflow-visible", flip && "-scale-x-100")}
+      className={cn('h-full w-full overflow-visible', flip && '-scale-x-100')}
       preserveAspectRatio="none"
       viewBox={`0 0 ${CONNECTOR_WIDTH} ${height}`}
     >
@@ -507,30 +425,9 @@ function Connector({
 
         return (
           <g key={`${totalCount}-${toCount}-${index}`}>
-            <line
-              x1={0}
-              y1={y1}
-              x2={16}
-              y2={y1}
-              stroke="#60E6F6"
-              strokeWidth={1.6}
-            />
-            <line
-              x1={0}
-              y1={y2}
-              x2={16}
-              y2={y2}
-              stroke="#60E6F6"
-              strokeWidth={1.6}
-            />
-            <line
-              x1={16}
-              y1={y1}
-              x2={16}
-              y2={y2}
-              stroke="#60E6F6"
-              strokeWidth={1.6}
-            />
+            <line x1={0} y1={y1} x2={16} y2={y1} stroke="#60E6F6" strokeWidth={1.6} />
+            <line x1={0} y1={y2} x2={16} y2={y2} stroke="#60E6F6" strokeWidth={1.6} />
+            <line x1={16} y1={y1} x2={16} y2={y2} stroke="#60E6F6" strokeWidth={1.6} />
             <line
               x1={16}
               y1={midY}
@@ -548,11 +445,11 @@ function Connector({
 
 function roundLabel(name: string): string {
   const map: Record<string, string> = {
-    "Round of 32": "R32",
-    "Round of 16": "R16",
-    "Quarter-final": "QF",
-    "Semi-final": "SF",
-    Final: "Final",
+    'Round of 32': 'R32',
+    'Round of 16': 'R16',
+    'Quarter-final': 'QF',
+    'Semi-final': 'SF',
+    Final: 'Final',
   };
 
   return map[name] || name;

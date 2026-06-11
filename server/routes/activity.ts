@@ -23,18 +23,23 @@ router.get('/', async (req: Request, res: Response) => {
 
   const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
-  const countResult = await db.execute(`SELECT COUNT(*) as total FROM activity_log ${where}`, params);
+  const countResult = await db.execute(
+    `SELECT COUNT(*) as total FROM activity_log ${where}`,
+    params,
+  );
   const total = (countResult.rows[0] as any).total;
 
   const offset = (page - 1) * limit;
-  const rows = (await db.execute(
-    `SELECT * FROM activity_log ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
-    [...params, limit, offset],
-  )).rows;
+  const rows = (
+    await db.execute(
+      `SELECT * FROM activity_log ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+      [...params, limit, offset],
+    )
+  ).rows;
 
   const logs = rows.map((r: any) => ({
     ...r,
-    created_at: r.created_at ? r.created_at.replace(" ", "T") + "+07:00" : null,
+    created_at: r.created_at ? r.created_at.replace(' ', 'T') + '+07:00' : null,
   }));
 
   res.json({ logs, total, page, totalPages: Math.ceil(total / limit) });

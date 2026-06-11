@@ -37,20 +37,19 @@ export function usePlacePrediction() {
 
       previousPredictions.forEach(([queryKey, data]) => {
         const queryParams =
-          typeof queryKey[1] === 'object' && queryKey[1] !== null ? queryKey[1] as {
-            userId?: string;
-            matchId?: string;
-          } : undefined;
+          typeof queryKey[1] === 'object' && queryKey[1] !== null
+            ? (queryKey[1] as {
+                userId?: string;
+                matchId?: string;
+              })
+            : undefined;
 
         if (queryParams?.userId && queryParams.userId !== variables.userId) return;
         if (queryParams?.matchId && queryParams.matchId !== variables.matchId) return;
 
         const next = (data ?? []).filter(
           (prediction) =>
-            !(
-              prediction.user_id === variables.userId &&
-              prediction.match_id === variables.matchId
-            )
+            !(prediction.user_id === variables.userId && prediction.match_id === variables.matchId),
         );
 
         queryClient.setQueryData<Prediction[]>(queryKey, [...next, optimisticPrediction]);

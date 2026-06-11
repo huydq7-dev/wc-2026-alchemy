@@ -1,6 +1,6 @@
-import { useParams, Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { useParams, Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
 import {
   Trophy,
   Target,
@@ -13,13 +13,13 @@ import {
   Medal,
   Zap,
   Eye,
-} from "lucide-react";
-import { api } from "@/api/client";
-import { cn } from "@/lib/utils";
-import type { UserProfile as UserProfileType } from "@/types";
-import PageHeader from "@/components/PageHeader";
-import FlagImage from "@/components/FlagImage";
-import { Badge } from "@/components/ui/badge";
+} from 'lucide-react';
+import { api } from '@/api/client';
+import { cn } from '@/lib/utils';
+import type { UserProfile as UserProfileType } from '@/types';
+import PageHeader from '@/components/PageHeader';
+import FlagImage from '@/components/FlagImage';
+import { Badge } from '@/components/ui/badge';
 
 function StatTile({
   label,
@@ -37,7 +37,7 @@ function StatTile({
       {Icon && <Icon className="w-5 h-5 text-white/16" />}
       <div>
         <p className="text-[10px] uppercase tracking-[0.18em] text-white/32">{label}</p>
-        <p className={cn("font-display text-xl mt-0.5", color || "text-white")}>{value}</p>
+        <p className={cn('font-display text-xl mt-0.5', color || 'text-white')}>{value}</p>
       </div>
     </div>
   );
@@ -67,7 +67,7 @@ export default function UserProfile() {
   const { id } = useParams<{ id: string }>();
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["userProfile", id],
+    queryKey: ['userProfile', id],
     queryFn: () => api.getUserProfile(id!),
     enabled: !!id,
   });
@@ -94,7 +94,10 @@ export default function UserProfile() {
     return (
       <div className="py-20 text-center text-white/45">
         <p className="text-lg">User not found</p>
-        <Link to="/leaderboard" className="text-[#60E6F6] text-sm mt-2 inline-block hover:underline">
+        <Link
+          to="/leaderboard"
+          className="text-[#60E6F6] text-sm mt-2 inline-block hover:underline"
+        >
           Back to Leaderboard
         </Link>
       </div>
@@ -102,10 +105,20 @@ export default function UserProfile() {
   }
 
   const profile = data as UserProfileType;
-  const { user, stats, recentForm, streak, favoriteTeam, underdogRate, bestStage, clutchRate, biggestWin } = profile;
+  const {
+    user,
+    stats,
+    recentForm,
+    streak,
+    favoriteTeam,
+    underdogRate,
+    bestStage,
+    clutchRate,
+    biggestWin,
+  } = profile;
 
   const rankMedal =
-    stats.rank === 1 ? "🥇" : stats.rank === 2 ? "🥈" : stats.rank === 3 ? "🥉" : null;
+    stats.rank === 1 ? '🥇' : stats.rank === 2 ? '🥈' : stats.rank === 3 ? '🥉' : null;
 
   return (
     <div className="space-y-6">
@@ -143,14 +156,10 @@ export default function UserProfile() {
               Rank #{stats.rank}
             </span>
             {user.created_at && (
-              <span className="text-xs text-white/28">
-                Joined {user.created_at.slice(0, 10)}
-              </span>
+              <span className="text-xs text-white/28">Joined {user.created_at.slice(0, 10)}</span>
             )}
             {user.paid && (
-              <Badge className="bg-[#60E6F6]/12 text-[#60E6F6] border-0 text-[10px]">
-                Paid
-              </Badge>
+              <Badge className="bg-[#60E6F6]/12 text-[#60E6F6] border-0 text-[10px]">Paid</Badge>
             )}
           </div>
         </div>
@@ -166,18 +175,27 @@ export default function UserProfile() {
         <StatTile
           icon={Trophy}
           label="Points"
-          value={`${stats.totalPoints > 0 ? "+" : ""}${stats.totalPoints}`}
-          color={stats.totalPoints >= 0 ? "text-[#60E6F6]" : "text-[#FFD890]"}
+          value={`${stats.totalPoints > 0 ? '+' : ''}${stats.totalPoints}`}
+          color={stats.totalPoints >= 0 ? 'text-[#60E6F6]' : 'text-[#FFD890]'}
         />
-        <StatTile icon={Percent} label="Win Rate" value={`${stats.winRate}%`} color="text-[#9DEFF9]" />
-        <StatTile icon={Swords} label="W / L / D" value={`${stats.wins} / ${stats.losses} / ${stats.draws}`} />
+        <StatTile
+          icon={Percent}
+          label="Win Rate"
+          value={`${stats.winRate}%`}
+          color="text-[#9DEFF9]"
+        />
+        <StatTile
+          icon={Swords}
+          label="W / L / D"
+          value={`${stats.wins} / ${stats.losses} / ${stats.draws}`}
+        />
         <StatTile icon={Target} label="Total Bets" value={stats.totalBets} />
         <StatTile icon={Eye} label="Pending" value={stats.pendingBets} color="text-white/55" />
         <StatTile
           icon={Zap}
           label="Debt"
-          value={stats.debtPaid ? "Done" : `${stats.debt.toLocaleString()} VND`}
-          color={stats.debtPaid ? "text-[#60E6F6]" : "text-[#FFD890]"}
+          value={stats.debtPaid ? 'Done' : `${stats.debt.toLocaleString()} VND`}
+          color={stats.debtPaid ? 'text-[#60E6F6]' : 'text-[#FFD890]'}
         />
       </motion.div>
 
@@ -195,10 +213,10 @@ export default function UserProfile() {
               <span
                 key={i}
                 className={cn(
-                  "inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold",
-                  r === "W" && "bg-[#60E6F6]/15 text-[#60E6F6]",
-                  r === "L" && "bg-[#FFD890]/15 text-[#FFD890]",
-                  r === "D" && "bg-white/8 text-white/40",
+                  'inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold',
+                  r === 'W' && 'bg-[#60E6F6]/15 text-[#60E6F6]',
+                  r === 'L' && 'bg-[#FFD890]/15 text-[#FFD890]',
+                  r === 'D' && 'bg-white/8 text-white/40',
                 )}
               >
                 {r}
@@ -207,11 +225,16 @@ export default function UserProfile() {
           </div>
           {streak !== 0 && (
             <div className="flex items-center gap-1.5">
-              <Flame className={cn("w-4 h-4", streak > 0 ? "text-[#FFD890]" : "text-white/28")} />
-              <span className={cn("text-xs font-medium", streak > 0 ? "text-[#FFD890]" : "text-white/40")}>
+              <Flame className={cn('w-4 h-4', streak > 0 ? 'text-[#FFD890]' : 'text-white/28')} />
+              <span
+                className={cn(
+                  'text-xs font-medium',
+                  streak > 0 ? 'text-[#FFD890]' : 'text-white/40',
+                )}
+              >
                 {streak > 0
                   ? `On a ${streak}-win streak!`
-                  : `${Math.abs(streak)} loss${streak < -1 ? "es" : ""} in a row`}
+                  : `${Math.abs(streak)} loss${streak < -1 ? 'es' : ''} in a row`}
               </span>
             </div>
           )}
@@ -243,7 +266,11 @@ export default function UserProfile() {
             <span className="text-xs text-white/36 ml-1">underdog picks</span>
           </p>
           <p className="text-[10px] text-white/28 mt-0.5">
-            {underdogRate > 60 ? "Loves the risky side" : underdogRate > 40 ? "Balanced picker" : "Plays it safe"}
+            {underdogRate > 60
+              ? 'Loves the risky side'
+              : underdogRate > 40
+                ? 'Balanced picker'
+                : 'Plays it safe'}
           </p>
         </InsightCard>
 
@@ -261,7 +288,11 @@ export default function UserProfile() {
             <span className="text-xs text-white/36 ml-1">minority wins</span>
           </p>
           <p className="text-[10px] text-white/28 mt-0.5">
-            {clutchRate > 60 ? "Thrives against the crowd" : clutchRate > 30 ? "Goes with the flow" : "Follows the herd"}
+            {clutchRate > 60
+              ? 'Thrives against the crowd'
+              : clutchRate > 30
+                ? 'Goes with the flow'
+                : 'Follows the herd'}
           </p>
         </InsightCard>
       </motion.div>
@@ -282,15 +313,19 @@ export default function UserProfile() {
               </div>
               <div className="flex items-center gap-3 flex-wrap">
                 <span className="text-lg">{biggestWin.team_a_flag}</span>
-                <span className="text-sm text-white/70">{biggestWin.team_a_name} vs {biggestWin.team_b_name}</span>
+                <span className="text-sm text-white/70">
+                  {biggestWin.team_a_name} vs {biggestWin.team_b_name}
+                </span>
                 <span className="text-lg">{biggestWin.team_b_flag}</span>
               </div>
               <p className="text-xs text-white/36 mt-2">
-                Picked{" "}
+                Picked{' '}
                 <span className="text-white/70">
                   {biggestWin.pickedFlag} {biggestWin.pickedTeam}
-                </span>{" "}
-                when only <span className="text-[#60E6F6] font-medium">{biggestWin.minorityPercent}%</span> of the pool agreed
+                </span>{' '}
+                when only{' '}
+                <span className="text-[#60E6F6] font-medium">{biggestWin.minorityPercent}%</span> of
+                the pool agreed
                 <span className="mx-2 text-white/16">·</span>
                 {biggestWin.stage}
               </p>
@@ -306,7 +341,9 @@ export default function UserProfile() {
         transition={{ delay: 0.3 }}
         className="app-panel p-4"
       >
-        <h3 className="font-display text-lg tracking-[0.12em] text-white mb-4">Prediction History</h3>
+        <h3 className="font-display text-lg tracking-[0.12em] text-white mb-4">
+          Prediction History
+        </h3>
         <UserPredictionList userId={id!} />
       </motion.div>
     </div>
@@ -315,13 +352,19 @@ export default function UserProfile() {
 
 function UserPredictionList({ userId }: { userId: string }) {
   const { data, isLoading } = useQuery({
-    queryKey: ["predictions", "history", userId],
+    queryKey: ['predictions', 'history', userId],
     queryFn: () => api.getUserHistory(userId),
     enabled: !!userId,
   });
 
   if (isLoading) {
-    return <div className="space-y-2">{[...Array(5)].map((_, i) => <div key={i} className="h-12 bg-white/5 rounded animate-pulse" />)}</div>;
+    return (
+      <div className="space-y-2">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="h-12 bg-white/5 rounded animate-pulse" />
+        ))}
+      </div>
+    );
   }
 
   if (!data?.predictions?.length) {
@@ -337,15 +380,23 @@ function UserPredictionList({ userId }: { userId: string }) {
           className="flex items-center justify-between rounded-none border border-white/5 bg-white/[0.02] p-3 hover:border-white/10 transition-colors"
         >
           <div className="flex items-center gap-2 min-w-0">
-            <FlagImage code={pred.team_a_code} size={40} className="w-5 h-4 object-cover shrink-0" />
+            <FlagImage
+              code={pred.team_a_code}
+              size={40}
+              className="w-5 h-4 object-cover shrink-0"
+            />
             <span className="text-xs text-white/48 truncate">
               {pred.team_a_name} vs {pred.team_b_name}
             </span>
-            <FlagImage code={pred.team_b_code} size={40} className="w-5 h-4 object-cover shrink-0" />
+            <FlagImage
+              code={pred.team_b_code}
+              size={40}
+              className="w-5 h-4 object-cover shrink-0"
+            />
           </div>
           <div className="flex items-center gap-2 shrink-0 ml-2">
             <FlagImage
-              code={pred.pick === "A" ? pred.team_a_code : pred.team_b_code}
+              code={pred.pick === 'A' ? pred.team_a_code : pred.team_b_code}
               size={40}
               className="w-4 h-3 object-cover"
             />
@@ -353,13 +404,13 @@ function UserPredictionList({ userId }: { userId: string }) {
               <Badge
                 variant="outline"
                 className={cn(
-                  "text-[10px]",
-                  pred.result === "win" && "border-[#60E6F6]/20 text-[#9DEFF9]",
-                  pred.result === "lose" && "border-[#F5A623]/20 text-[#FFD890]",
-                  pred.result === "draw" && "border-white/12 text-white/55",
+                  'text-[10px]',
+                  pred.result === 'win' && 'border-[#60E6F6]/20 text-[#9DEFF9]',
+                  pred.result === 'lose' && 'border-[#F5A623]/20 text-[#FFD890]',
+                  pred.result === 'draw' && 'border-white/12 text-white/55',
                 )}
               >
-                {pred.result === "win" ? "+1" : pred.result === "lose" ? "-1" : "0"}
+                {pred.result === 'win' ? '+1' : pred.result === 'lose' ? '-1' : '0'}
               </Badge>
             )}
           </div>

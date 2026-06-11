@@ -12,10 +12,10 @@ router.get('/', async (_req: Request, res: Response) => {
   const users = (await db.execute('SELECT * FROM users')).rows as any[];
   const predictions = (await db.execute('SELECT * FROM predictions')).rows as any[];
 
-  const userDebts = users.map(user => {
-    const userPreds = predictions.filter(p => p.user_id === user.id);
-    const losses = userPreds.filter(p => p.result === 'lose').length;
-    const wins = userPreds.filter(p => p.result === 'win').length;
+  const userDebts = users.map((user) => {
+    const userPreds = predictions.filter((p) => p.user_id === user.id);
+    const losses = userPreds.filter((p) => p.result === 'lose').length;
+    const wins = userPreds.filter((p) => p.result === 'win').length;
     const debt = losses * BET_AMOUNT;
     const totalPoints = wins - losses;
     return {
@@ -30,20 +30,20 @@ router.get('/', async (_req: Request, res: Response) => {
   });
 
   const totalFund = userDebts.reduce((sum, u) => sum + u.debt, 0);
-  const paidCount = userDebts.filter(u => u.paid).length;
-  const unpaidCount = userDebts.filter(u => !u.paid).length;
+  const paidCount = userDebts.filter((u) => u.paid).length;
+  const unpaidCount = userDebts.filter((u) => !u.paid).length;
 
   // Prize distribution based on leaderboard ranking
   const ranked = [...userDebts].sort((a, b) => b.totalPoints - a.totalPoints);
   const prizes = PRIZE_PERCENTAGES.map((pct, i) => ({
     rank: i + 1,
     percentage: pct,
-    amount: Math.round(totalFund * pct / 100),
+    amount: Math.round((totalFund * pct) / 100),
     user: ranked[i] || null,
   }));
 
-  const paidUsers = userDebts.filter(u => u.paid);
-  const unpaidUsers = userDebts.filter(u => !u.paid).sort((a, b) => b.debt - a.debt);
+  const paidUsers = userDebts.filter((u) => u.paid);
+  const unpaidUsers = userDebts.filter((u) => !u.paid).sort((a, b) => b.debt - a.debt);
 
   res.json({
     betAmount: BET_AMOUNT,

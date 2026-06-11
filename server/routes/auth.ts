@@ -46,10 +46,12 @@ router.post('/change-pin', async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'New PIN must be at least 4 digits' });
   }
 
-  const user = (await db.execute({
-    sql: 'SELECT * FROM users WHERE id = ?',
-    args: [userId],
-  })).rows[0] as any;
+  const user = (
+    await db.execute({
+      sql: 'SELECT * FROM users WHERE id = ?',
+      args: [userId],
+    })
+  ).rows[0] as any;
 
   if (!user) return res.status(404).json({ error: 'User not found' });
   if (user.pin !== oldPin) return res.status(401).json({ error: 'Wrong current PIN' });
@@ -67,10 +69,12 @@ router.post('/reset-pin', requireAdmin, async (req: Request, res: Response) => {
 
   if (!userId) return res.status(400).json({ error: 'Missing userId' });
 
-  const user = (await db.execute({
-    sql: 'SELECT * FROM users WHERE id = ?',
-    args: [userId],
-  })).rows[0] as any;
+  const user = (
+    await db.execute({
+      sql: 'SELECT * FROM users WHERE id = ?',
+      args: [userId],
+    })
+  ).rows[0] as any;
 
   if (!user) return res.status(404).json({ error: 'User not found' });
 
