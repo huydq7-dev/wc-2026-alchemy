@@ -9,7 +9,7 @@ import './index.css'
 
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: { staleTime: 10_000, retry: 1 },
+    queries: { staleTime: 60_000, retry: 1, gcTime: 5 * 60_000 },
   },
 })
 

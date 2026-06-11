@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { useEffect, lazy, Suspense } from 'react'
 import Layout from '@/components/Layout'
 import Login from '@/pages/Login'
+import ErrorBoundary from '@/components/ErrorBoundary'
 import { useGameStore } from '@/store/useGameStore'
 import { useUsers } from '@/hooks/useUsers'
 
@@ -58,21 +59,23 @@ function ProtectedRoutes() {
 
   return (
     <Layout>
-      <Suspense fallback={<PageLoader />}>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/schedule" element={<Schedule />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/match/:id" element={<MatchDetail />} />
-          <Route path="/rules" element={<Rules />} />
-          <Route path="/fund" element={<Fund />} />
-          <Route path="/standings" element={<Standings />} />
-          <Route path="/activity" element={<Activity />} />
-          <Route path="/squad/:teamCode" element={<Squad />} />
-          <Route path="/user/:id" element={<UserProfile />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/schedule" element={<Schedule />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/match/:id" element={<MatchDetail />} />
+            <Route path="/rules" element={<Rules />} />
+            <Route path="/fund" element={<Fund />} />
+            <Route path="/standings" element={<Standings />} />
+            <Route path="/activity" element={<Activity />} />
+            <Route path="/squad/:teamCode" element={<Squad />} />
+            <Route path="/user/:id" element={<UserProfile />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
+      </ErrorBoundary>
     </Layout>
   )
 }
