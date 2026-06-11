@@ -71,6 +71,7 @@ export function usePlacePrediction() {
       });
       queryClient.invalidateQueries({ queryKey: ['matches', variables.matchId] });
       queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
+      queryClient.invalidateQueries({ queryKey: ['pickStats'] });
       toast.success('Prediction placed!');
     },
   });
@@ -81,5 +82,15 @@ export function useUserHistory(userId: string) {
     queryKey: ['predictions', 'history', userId],
     queryFn: () => api.getUserHistory(userId),
     enabled: !!userId,
+  });
+}
+
+export function usePickStats(matchIds: string[]) {
+  const ids = matchIds.filter(Boolean);
+  return useQuery({
+    queryKey: ['pickStats', ids],
+    queryFn: () => api.getPickStats(ids),
+    enabled: ids.length > 0,
+    staleTime: 60_000,
   });
 }
