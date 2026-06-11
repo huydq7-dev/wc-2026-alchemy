@@ -54,6 +54,13 @@ export default function MatchCard({
     placePrediction.mutate({ userId: currentUserId, matchId: match.id, pick });
   };
 
+  const handleSaveDeal = (deal: string, dealSide: 'A' | 'B') => {
+    api.updateMatch(match.id, { deal, deal_side: dealSide }).then(() => {
+      queryClient.invalidateQueries({ queryKey: ['matches'] });
+      setShowDealEditor(false);
+    });
+  };
+
   const scoreDisplay =
     match.score_a !== null && match.score_b !== null
       ? `${match.score_a} - ${match.score_b}`

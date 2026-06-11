@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Clock, HelpCircle, Radio } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, HelpCircle, Radio, Pencil } from 'lucide-react';
 import PageHeader from '@/components/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,9 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import LiveBadge from '@/components/LiveBadge';
 import DealBadge from '@/components/DealBadge';
+import DealEditor from '@/components/DealEditor';
 import LiveMatchPanel from '@/components/LiveMatchPanel';
 import { useMatch } from '@/hooks/useMatches';
 import { useLiveMatch } from '@/hooks/useLiveMatch';
+import { useGameStore } from '@/store/useGameStore';
+import { useQueryClient } from '@tanstack/react-query';
+import { api } from '@/api/client';
 import FlagImage from '@/components/FlagImage';
 import { cn } from '@/lib/utils';
 
@@ -17,12 +22,24 @@ export default function MatchDetail() {
   const { id } = useParams<{ id: string }>();
   const { data: match, isLoading } = useMatch(id!);
 
+  const queryClient = useQueryClient();
+  const isAdmin = useGameStore((s) => s.currentUser?.isAdmin || false);
+  const [showDealEditor, setShowDealEditor] = useState(false);
+
   // Live data from Highlightly — must be before any early return (Rules of Hooks)
   const liveMatch = useLiveMatch({
     teamA: match?.team_a_name ?? '',
     teamB: match?.team_b_name ?? '',
     date: match?.date ?? '',
   });
+
+  const handleSaveDeal = (deal: string, dealSide: 'A' | 'B') => {
+    if (!match) return;
+    api.updateMatch(match.id, { deal, deal_side: dealSide }).then(() => {
+      queryClient.invalidateQueries({ queryKey: ['matches'] });
+      setShowDealEditor(false);
+    });
+  };
 
   if (isLoading) {
     return (
@@ -102,11 +119,22 @@ export default function MatchDetail() {
               ) : (
                 <span className="font-display text-2xl text-white">{match.time}</span>
               )}
-              <DealBadge
-                deal={match.deal}
-                dealSide={match.deal_side as 'A' | 'B'}
-                teamAName={match.team_a_name}
-              />
+              <div className="flex items-center gap-1">
+                <DealBadge
+                  deal={match.deal}
+                  dealSide={match.deal_side as 'A' | 'B'}
+                  teamAName={match.team_a_name}
+                />
+                {isAdmin && (
+                  <button
+                    onClick={() => setShowDealEditor(true)}
+                    className="text-white/26 transition-colors hover:text-accent"
+                    title="Edit deal"
+                  >
+                    <Pencil className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className="flex flex-col items-center gap-2 flex-1 min-w-0">
@@ -307,6 +335,14 @@ export default function MatchDetail() {
           )}
         </div>
       </div>
+
+      {showDealEditor && (
+        <DealEditor
+          match={match}
+          onSave={handleSaveDeal}
+          onClose={() => setShowDealEditor(false)}
+        />
+      )}
     </div>
   );
 }
