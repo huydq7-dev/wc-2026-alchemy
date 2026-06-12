@@ -34,7 +34,7 @@ export default function LeaderboardTable({ entries }: Props) {
               <th className="text-center py-3 px-4">Draws</th>
               <th className="text-center py-3 px-4">Pending</th>
               <th className="text-center py-3 px-4">Win Rate</th>
-              <th className="text-center py-3 px-4">Debt</th>
+              <th className="text-center py-3 px-4">Point</th>
             </tr>
           </thead>
           <tbody>
@@ -99,7 +99,7 @@ export default function LeaderboardTable({ entries }: Props) {
                             : 'border-[#F5A623]/20 text-[#FFD890]'
                         }
                       >
-                        {entry.debtPaid ? 'Done' : `${entry.debt.toLocaleString()} VND`}
+                        {entry.debtPaid ? 'Settled' : `${entry.debt.toLocaleString()} pts`}
                       </Badge>
                     ) : (
                       <Badge variant="outline" className="border-white/6 text-white/32">

@@ -98,7 +98,7 @@ const rules = [
     id: 'R05',
     title: 'Bet Amount & Prize Pool',
     content:
-      'Each bet = 5,000 VND. Lose → owe 5,000 VND. Win or Draw → no charge. At end of tournament, total debt forms the prize pool, drink and party together.',
+      'Each bet = 5,000 pts. Lose → owe 5,000 pts. Win or Draw → 0 pts. At end of tournament, total debt forms the prize pool, drink and party together.',
     order: 5,
   },
   {

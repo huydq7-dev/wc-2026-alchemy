@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Clock, Radio, Pencil } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, Pencil } from 'lucide-react';
 import PageHeader from '@/components/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,9 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import LiveBadge from '@/components/LiveBadge';
 import DealBadge from '@/components/DealBadge';
 import DealEditor from '@/components/DealEditor';
-import LiveMatchPanel from '@/components/LiveMatchPanel';
 import { useMatch } from '@/hooks/useMatches';
-import { useLiveMatch } from '@/hooks/useLiveMatch';
 import { useGameStore } from '@/store/useGameStore';
 import { useQueryClient } from '@tanstack/react-query';
 import { api } from '@/api/client';
@@ -25,13 +23,6 @@ export default function MatchDetail() {
   const queryClient = useQueryClient();
   const isAdmin = useGameStore((s) => s.currentUser?.isAdmin || false);
   const [showDealEditor, setShowDealEditor] = useState(false);
-
-  // Live data from Highlightly — must be before any early return (Rules of Hooks)
-  const liveMatch = useLiveMatch({
-    teamA: match?.team_a_name ?? '',
-    teamB: match?.team_b_name ?? '',
-    date: match?.date ?? '',
-  });
 
   const handleSaveDeal = (deal: string, dealSide: 'A' | 'B') => {
     if (!match) return;
@@ -157,32 +148,8 @@ export default function MatchDetail() {
         </CardContent>
       </Card>
 
-      {/* ── Live Data + Predictions (2-col on desktop) ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        {/* Live Data Panel */}
-        <div className="lg:col-span-3">
-          {liveMatch.hlMatchId ? (
-            <LiveMatchPanel
-              detail={liveMatch.detail}
-              lineups={liveMatch.lineups}
-              stats={liveMatch.stats}
-              isLive={isLive || liveMatch.isLive}
-              isFetching={liveMatch.isFetching}
-            />
-          ) : !liveMatch.isLoading && (isLive || isUpcoming || isFinished) ? (
-            <Card>
-              <CardContent className="py-6 text-center">
-                <Radio className="w-5 h-5 text-white/15 mx-auto mb-2" />
-                <p className="text-xs text-white/30">
-                  Live data will appear here when available from Highlightly.
-                </p>
-              </CardContent>
-            </Card>
-          ) : null}
-        </div>
-
-        {/* Predictions sidebar */}
-        <div className="lg:col-span-2">
+      {/* Predictions */}
+      <div className="max-w-2xl mx-auto">
           {predictions.length > 0 ? (
             <Card>
               <CardHeader>
@@ -223,27 +190,27 @@ export default function MatchDetail() {
                       <>
                         <Separator className="my-2.5 bg-white/5" />
                         <div className="flex items-center justify-between text-[11px]">
-                          <span className="text-white/32">Pool if {match.team_a_name} wins</span>
+                          <span className="text-white/32">Debt if {match.team_a_name} wins</span>
                           <span className="text-[#60E6F6] font-medium">
                             {picksB * 5000 > 0
-                              ? `${(picksB * 5000).toLocaleString()}đ`
-                              : '0đ'}
+                              ? `${(picksB * 5000).toLocaleString()} pts`
+                              : '0 pts'}
                           </span>
                         </div>
                         <div className="flex items-center justify-between text-[11px] mt-1">
-                          <span className="text-white/32">Pool if {match.team_b_name} wins</span>
+                          <span className="text-white/32">Debt if {match.team_b_name} wins</span>
                           <span className="text-[#F5A623] font-medium">
                             {picksA * 5000 > 0
-                              ? `${(picksA * 5000).toLocaleString()}đ`
-                              : '0đ'}
+                              ? `${(picksA * 5000).toLocaleString()} pts`
+                              : '0 pts'}
                           </span>
                         </div>
                         <p className="text-[9px] text-white/20 mt-2">
                           {picksB > 0
-                            ? `${picksB} loser${picksB > 1 ? 's' : ''} × 5,000đ`
+                            ? `${picksB} loser${picksB > 1 ? 's' : ''} × 5,000 pts`
                             : 'No losers'}{' '}
                           ~ {picksA > 0
-                            ? `${picksA} loser${picksA > 1 ? 's' : ''} × 5,000đ`
+                            ? `${picksA} loser${picksA > 1 ? 's' : ''} × 5,000 pts`
                             : 'No losers'}
                         </p>
                       </>
@@ -334,7 +301,6 @@ export default function MatchDetail() {
             </p>
           )}
         </div>
-      </div>
 
       {showDealEditor && (
         <DealEditor

@@ -4,7 +4,6 @@ import { requireAdmin } from '../middleware/admin.js';
 import { requireSingleValue } from '../utils/request.js';
 
 const BET_AMOUNT = 5000;
-const PRIZE_PERCENTAGES = [40, 30, 20, 10];
 
 const router = Router();
 
@@ -24,35 +23,25 @@ router.get('/', async (_req: Request, res: Response) => {
       avatar: user.avatar,
       losses,
       debt,
-      paid: !!user.debt_paid,
+      settled: !!user.debt_paid,
       totalPoints,
     };
   });
 
   const totalFund = userDebts.reduce((sum, u) => sum + u.debt, 0);
-  const paidCount = userDebts.filter((u) => u.paid).length;
-  const unpaidCount = userDebts.filter((u) => !u.paid).length;
+  const settledCount = userDebts.filter((u) => u.settled).length;
+  const unsettledCount = userDebts.filter((u) => !u.settled).length;
 
-  // Prize distribution based on leaderboard ranking
-  const ranked = [...userDebts].sort((a, b) => b.totalPoints - a.totalPoints);
-  const prizes = PRIZE_PERCENTAGES.map((pct, i) => ({
-    rank: i + 1,
-    percentage: pct,
-    amount: Math.round((totalFund * pct) / 100),
-    user: ranked[i] || null,
-  }));
-
-  const paidUsers = userDebts.filter((u) => u.paid);
-  const unpaidUsers = userDebts.filter((u) => !u.paid).sort((a, b) => b.debt - a.debt);
+  const settledUsers = userDebts.filter((u) => u.settled);
+  const unsettledUsers = userDebts.filter((u) => !u.settled).sort((a, b) => b.debt - a.debt);
 
   res.json({
     betAmount: BET_AMOUNT,
     totalFund,
-    paidCount,
-    unpaidCount,
-    paidUsers,
-    unpaidUsers,
-    prizes,
+    settledCount,
+    unsettledCount,
+    settledUsers,
+    unsettledUsers,
   });
 });
 

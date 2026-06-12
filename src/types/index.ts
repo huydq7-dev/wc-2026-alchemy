@@ -112,11 +112,10 @@ export interface LeaderboardData {
 export interface FundData {
   betAmount: number;
   totalFund: number;
-  paidCount: number;
-  unpaidCount: number;
-  paidUsers: DebtUser[];
-  unpaidUsers: DebtUser[];
-  prizes: PrizeInfo[];
+  settledCount: number;
+  unsettledCount: number;
+  settledUsers: DebtUser[];
+  unsettledUsers: DebtUser[];
 }
 
 export interface DebtUser {
@@ -125,15 +124,8 @@ export interface DebtUser {
   avatar: string;
   losses: number;
   debt: number;
-  paid: boolean;
+  settled: boolean;
   totalPoints: number;
-}
-
-export interface PrizeInfo {
-  rank: number;
-  percentage: number;
-  amount: number;
-  user: LeaderboardEntry | null;
 }
 
 export interface Rule {

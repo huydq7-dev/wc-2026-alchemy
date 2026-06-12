@@ -159,7 +159,7 @@ export default function UserProfile() {
               <span className="text-xs text-white/28">Joined {user.created_at.slice(0, 10)}</span>
             )}
             {user.paid && (
-              <Badge className="bg-[#60E6F6]/12 text-[#60E6F6] border-0 text-[10px]">Paid</Badge>
+              <Badge className="bg-[#60E6F6]/12 text-[#60E6F6] border-0 text-[10px]">Settled</Badge>
             )}
           </div>
         </div>
@@ -194,7 +194,7 @@ export default function UserProfile() {
         <StatTile
           icon={Zap}
           label="Debt"
-          value={stats.debtPaid ? 'Done' : `${stats.debt.toLocaleString()} VND`}
+          value={stats.debtPaid ? 'Settled' : `${stats.debt.toLocaleString()} pts`}
           color={stats.debtPaid ? 'text-[#60E6F6]' : 'text-[#FFD890]'}
         />
       </motion.div>
