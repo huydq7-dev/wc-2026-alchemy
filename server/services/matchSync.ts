@@ -38,9 +38,10 @@ export async function syncMatchResults(): Promise<{ updated: number; details: st
   let updated = 0;
 
   try {
-    // Fetch WC matches for today and yesterday (to catch recently finished)
-    const today = new Date().toISOString().slice(0, 10);
-    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    // Fetch WC matches for today and yesterday in ICT (UTC+7)
+    const ictNow = new Date(Date.now() + 7 * 60 * 60 * 1000);
+    const today = ictNow.toISOString().slice(0, 10);
+    const yesterday = new Date(ictNow.getTime() - 86400000).toISOString().slice(0, 10);
 
     const allHLMatches = [...(await getMatches(today)), ...(await getMatches(yesterday))];
 
@@ -67,8 +68,8 @@ export async function syncMatchResults(): Promise<{ updated: number; details: st
         away: parseInt(hl.away_score) || 0,
       };
 
-      // Skip if no real score
-      if (hlScore.home === 0 && hlScore.away === 0 && hl.home_score === '0') continue;
+      // Skip if Highlightly has no score data at all (null/undefined/empty string)
+      if (hl.home_score == null || hl.home_score === '') continue;
 
       // Check if update is needed
       const scoreChanged = dbMatch.score_a !== hlScore.home || dbMatch.score_b !== hlScore.away;

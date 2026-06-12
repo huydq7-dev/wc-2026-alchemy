@@ -7,6 +7,14 @@ interface MatchInfo {
   date: string;
 }
 
+const STALE_MATCHES = 600_000; // 10 min — match list per date is stable
+const STALE_DETAIL_LIVE = 60_000; // 1 min — live detail changes
+const STALE_DETAIL = 300_000; // 5 min — upcoming/finished detail
+const STALE_LINEUPS = 1_800_000; // 30 min — lineups don't change once published
+const STALE_STATS = 86_400_000; // 24 h — finished stats never change
+
+const GC = 3_600_000; // 1 h — keep unused data in cache
+
 export function useLiveMatch({ teamA, teamB, date }: MatchInfo) {
   const hasTeams = !!teamA && !!teamB && !!date;
 
@@ -15,7 +23,9 @@ export function useLiveMatch({ teamA, teamB, date }: MatchInfo) {
     queryKey: ['live', 'matches', date],
     queryFn: () => api.getLiveMatches(date),
     enabled: hasTeams,
-    refetchInterval: 300_000, // 5 min — server caches, poll gently
+    staleTime: STALE_MATCHES,
+    gcTime: GC,
+    refetchInterval: STALE_MATCHES,
   });
 
   // Step 2: find the matching Highlightly match by team names (fuzzy)
@@ -27,24 +37,36 @@ export function useLiveMatch({ teamA, teamB, date }: MatchInfo) {
     return (home.includes(a) || a.includes(home)) && (away.includes(b) || b.includes(away));
   });
 
-  // Step 3: fetch detail & lineups for the matched Highlightly match
+  const isLive = ['1H', '2H', 'HT', 'Live', 'live'].includes(hlMatch?.status ?? '');
+  const isFinished = hlMatch?.status === 'Finished';
+
+  // Step 3: fetch detail for the matched Highlightly match
   const detailQuery = useQuery({
     queryKey: ['live', 'match', hlMatch?.id],
     queryFn: () => api.getLiveMatch(hlMatch!.id),
     enabled: !!hlMatch?.id,
-    refetchInterval: (query) => {
-      const status = query.state.data?.match?.status;
-      return status === 'live' || status === '1H' || status === '2H' || status === 'HT'
-        ? 60_000
-        : 300_000;
-    },
+    staleTime: isLive ? STALE_DETAIL_LIVE : STALE_DETAIL,
+    gcTime: GC,
+    refetchInterval: isLive ? 60_000 : 300_000,
   });
 
+  // Step 4: lineups — only for upcoming/live, skip for finished
   const lineupsQuery = useQuery({
     queryKey: ['live', 'lineups', hlMatch?.id],
     queryFn: () => api.getLiveLineups(hlMatch!.id),
-    enabled: !!hlMatch?.id,
-    refetchInterval: 300_000,
+    enabled: !!hlMatch?.id && !isFinished,
+    staleTime: STALE_LINEUPS,
+    gcTime: GC,
+    refetchInterval: STALE_LINEUPS,
+  });
+
+  // Step 5: stats — only for finished matches (server caches 24h)
+  const statsQuery = useQuery({
+    queryKey: ['live', 'stats', hlMatch?.id],
+    queryFn: () => api.getLiveStats(hlMatch!.id),
+    enabled: !!hlMatch?.id && isFinished,
+    staleTime: STALE_STATS,
+    gcTime: GC,
   });
 
   return {
@@ -52,7 +74,8 @@ export function useLiveMatch({ teamA, teamB, date }: MatchInfo) {
     isLoading: matchesQuery.isLoading,
     detail: detailQuery.data?.match ?? null,
     lineups: lineupsQuery.data?.lineups ?? null,
-    isLive: ['1H', '2H', 'HT', 'Live', 'live'].includes(hlMatch?.status ?? ''),
+    stats: statsQuery.data?.statistics ?? null,
+    isLive,
     isFetching: detailQuery.isFetching,
   };
 }

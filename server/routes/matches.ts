@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import db from '../db.js';
-import { calculateResult, isPickAllowed } from '../gameLogic.js';
+import { calculateResult, getEffectiveStatus, isPickAllowed } from '../gameLogic.js';
 import { requireAdmin } from '../middleware/admin.js';
 import { logActivity } from '../services/activity.js';
 import { getSingleValue, isPick, requireSingleValue } from '../utils/request.js';
@@ -27,7 +27,11 @@ router.get('/', async (req: Request, res: Response) => {
     query += ' ORDER BY date, time';
 
     const result = await db.execute(query, params);
-    res.json(result.rows);
+    const rows = result.rows.map((row: any) => ({
+      ...row,
+      status: getEffectiveStatus(row.status, row.date, row.time),
+    }));
+    res.json(rows);
   } catch (err: any) {
     console.error('[matches] list error:', err.message);
     res.status(500).json({ error: 'Failed to fetch matches' });
@@ -36,10 +40,13 @@ router.get('/', async (req: Request, res: Response) => {
 
 router.get('/next', async (_req: Request, res: Response) => {
   try {
-    const result = await db.execute(
-      "SELECT * FROM matches WHERE status = 'upcoming' ORDER BY date, time LIMIT 1",
-    );
-    res.json(result.rows[0] || null);
+    const result = await db.execute('SELECT * FROM matches ORDER BY date, time');
+    const upcoming = result.rows.filter((row: any) => {
+      const s = getEffectiveStatus(row.status, row.date, row.time);
+      return s === 'upcoming';
+    });
+    const next = upcoming[0] || null;
+    res.json(next ? { ...next, status: 'upcoming' } : null);
   } catch (err: any) {
     console.error('[matches] next error:', err.message);
     res.status(500).json({ error: 'Failed to fetch next match' });
@@ -49,8 +56,10 @@ router.get('/next', async (_req: Request, res: Response) => {
 router.get('/:id', async (req: Request, res: Response) => {
   try {
     const id = requireSingleValue(req.params.id);
-    const match = (await db.execute('SELECT * FROM matches WHERE id = ?', [id])).rows[0];
-    if (!match) return res.status(404).json({ error: 'Match not found' });
+    const row = (await db.execute('SELECT * FROM matches WHERE id = ?', [id])).rows[0] as any;
+    if (!row) return res.status(404).json({ error: 'Match not found' });
+
+    const match = { ...row, status: getEffectiveStatus(row.status, row.date, row.time) };
 
     const predictions = (
       await db.execute(
@@ -186,10 +195,11 @@ router.patch('/:id', requireAdmin, async (req: Request, res: Response) => {
 router.get('/:id/pickable', async (req: Request, res: Response) => {
   try {
     const id = requireSingleValue(req.params.id);
-    const match = (await db.execute('SELECT * FROM matches WHERE id = ?', [id])).rows[0] as any;
-    if (!match) return res.status(404).json({ error: 'Match not found' });
+    const row = (await db.execute('SELECT * FROM matches WHERE id = ?', [id])).rows[0] as any;
+    if (!row) return res.status(404).json({ error: 'Match not found' });
 
-    const allowed = match.status === 'upcoming' && isPickAllowed(match.date, match.time);
+    const effectiveStatus = getEffectiveStatus(row.status, row.date, row.time);
+    const allowed = effectiveStatus === 'upcoming' && isPickAllowed(row.date, row.time);
     res.json({ pickable: allowed });
   } catch (err: any) {
     console.error('[matches] pickable error:', err.message);

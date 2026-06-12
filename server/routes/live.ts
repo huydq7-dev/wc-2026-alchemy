@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getMatches, getMatchDetail, getLineups } from '../services/liveData.js';
+import { getMatches, getMatchDetail, getLineups, getFinishedMatchStats } from '../services/liveData.js';
 
 const router = Router();
 
@@ -26,6 +26,17 @@ router.get('/match/:id', async (req, res) => {
   } catch (err: any) {
     console.error('[live] match detail error:', err.message);
     res.status(502).json({ error: 'Live data unavailable' });
+  }
+});
+
+// GET /api/live/match/:id/stats — statistics (cached 24h for finished matches)
+router.get('/match/:id/stats', async (req, res) => {
+  try {
+    const data = await getFinishedMatchStats(req.params.id);
+    res.json({ ...data, updated: new Date().toISOString() });
+  } catch (err: any) {
+    console.error('[live] stats error:', err.message);
+    res.status(502).json({ error: 'Stats unavailable' });
   }
 });
 

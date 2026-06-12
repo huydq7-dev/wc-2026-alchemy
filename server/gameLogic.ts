@@ -28,3 +28,30 @@ export function isPickAllowed(matchDate: string, matchTime: string): boolean {
   const deadlineDate = new Date(matchDateObj.getTime() - 30 * 60 * 1000);
   return new Date() < deadlineDate;
 }
+
+const MATCH_DURATION_MS = 150 * 60 * 1000; // 2.5h covers 90min + halftime + added time
+
+/**
+ * Derive the real match status from kickoff time vs. current time.
+ * DB status is treated as the source of truth when it's 'finished'
+ * (admin-confirmed with scores), otherwise we compute from time.
+ */
+export function getEffectiveStatus(
+  dbStatus: string,
+  matchDate: string,
+  matchTime: string,
+): 'upcoming' | 'live' | 'finished' {
+  if (dbStatus === 'finished') return 'finished';
+
+  const matchStart = new Date(`${matchDate}T${matchTime}:00+07:00`).getTime();
+  const now = Date.now();
+
+  if (dbStatus === 'live') {
+    return now > matchStart + MATCH_DURATION_MS ? 'finished' : 'live';
+  }
+
+  // DB says 'upcoming' — verify against clock
+  if (now < matchStart) return 'upcoming';
+  if (now < matchStart + MATCH_DURATION_MS) return 'live';
+  return 'finished';
+}

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Clock3, Trophy } from 'lucide-react';
 import FlagImage from '@/components/FlagImage';
-import { cn } from '@/lib/utils';
+import { cn, getEffectiveStatus } from '@/lib/utils';
 import type { BracketData, BracketMatch, BracketRound } from '@/types';
 
 interface Props {
@@ -276,7 +276,10 @@ function MatchCard({ match, side }: { match: BracketMatch; side: 'left' | 'right
       <TeamLine team={match.team_b} score={match.score_b} isWinner={teamBWon} side={side} />
       <div className="flex items-center justify-between border-t border-black/10 px-2 py-1 text-[9px] uppercase tracking-[0.14em] text-black/55">
         <span>
-          {match.status === 'finished' ? 'Finished' : match.status === 'live' ? 'Live' : 'Upcoming'}
+          {(function () {
+            const s = getEffectiveStatus(match.status, match.date, match.time);
+            return s === 'finished' ? 'Finished' : s === 'live' ? 'Live' : 'Upcoming';
+          })()}
         </span>
         <span className="flex items-center gap-1">
           <Clock3 className="h-2.5 w-2.5" />

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronRight, Pencil, Users, BarChart3 } from 'lucide-react';
+import { ChevronRight, Pencil, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import LiveBadge from './LiveBadge';
@@ -9,18 +9,16 @@ import DealBadge from './DealBadge';
 import DealEditor from './DealEditor';
 import { useGameStore } from '@/store/useGameStore';
 import { usePlacePrediction } from '@/hooks/usePredictions';
-import { useLiveMatch } from '@/hooks/useLiveMatch';
 import { useQueryClient } from '@tanstack/react-query';
 import { api } from '@/api/client';
 import FlagImage from '@/components/FlagImage';
-import { cn } from '@/lib/utils';
+import { cn, getEffectiveStatus } from '@/lib/utils';
 import type { Match } from '@/types';
 
 interface Props {
   match: Match;
   userPick?: 'A' | 'B' | null;
   showPickButtons?: boolean;
-  showOdds?: boolean;
   pickStats?: { a: number; b: number; total: number; aPct: number; bPct: number } | null;
 }
 
@@ -28,26 +26,35 @@ export default function MatchCard({
   match,
   userPick,
   showPickButtons = true,
-  showOdds = false,
   pickStats,
 }: Readonly<Props>) {
   const currentUserId = useGameStore((s) => s.currentUser?.id || '');
   const isAdmin = useGameStore((s) => s.currentUser?.isAdmin || false);
   const placePrediction = usePlacePrediction();
   const queryClient = useQueryClient();
-  const isUpcoming = match.status === 'upcoming';
+  const effectiveStatus = getEffectiveStatus(match.status, match.date, match.time);
+  const isUpcoming = effectiveStatus === 'upcoming';
+  const isLive = effectiveStatus === 'live';
+  const isFinished = effectiveStatus === 'finished';
   const isPicked = !!userPick;
   const [showDealEditor, setShowDealEditor] = useState(false);
+  const [showScoreEditor, setShowScoreEditor] = useState(false);
+  const [scoreA, setScoreA] = useState(match.score_a ?? 0);
+  const [scoreB, setScoreB] = useState(match.score_b ?? 0);
 
-  // Win probabilities from Highlightly — only fetch for upcoming (pre-match only)
-  const liveMatch = useLiveMatch({
-    teamA: showOdds && isUpcoming ? match.team_a_name : '',
-    teamB: showOdds && isUpcoming ? match.team_b_name : '',
-    date: showOdds && isUpcoming ? match.date : '',
-  });
-  const odds = liveMatch.detail?.predictions ?? null;
-  const isLive = match.status === 'live';
-  const isFinished = match.status === 'finished';
+  const handleSaveScore = () => {
+    api
+      .updateMatch(match.id, {
+        status: 'finished',
+        score_a: scoreA,
+        score_b: scoreB,
+      })
+      .then(() => {
+        queryClient.invalidateQueries({ queryKey: ['matches'] });
+        queryClient.invalidateQueries({ queryKey: ['match', match.id] });
+        setShowScoreEditor(false);
+      });
+  };
 
   const handlePick = (pick: 'A' | 'B') => {
     if (!isUpcoming) return;
@@ -136,7 +143,69 @@ export default function MatchCard({
                 </button>
               )}
             </div>
-            <span className="font-display text-2xl tracking-wider text-white">{scoreDisplay}</span>
+            {showScoreEditor ? (
+              <div
+                className="flex items-center gap-1"
+                onClick={(e) => e.preventDefault()}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSaveScore();
+                  if (e.key === 'Escape') setShowScoreEditor(false);
+                }}
+              >
+                <input
+                  type="number"
+                  value={scoreA}
+                  onChange={(e) => setScoreA(Number(e.target.value))}
+                  className="w-10 h-7 text-center text-sm font-display bg-white/5 border border-white/10 rounded text-white"
+                  autoFocus
+                />
+                <span className="text-white/30 text-sm">-</span>
+                <input
+                  type="number"
+                  value={scoreB}
+                  onChange={(e) => setScoreB(Number(e.target.value))}
+                  className="w-10 h-7 text-center text-sm font-display bg-white/5 border border-white/10 rounded text-white"
+                />
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSaveScore();
+                  }}
+                  className="ml-1 px-1.5 py-0.5 text-[10px] bg-[#60E6F6] text-[#09112B] rounded"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowScoreEditor(false);
+                  }}
+                  className="px-1 py-0.5 text-[10px] text-white/30 hover:text-white"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (isAdmin && !isUpcoming) {
+                    setScoreA(match.score_a ?? 0);
+                    setScoreB(match.score_b ?? 0);
+                    setShowScoreEditor(true);
+                  }
+                }}
+                className={cn(
+                  'font-display text-2xl tracking-wider',
+                  isAdmin && !isUpcoming
+                    ? 'text-white hover:text-[#60E6F6] cursor-pointer'
+                    : 'text-white cursor-default',
+                )}
+                title={isAdmin && !isUpcoming ? 'Click to update score' : undefined}
+              >
+                {scoreDisplay}
+              </button>
+            )}
           </div>
 
           {/* Team B */}
@@ -182,30 +251,6 @@ export default function MatchCard({
               />
             </div>
             <span className="text-[#F5A623] font-medium w-8">{pickStats.bPct}%</span>
-          </div>
-        </div>
-      )}
-
-      {/* Win Probabilities (Highlightly) */}
-      {odds && isUpcoming && (
-        <div className="mt-2 pt-2 border-t border-white/5">
-          <div className="flex items-center gap-1.5 mb-1">
-            <BarChart3 className="w-3 h-3 text-white/20" />
-            <span className="text-[10px] text-white/30">Win Probability</span>
-          </div>
-          <div className="flex items-center gap-1 text-[10px]">
-            <span className="text-white/50 w-8 text-right">{odds.home}%</span>
-            <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-white/5 flex">
-              <div className="h-full bg-[#60E6F6]/60" style={{ width: `${odds.home}%` }} />
-              <div className="h-full bg-white/15" style={{ width: `${odds.draw}%` }} />
-              <div className="h-full bg-[#F5A623]/60" style={{ width: `${odds.away}%` }} />
-            </div>
-            <span className="text-white/50 w-8">{odds.away}%</span>
-          </div>
-          <div className="flex justify-between text-[9px] text-white/20 mt-0.5 px-9">
-            <span>{match.team_a_name.slice(0, 3).toUpperCase()}</span>
-            <span>D {odds.draw}%</span>
-            <span>{match.team_b_name.slice(0, 3).toUpperCase()}</span>
           </div>
         </div>
       )}

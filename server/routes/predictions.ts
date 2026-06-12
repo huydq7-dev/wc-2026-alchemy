@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import db from '../db.js';
-import { isPickAllowed } from '../gameLogic.js';
+import { getEffectiveStatus, isPickAllowed } from '../gameLogic.js';
 import { logActivity } from '../services/activity.js';
 import { getSingleValue, isPick, requireSingleValue } from '../utils/request.js';
 
@@ -51,7 +51,8 @@ router.post('/', async (req: Request, res: Response) => {
     const match = (await db.execute({ sql: 'SELECT * FROM matches WHERE id = ?', args: [matchId] }))
       .rows[0] as any;
     if (!match) return res.status(404).json({ error: 'Match not found' });
-    if (match.status !== 'upcoming')
+    const effectiveStatus = getEffectiveStatus(match.status, match.date, match.time);
+    if (effectiveStatus !== 'upcoming')
       return res.status(400).json({ error: 'Match has already started or finished' });
     if (!isPickAllowed(match.date, match.time))
       return res

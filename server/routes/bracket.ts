@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import db from '../db.js';
+import { getEffectiveStatus } from '../gameLogic.js';
 
 const router = Router();
 
@@ -32,7 +33,7 @@ router.get('/', async (_req: Request, res: Response) => {
           score_a: m.score_a,
           score_b: m.score_b,
           venue: m.venue,
-          status: m.status,
+          status: getEffectiveStatus(m.status, m.date, m.time),
         })),
       });
     }

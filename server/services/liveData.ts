@@ -1,10 +1,12 @@
 // Highlightly Football API cache layer
 // World Cup 2026 league ID: 1635
-// Actual API base: soccer.highlightly.net (RapidAPI key works here too)
+// Primary: RapidAPI (higher quota), Fallback: direct soccer.highlightly.net
 
-const BASE = 'https://soccer.highlightly.net';
+const BASE_RAPID = 'https://sport-highlights-api.p.rapidapi.com/football';
+const BASE_DIRECT = 'https://soccer.highlightly.net';
 const LEAGUE_ID = '1635';
 const API_KEY = process.env.HIGHLIGHTLY_API_KEY || '';
+const RAPID_KEY = process.env.RAPIDAPI_KEY || '';
 
 interface CacheEntry<T> {
   data: T;
@@ -14,9 +16,9 @@ interface CacheEntry<T> {
 const cache = new Map<string, CacheEntry<any>>();
 
 const TTL = {
-  live: 60_000,
-  upcoming: 600_000, // 10 min — odds don't change frequently
-  finished: 1_800_000, // 30 min — finished matches never change
+  live: 120_000,              // 2 min — live scores change frequently
+  upcoming: 1_800_000,        // 30 min — lineups/schedule change slowly
+  finished: 86_400_000,       // 24 h — finished match data never changes
 };
 
 // ── Actual API response shapes ──
@@ -134,14 +136,45 @@ function isStale(key: string): boolean {
   return Date.now() - entry.ts > (cache.get(key + ':ttl')?.data ?? TTL.upcoming);
 }
 
-let rateLimitedUntil: number | null = null;
+let rapidRateLimitedUntil: number | null = null;
+let directRateLimitedUntil: number | null = null;
 
 async function fetchHL<T>(path: string, params: Record<string, string> = {}): Promise<T> {
-  if (rateLimitedUntil && Date.now() < rateLimitedUntil) {
+  // Try RapidAPI first (higher quota BASIC plan), fall back to direct
+  if (RAPID_KEY && !(rapidRateLimitedUntil && Date.now() < rapidRateLimitedUntil)) {
+    try {
+      // path is like "/matches" or "/statistics/123" — prepend BASE_RAPID (has /football)
+      const url = new URL(BASE_RAPID + path);
+      Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+      const res = await fetch(url.toString(), {
+        headers: {
+          'x-rapidapi-key': RAPID_KEY,
+          'x-rapidapi-host': 'sport-highlights-api.p.rapidapi.com',
+        },
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json?.message?.includes('breached')) throw new Error('rapid-limited');
+        return json;
+      }
+      if (res.status === 429) {
+        rapidRateLimitedUntil = Date.now() + 60_000;
+        throw new Error('rapid-rate-limited');
+      }
+    } catch (e: any) {
+      if (e.message === 'rapid-limited') rapidRateLimitedUntil = Date.now() + 300_000;
+      // Don't fall through to direct — it has a tiny quota. Callers serve cached data.
+      if (e.message === 'rapid-limited' || e.message === 'rapid-rate-limited') throw e;
+      // For network errors, still try direct as fallback
+    }
+  }
+
+  // Fallback: direct Highlightly (only when RapidAPI not rate-limited)
+  if (directRateLimitedUntil && Date.now() < directRateLimitedUntil) {
     throw new Error('Highlightly rate limited — using cached data');
   }
 
-  const url = new URL(path, BASE);
+  const url = new URL(path, BASE_DIRECT);
   Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
 
   const res = await fetch(url.toString(), {
@@ -149,16 +182,13 @@ async function fetchHL<T>(path: string, params: Record<string, string> = {}): Pr
   });
 
   if (!res.ok) {
-    if (res.status === 429) {
-      rateLimitedUntil = Date.now() + 60_000;
-    }
+    if (res.status === 429) directRateLimitedUntil = Date.now() + 60_000;
     throw new Error(`Highlightly API ${res.status}: ${res.statusText}`);
   }
 
-  // Detect rate-limit message in 200 response body (Highlightly quirk)
   const json = await res.json();
   if (json?.message?.includes('breached your daily request limits')) {
-    rateLimitedUntil = Date.now() + 300_000;
+    directRateLimitedUntil = Date.now() + 300_000;
     throw new Error('Highlightly rate limited — using cached data');
   }
 
@@ -194,14 +224,18 @@ function normalizeMatch(m: HLMatch): RawMatch {
 }
 
 function normalizeEvents(raw: any[]): MatchEvent[] {
-  return raw.map((e: any) => ({
-    time: String(e.time ?? e.minute ?? ''),
-    type: e.type ?? e.event ?? '',
-    player: e.player ?? e.player_name ?? '',
-    team: e.team ?? e.team_name ?? '',
-    assist: e.assist ?? undefined,
-    substituted: e.substituted ?? undefined,
-  }));
+  return raw.map((e: any) => {
+    const player = e.player ?? e.player_name ?? '';
+    const team = e.team ?? e.team_name ?? '';
+    return {
+      time: String(e.time ?? e.minute ?? ''),
+      type: e.type ?? e.event ?? '',
+      player: typeof player === 'string' ? player : player?.name ?? '',
+      team: typeof team === 'string' ? team : team?.name ?? '',
+      assist: e.assist ?? undefined,
+      substituted: e.substituted ?? undefined,
+    };
+  });
 }
 
 function normalizeStats(raw: { statistics: any[]; team: { name: string } }[]): MatchStat[] {
@@ -212,38 +246,45 @@ function normalizeStats(raw: { statistics: any[]; team: { name: string } }[]): M
 
   return homeStats.map((hs: any, i: number) => {
     const as = awayStats[i] ?? {};
+    const type = hs.type ?? hs.name ?? '';
     return {
-      type: hs.type ?? hs.name ?? '',
+      type: typeof type === 'string' ? type : type?.name ?? '',
       home: String(hs.home ?? hs.value ?? '0'),
       away: String(as.away ?? as.value ?? '0'),
     };
   });
 }
 
-function normalizeLineup(raw: any): MatchLineups['home'] {
-  const starters = (raw.initialLineup ?? raw.starters ?? raw.startingXI ?? []).map((p: any) => ({
-    name: p.name ?? p.player ?? p.player_name ?? '',
-    number: Number(p.number ?? p.jersey ?? p.shirt ?? 0),
-    position: p.position ?? p.pos ?? p.role ?? '',
-  }));
+function safeField(value: any): string {
+  if (typeof value === 'string') return value;
+  if (value && typeof value === 'object' && 'name' in value) return String(value.name);
+  return '';
+}
 
-  const substitutes = (raw.substitutes ?? raw.subs ?? raw.bench ?? []).map((p: any) => ({
-    name: p.name ?? p.player ?? p.player_name ?? '',
+function normalizeLineup(raw: any): MatchLineups['home'] {
+  const normalizePlayer = (p: any) => ({
+    name: safeField(p.name ?? p.player ?? p.player_name ?? ''),
     number: Number(p.number ?? p.jersey ?? p.shirt ?? 0),
-    position: p.position ?? p.pos ?? p.role ?? '',
-  }));
+    position: safeField(p.position ?? p.pos ?? p.role ?? ''),
+  });
+
+  const starters = (raw.initialLineup ?? raw.starters ?? raw.startingXI ?? []).map(normalizePlayer);
+
+  const substitutes = (raw.substitutes ?? raw.subs ?? raw.bench ?? []).map(normalizePlayer);
 
   return { formation: raw.formation ?? '4-4-2', starters, substitutes };
 }
 
 // ── Public API ──
 
+const TIMEZONE = 'Asia/Bangkok'; // ICT / GMT+7
+
 export async function getMatches(date?: string): Promise<RawMatch[]> {
-  const key = `matches:${date || 'today'}`;
+  const key = `matches:${date || 'today'}:${TIMEZONE}`;
 
   if (!isStale(key)) return cache.get(key)!.data;
 
-  const params: Record<string, string> = { leagueId: LEAGUE_ID };
+  const params: Record<string, string> = { leagueId: LEAGUE_ID, timezone: TIMEZONE };
   if (date) params.date = date;
 
   try {
@@ -274,9 +315,10 @@ export async function getMatchDetail(matchId: string): Promise<MatchDetail | nul
   if (!isStale(key)) return cache.get(key)!.data;
 
   try {
-    const result = await fetchHL<HLMatchDetail[]>(`/matches/${matchId}`);
-    // API returns an array with one element
-    const m = Array.isArray(result) ? result[0] : (result as any);
+    const result = await fetchHL<any>(`/matches/${matchId}`);
+    // RapidAPI wraps in {data: [...]}, direct returns array or single object
+    const raw = result?.data ?? result;
+    const m = Array.isArray(raw) ? raw[0] : raw;
 
     if (!m) return null;
 
@@ -332,21 +374,69 @@ export async function getMatchDetail(matchId: string): Promise<MatchDetail | nul
   }
 }
 
+// Dedicated stats fetch for finished matches — cache 24h (never changes)
+export async function getFinishedMatchStats(
+  matchId: string,
+): Promise<{ statistics: MatchStat[] } | null> {
+  const key = `stats:${matchId}`;
+
+  const cached = cache.get(key);
+  if (cached && Date.now() - cached.ts < TTL.finished) return cached.data;
+
+  try {
+    const path = `/statistics/${matchId}`;
+    // RapidAPI wraps data differently — try RapidAPI first
+    const result = await fetchHL<{ data?: { statistics: any[] } } | { statistics: any[] }>(path);
+
+    const rawStats: any[] =
+      (result as any).data?.statistics ||
+      (result as any).statistics ||
+      (result as any).data ||
+      [];
+
+    if (!Array.isArray(rawStats) || rawStats.length === 0) {
+      // Cache the empty result briefly so we don't hammer the API
+      cache.set(key, { data: { statistics: [] }, ts: Date.now() });
+      return { statistics: [] };
+    }
+
+    const statistics: MatchStat[] = rawStats.map((s: any) => {
+      const type = s.type ?? s.name ?? '';
+      return {
+        type: typeof type === 'string' ? type : type?.name ?? '',
+        home: String(s.home ?? s.value ?? '0'),
+        away: String(s.away ?? s.value ?? '0'),
+      };
+    });
+
+    const data = { statistics };
+    cache.set(key, { data, ts: Date.now() });
+    return data;
+  } catch (err: any) {
+    const cached = cache.get(key);
+    if (cached) return cached.data;
+    console.error('[liveData] stats error:', err.message);
+    return { statistics: [] };
+  }
+}
+
 export async function getLineups(matchId: string): Promise<MatchLineups | null> {
   const key = `lineups:${matchId}`;
 
   if (!isStale(key)) return cache.get(key)!.data;
 
   try {
-    const result = await fetchHL<HLLineups>(`/lineups/${matchId}`);
+    const result = await fetchHL<any>(`/lineups/${matchId}`);
+    // RapidAPI wraps in {data: {...}}, direct returns the object directly
+    const data = result?.data ?? result;
 
     const lineups: MatchLineups = {
-      home: normalizeLineup(result?.homeTeam ?? {}),
-      away: normalizeLineup(result?.awayTeam ?? {}),
+      home: normalizeLineup(data?.homeTeam ?? {}),
+      away: normalizeLineup(data?.awayTeam ?? {}),
     };
 
     cache.set(key, { data: lineups, ts: Date.now() });
-    cache.set(key + ':ttl', { data: TTL.live, ts: Date.now() });
+    cache.set(key + ':ttl', { data: TTL.upcoming, ts: Date.now() });
 
     return lineups;
   } catch (err: any) {

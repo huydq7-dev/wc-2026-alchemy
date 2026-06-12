@@ -7,6 +7,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useMatches } from '@/hooks/useMatches';
 import { usePredictions, usePickStats } from '@/hooks/usePredictions';
 import { useGameStore } from '@/store/useGameStore';
+import { getEffectiveStatus } from '@/lib/utils';
 import type { Match } from '@/types';
 
 type FilterTab = 'all' | 'today' | 'upcoming' | 'finished';
@@ -19,26 +20,28 @@ export default function Schedule() {
 
   const predMap = new Map((predictions || []).map((p: any) => [p.match_id, p.pick]));
 
-  // Fetch community pick stats for upcoming matches
-  const upcomingMatchIds = (matches || [])
-    .filter((m: Match) => m.status === 'upcoming')
-    .map((m: Match) => m.id);
-  const { data: pickStats } = usePickStats(upcomingMatchIds);
-
-  const today = new Date().toISOString().split('T')[0];
+  // Match dates are in ICT (UTC+7); en-CA locale gives YYYY-MM-DD
+  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Bangkok' }).format(new Date());
 
   const filteredMatches = (matches || []).filter((m: Match) => {
+    const s = getEffectiveStatus(m.status, m.date, m.time);
     switch (filter) {
       case 'today':
         return m.date === today;
       case 'upcoming':
-        return m.status === 'upcoming';
+        return s === 'upcoming';
       case 'finished':
-        return m.status === 'finished';
+        return s === 'finished';
       default:
         return true;
     }
   });
+
+  // Fetch community pick stats for upcoming matches
+  const upcomingMatchIds = filteredMatches
+    .filter((m: Match) => getEffectiveStatus(m.status, m.date, m.time) === 'upcoming')
+    .map((m: Match) => m.id);
+  const { data: pickStats } = usePickStats(upcomingMatchIds);
 
   const grouped = filteredMatches.reduce(
     (acc: Record<string, Match[]>, m: Match) => {
@@ -105,7 +108,6 @@ export default function Schedule() {
                         match={match}
                         userPick={predMap.get(match.id) || null}
                         pickStats={pickStats?.[match.id] ?? null}
-                        showOdds
                       />
                     ))}
                   </AnimatePresence>

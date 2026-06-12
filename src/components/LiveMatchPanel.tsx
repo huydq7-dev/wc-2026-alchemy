@@ -33,6 +33,7 @@ interface LineupData {
 interface Props {
   detail: any;
   lineups: LineupData | null;
+  stats?: MatchStat[] | null;
   isLive: boolean;
   isFetching: boolean;
 }
@@ -95,11 +96,23 @@ function statBarWidth(home: string, away: string): [number, number] {
   return [(h / total) * 100, (a / total) * 100];
 }
 
-export default function LiveMatchPanel({ detail, lineups, isLive, isFetching }: Props) {
+function safeStr(value: any): string {
+  if (typeof value === 'string') return value;
+  if (value && typeof value === 'object' && 'name' in value) return String(value.name);
+  return '';
+}
+
+function safeTeamName(value: any, fallback: string): string {
+  if (typeof value === 'string') return value || fallback;
+  if (value && typeof value === 'object' && 'name' in value) return String(value.name);
+  return fallback;
+}
+
+export default function LiveMatchPanel({ detail, lineups, stats: statsProp, isLive, isFetching }: Props) {
   const [tab, setTab] = useState<Tab>('events');
 
   const events: MatchEvent[] = detail?.events ?? [];
-  const stats: MatchStat[] = detail?.statistics ?? [];
+  const stats: MatchStat[] = statsProp ?? detail?.statistics ?? [];
 
   return (
     <div className="space-y-4">
@@ -157,7 +170,7 @@ export default function LiveMatchPanel({ detail, lineups, isLive, isFetching }: 
                         <span className="text-base shrink-0">{eventIcon(evt.type)}</span>
                         <div className="min-w-0 flex-1">
                           <span className={cn('text-sm font-medium', eventColor(evt.type))}>
-                            {evt.player}
+                            {safeStr(evt.player)}
                           </span>
                           {evt.assist && (
                             <span className="text-xs text-white/30 ml-1">
@@ -171,7 +184,7 @@ export default function LiveMatchPanel({ detail, lineups, isLive, isFetching }: 
                           )}
                         </div>
                         <span className="text-[10px] text-white/20 uppercase tracking-wider shrink-0">
-                          {evt.team}
+                          {safeStr(evt.team)}
                         </span>
                       </div>
                     ))}
@@ -192,7 +205,7 @@ export default function LiveMatchPanel({ detail, lineups, isLive, isFetching }: 
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm text-white/60 flex items-center gap-2">
                       <Shirt className="w-4 h-4" />
-                      {detail?.home ?? 'Home'} — {lineups.home.formation}
+                      {safeTeamName(detail?.home, 'Home')} — {lineups.home.formation}
                       <span className="text-xs text-white/30 ml-auto">{lineups.home.coach}</span>
                     </CardTitle>
                   </CardHeader>
@@ -234,7 +247,7 @@ export default function LiveMatchPanel({ detail, lineups, isLive, isFetching }: 
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm text-white/60 flex items-center gap-2">
                       <Shirt className="w-4 h-4" />
-                      {detail?.away ?? 'Away'} — {lineups.away.formation}
+                      {safeTeamName(detail?.away, 'Away')} — {lineups.away.formation}
                       <span className="text-xs text-white/30 ml-auto">{lineups.away.coach}</span>
                     </CardTitle>
                   </CardHeader>
@@ -294,9 +307,9 @@ export default function LiveMatchPanel({ detail, lineups, isLive, isFetching }: 
               <Card>
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-4 text-[10px] text-white/30 uppercase tracking-wider">
-                    <span className="w-20 text-right">{detail?.home ?? 'Home'}</span>
+                    <span className="w-20 text-right">{safeTeamName(detail?.home, 'Home')}</span>
                     <span />
-                    <span>{detail?.away ?? 'Away'}</span>
+                    <span>{safeTeamName(detail?.away, 'Away')}</span>
                   </div>
                   <div className="space-y-3">
                     {stats.map((s, i) => {
@@ -343,7 +356,7 @@ export default function LiveMatchPanel({ detail, lineups, isLive, isFetching }: 
               <CardContent className="p-4 pt-0">
                 <div className="flex items-center gap-3">
                   <div className="flex-1 text-center">
-                    <p className="text-xs text-white/40">{detail.home}</p>
+                    <p className="text-xs text-white/40">{safeTeamName(detail?.home, 'Home')}</p>
                     <p className="font-display text-lg text-[#60E6F6]">
                       {detail.predictions.home}%
                     </p>
@@ -353,7 +366,7 @@ export default function LiveMatchPanel({ detail, lineups, isLive, isFetching }: 
                     <p className="font-display text-lg text-white/30">{detail.predictions.draw}%</p>
                   </div>
                   <div className="flex-1 text-center">
-                    <p className="text-xs text-white/40">{detail.away}</p>
+                    <p className="text-xs text-white/40">{safeTeamName(detail?.away, 'Away')}</p>
                     <p className="font-display text-lg text-[#F5A623]">
                       {detail.predictions.away}%
                     </p>

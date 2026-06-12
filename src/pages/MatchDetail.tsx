@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Clock, HelpCircle, Radio, Pencil } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, Radio, Pencil } from 'lucide-react';
 import PageHeader from '@/components/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,7 +16,7 @@ import { useGameStore } from '@/store/useGameStore';
 import { useQueryClient } from '@tanstack/react-query';
 import { api } from '@/api/client';
 import FlagImage from '@/components/FlagImage';
-import { cn } from '@/lib/utils';
+import { cn, getEffectiveStatus } from '@/lib/utils';
 
 export default function MatchDetail() {
   const { id } = useParams<{ id: string }>();
@@ -61,9 +61,10 @@ export default function MatchDetail() {
     );
   }
 
-  const isLive = match.status === 'live';
-  const isFinished = match.status === 'finished';
-  const isUpcoming = match.status === 'upcoming';
+  const effectiveStatus = getEffectiveStatus(match.status, match.date, match.time);
+  const isLive = effectiveStatus === 'live';
+  const isFinished = effectiveStatus === 'finished';
+  const isUpcoming = effectiveStatus === 'upcoming';
   const hasScore = match.score_a != null && match.score_b != null;
 
   // Pool calculation from actual picks
@@ -77,7 +78,7 @@ export default function MatchDetail() {
       <PageHeader
         title="Match Detail"
         icon={<MapPin className="w-7 h-7 text-[#60E6F6]" />}
-        description="Fixture detail, final score, deal explanation, and everyone’s picks in one place."
+        description="Fixture detail, final score, and everyone’s picks in one place."
       />
 
       <Button asChild variant="ghost" className="-ml-3 text-white/65">
@@ -92,7 +93,7 @@ export default function MatchDetail() {
           <div className="flex items-center justify-center gap-2 mb-4">
             {isLive && <LiveBadge />}
             {isFinished && <Badge variant="secondary">Finished</Badge>}
-            {match.status === 'upcoming' && <Badge variant="secondary">Upcoming</Badge>}
+            {isUpcoming && <Badge variant="secondary">Upcoming</Badge>}
           </div>
 
           <p className="mb-4 text-center text-xs text-white/80">
@@ -156,38 +157,6 @@ export default function MatchDetail() {
         </CardContent>
       </Card>
 
-      {hasScore && match.dealInfo && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-white font-display text-lg flex items-center gap-2">
-              <HelpCircle className="w-5 h-5 text-[#60E6F6]" />
-              Deal Explanation
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm leading-relaxed text-white/62">{match.dealInfo.summary}</p>
-            <div className="app-panel-muted mt-3 rounded-2xl p-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-white">
-                  {match.team_a_name} ({match.score_a})
-                  {match.deal_side === 'A' && ` + (${match.deal})`}
-                </span>
-                <span className="text-white">
-                  {match.team_b_name} ({match.score_b})
-                  {match.deal_side === 'B' && ` + (${match.deal})`}
-                </span>
-              </div>
-              <Separator className="my-2 bg-white/5" />
-              <div className="flex justify-between text-sm">
-                <span className="text-white font-semibold">{match.dealInfo.adjustedA}</span>
-                <span className="text-white/36">After Deal</span>
-                <span className="text-white font-semibold">{match.dealInfo.adjustedB}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       {/* ── Live Data + Predictions (2-col on desktop) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Live Data Panel */}
@@ -196,10 +165,11 @@ export default function MatchDetail() {
             <LiveMatchPanel
               detail={liveMatch.detail}
               lineups={liveMatch.lineups}
+              stats={liveMatch.stats}
               isLive={isLive || liveMatch.isLive}
               isFetching={liveMatch.isFetching}
             />
-          ) : !liveMatch.isLoading && (isLive || match.status === 'upcoming') ? (
+          ) : !liveMatch.isLoading && (isLive || isUpcoming || isFinished) ? (
             <Card>
               <CardContent className="py-6 text-center">
                 <Radio className="w-5 h-5 text-white/15 mx-auto mb-2" />
@@ -276,6 +246,36 @@ export default function MatchDetail() {
                             ? `${picksA} loser${picksA > 1 ? 's' : ''} × 5,000đ`
                             : 'No losers'}
                         </p>
+                      </>
+                    )}
+                    {isFinished && hasScore && match.dealInfo && (
+                      <>
+                        <Separator className="my-2.5 bg-white/5" />
+                        <div className="flex items-center gap-2">
+                          <FlagImage
+                            code={
+                              match.dealInfo.adjustedA > match.dealInfo.adjustedB
+                                ? match.team_a_code
+                                : match.dealInfo.adjustedB > match.dealInfo.adjustedA
+                                  ? match.team_b_code
+                                  : ''
+                            }
+                            size={40}
+                            className="w-5 h-3.5 rounded-none object-cover"
+                          />
+                          <span className="text-xs text-white/80">
+                            {match.dealInfo.result}
+                          </span>
+                        </div>
+                        {match.deal !== '0' && (
+                          <p className="text-[10px] text-white/25 mt-1">
+                            Score {match.score_a}-{match.score_b}
+                            {match.deal_side === 'A'
+                              ? ` + ${match.deal} ${match.team_a_name}`
+                              : ` + ${match.deal} ${match.team_b_name}`}
+                            {' '}→ After deal: {match.dealInfo.adjustedA}-{match.dealInfo.adjustedB}
+                          </p>
+                        )}
                       </>
                     )}
                   </div>

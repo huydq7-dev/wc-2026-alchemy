@@ -122,6 +122,8 @@ export const api = {
   getLiveMatch: (id: string) => request<{ match: any; updated: string }>(`/live/match/${id}`),
   getLiveLineups: (matchId: string) =>
     request<{ lineups: any; updated: string }>(`/live/match/${matchId}/lineups`),
+  getLiveStats: (matchId: string) =>
+    request<{ statistics: any[]; updated: string }>(`/live/match/${matchId}/stats`),
 
   // Activity
   getActivity: (params?: { page?: number; limit?: number; action?: string; userId?: string }) => {
