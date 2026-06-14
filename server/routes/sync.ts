@@ -3,6 +3,7 @@ import { syncMatches } from '../services/openfootball.js';
 import { syncMatchResults } from '../services/matchSync.js';
 import { syncScoresFromOpenfootball } from '../services/scoreSync.js';
 import { syncScoresFromFootballData } from '../services/footballDataSync.js';
+import { syncFromWcstat, isApiAvailable } from '../services/wcstatSync.js';
 import { requireAdmin } from '../middleware/admin.js';
 
 const router = Router();
@@ -44,6 +45,21 @@ router.post('/results', requireAdmin, async (_req: Request, res: Response) => {
   } catch (err: any) {
     res.status(500).json({ error: err.message || 'Sync failed' });
   }
+});
+
+// POST /api/matches/sync/wcstat — free wcstat.orangecloud.vn score sync
+router.post('/wcstat', requireAdmin, async (_req: Request, res: Response) => {
+  try {
+    const result = await syncFromWcstat();
+    res.json(result);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Sync failed' });
+  }
+});
+
+// GET /api/matches/sync/wcstat/status — check if wcstat sync is available
+router.get('/wcstat/status', async (_req: Request, res: Response) => {
+  res.json({ available: isApiAvailable() });
 });
 
 export default router;

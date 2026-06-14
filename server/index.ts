@@ -2,6 +2,7 @@ import app from './app.js';
 import { startAutoSync } from './services/matchSync.js';
 import { startScoreSync } from './services/scoreSync.js';
 import { startFDSync } from './services/footballDataSync.js';
+import { startWcstatSync } from './services/wcstatSync.js';
 
 const PORT = process.env.PORT || 3001;
 
@@ -22,4 +23,7 @@ app.listen(PORT, () => {
   ) {
     startAutoSync(1_800_000);
   }
+
+  // Free: wcstat.orangecloud.vn — every 60s (no API key needed)
+  startWcstatSync(60_000);
 });

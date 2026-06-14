@@ -224,3 +224,32 @@ export interface UserProfile {
   clutchRate: number;
   biggestWin: BiggestWin | null;
 }
+
+export interface FreeStatsTeam {
+  teamName: string;
+  possession: number;
+  shots: number;
+  shotsOnTarget: number;
+  xg: number;
+  passes: number;
+  passAccuracy: number;
+}
+
+export interface FreeStatsEvents {
+  goals: number;
+  yellowCards: number;
+  redCards: number;
+  substitutions: number;
+}
+
+export interface FreeStatsData {
+  matchId: string;
+  slug: string;
+  status: string;
+  homeScore: number;
+  awayScore: number;
+  home: FreeStatsTeam;
+  away: FreeStatsTeam;
+  events: FreeStatsEvents;
+  updatedAt: string;
+}

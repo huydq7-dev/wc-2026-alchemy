@@ -125,6 +125,13 @@ export const api = {
   getLiveStats: (matchId: string) =>
     request<{ statistics: any[]; updated: string }>(`/live/match/${matchId}/stats`),
 
+  // Free stats (wcstat.orangecloud.vn proxy)
+  getFreeStats: (matchId: string) =>
+    request<{ data: import('@/types').FreeStatsData; updated: string }>(`/free-stats/${matchId}`),
+
+  // Wcstat sync status
+  getWcstatStatus: () => request<{ available: boolean }>('/matches/sync/wcstat/status'),
+
   // Activity
   getActivity: (params?: { page?: number; limit?: number; action?: string; userId?: string }) => {
     const sp = new URLSearchParams();

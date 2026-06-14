@@ -9,7 +9,7 @@ import DealBadge from './DealBadge';
 import DealEditor from './DealEditor';
 import { useGameStore } from '@/store/useGameStore';
 import { usePlacePrediction } from '@/hooks/usePredictions';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { api } from '@/api/client';
 import FlagImage from '@/components/FlagImage';
 import { cn, getEffectiveStatus } from '@/lib/utils';
@@ -41,6 +41,14 @@ export default function MatchCard({
   const [showScoreEditor, setShowScoreEditor] = useState(false);
   const [scoreA, setScoreA] = useState(match.score_a ?? 0);
   const [scoreB, setScoreB] = useState(match.score_b ?? 0);
+
+  const { data: wcstatStatus } = useQuery({
+    queryKey: ['wcstatStatus'],
+    queryFn: () => api.getWcstatStatus(),
+    staleTime: 60_000,
+    refetchInterval: 120_000,
+  });
+  const wcstatAvailable = wcstatStatus?.available ?? false;
 
   const handleSaveScore = () => {
     api
@@ -189,7 +197,7 @@ export default function MatchCard({
               <button
                 onClick={(e) => {
                   e.preventDefault();
-                  if (isAdmin && !isUpcoming) {
+                  if (isAdmin && !isUpcoming && !wcstatAvailable) {
                     setScoreA(match.score_a ?? 0);
                     setScoreB(match.score_b ?? 0);
                     setShowScoreEditor(true);
@@ -197,11 +205,17 @@ export default function MatchCard({
                 }}
                 className={cn(
                   'font-display text-2xl tracking-wider',
-                  isAdmin && !isUpcoming
+                  isAdmin && !isUpcoming && !wcstatAvailable
                     ? 'text-white hover:text-[#60E6F6] cursor-pointer'
                     : 'text-white cursor-default',
                 )}
-                title={isAdmin && !isUpcoming ? 'Click to update score' : undefined}
+                title={
+                  isAdmin && !isUpcoming
+                    ? wcstatAvailable
+                      ? 'Scores are synced automatically from official source'
+                      : 'Click to update score'
+                    : undefined
+                }
               >
                 {scoreDisplay}
               </button>

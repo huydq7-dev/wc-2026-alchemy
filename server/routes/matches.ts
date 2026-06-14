@@ -3,6 +3,7 @@ import db from '../db.js';
 import { calculateResult, getEffectiveStatus, isPickAllowed } from '../gameLogic.js';
 import { requireAdmin } from '../middleware/admin.js';
 import { logActivity } from '../services/activity.js';
+import { isApiAvailable } from '../services/wcstatSync.js';
 import { getSingleValue, isPick, requireSingleValue } from '../utils/request.js';
 
 const router = Router();
@@ -108,6 +109,15 @@ router.patch('/:id', requireAdmin, async (req: Request, res: Response) => {
     const { status, score_a, score_b, deal, deal_side } = req.body;
     const adminId = getSingleValue(req.headers['x-user-id']);
     if (!adminId) return res.status(401).json({ error: 'Not logged in' });
+
+    // Block manual score/status edits when wcstat API is reachable
+    const wantsScoreEdit = score_a !== undefined || score_b !== undefined;
+    const wantsStatusChange = status !== undefined;
+    if ((wantsScoreEdit || wantsStatusChange) && isApiAvailable()) {
+      return res.status(423).json({
+        error: 'Scores are synced automatically from the official source. Manual edits are only available when the sync API is unreachable.',
+      });
+    }
 
     const match = (await db.execute('SELECT * FROM matches WHERE id = ?', [id])).rows[0] as any;
     if (!match) return res.status(404).json({ error: 'Match not found' });
