@@ -3,7 +3,7 @@ import { syncMatches } from '../services/openfootball.js';
 import { syncMatchResults } from '../services/matchSync.js';
 import { syncScoresFromOpenfootball } from '../services/scoreSync.js';
 import { syncScoresFromFootballData } from '../services/footballDataSync.js';
-import { syncFromWcstat, isApiAvailable } from '../services/wcstatSync.js';
+import { syncFromWcstat, checkApiAvailable } from '../services/wcstatSync.js';
 import { requireAdmin } from '../middleware/admin.js';
 
 const router = Router();
@@ -59,7 +59,8 @@ router.post('/wcstat', requireAdmin, async (_req: Request, res: Response) => {
 
 // GET /api/matches/sync/wcstat/status — check if wcstat sync is available
 router.get('/wcstat/status', async (_req: Request, res: Response) => {
-  res.json({ available: isApiAvailable() });
+  const available = await checkApiAvailable();
+  res.json({ available });
 });
 
 export default router;

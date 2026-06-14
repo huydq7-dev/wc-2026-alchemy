@@ -77,6 +77,31 @@ export function isApiAvailable(): boolean {
   return lastSuccessfulFetch > 0 && Date.now() - lastSuccessfulFetch < 120_000;
 }
 
+let lastAvailabilityCheck = 0;
+let lastAvailabilityResult = false;
+const AVAILABILITY_CACHE_MS = 30_000;
+
+export async function checkApiAvailable(): Promise<boolean> {
+  // Return cached result if fresh
+  if (Date.now() - lastAvailabilityCheck < AVAILABILITY_CACHE_MS) {
+    return lastAvailabilityResult;
+  }
+
+  try {
+    const res = await fetch(SCHEDULE_URL, {
+      headers: { 'User-Agent': 'Mozilla/5.0', Accept: 'application/json' },
+      signal: AbortSignal.timeout(5_000),
+    });
+    lastAvailabilityResult = res.ok;
+    if (res.ok) lastSuccessfulFetch = Date.now();
+  } catch {
+    lastAvailabilityResult = false;
+  }
+
+  lastAvailabilityCheck = Date.now();
+  return lastAvailabilityResult;
+}
+
 async function recalculateAllPredictions(
   matchId: string,
   scoreA: number,
