@@ -9,7 +9,7 @@ export function useMatches(params?: { status?: string; stage?: string }) {
     queryFn: () => api.getMatches(params),
     staleTime: 60_000, // 1min — allow refetch when scores change
     refetchInterval: (data) => {
-      if (!data) return false;
+      if (!data || !Array.isArray(data)) return false;
       const hasLive = data.some(
         (m: Match) => getEffectiveStatus(m.status, m.date, m.time) === 'live',
       );
