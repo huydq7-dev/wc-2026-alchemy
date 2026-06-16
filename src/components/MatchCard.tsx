@@ -18,6 +18,7 @@ import type { Match } from '@/types';
 interface Props {
   match: Match;
   userPick?: 'A' | 'B' | null;
+  userResult?: 'win' | 'lose' | 'draw' | null;
   showPickButtons?: boolean;
   pickStats?: { a: number; b: number; total: number; aPct: number; bPct: number } | null;
 }
@@ -25,6 +26,7 @@ interface Props {
 export default function MatchCard({
   match,
   userPick,
+  userResult,
   showPickButtons = true,
   pickStats,
 }: Readonly<Props>) {
@@ -88,7 +90,10 @@ export default function MatchCard({
       className={cn(
         'app-panel relative rounded-none p-4 transition-all',
         isLive && 'border-[#17307C] shadow-lg shadow-primary/10',
-        isFinished && 'border-white/5 opacity-80',
+        isFinished && !userResult && 'border-white/5 opacity-80',
+        isFinished && userResult === 'win' && 'border-success/30 opacity-95 shadow-[0_0_18px_rgba(0,177,64,0.08)]',
+        isFinished && userResult === 'lose' && 'border-danger/15 opacity-65',
+        isFinished && userResult === 'draw' && 'border-white/5 opacity-80',
         isUpcoming && 'border-white/10 hover:border-white/20',
         isPicked && 'ring-1 ring-primary/25',
       )}
@@ -308,15 +313,37 @@ export default function MatchCard({
       )}
 
       {/* Finished: show pick result */}
-      {isFinished && userPick && (
-        <div className="flex items-center justify-center gap-2 mt-3 pt-3 border-t border-white/5">
-          <span className="flex items-center justify-center gap-1 text-xs text-white/38">
+      {isFinished && userPick && userResult && (
+        <div
+          className={cn(
+            'flex items-center justify-center gap-2 mt-3 pt-3 border-t',
+            userResult === 'win' && 'border-success/15',
+            userResult === 'lose' && 'border-danger/10',
+            userResult === 'draw' && 'border-white/5',
+          )}
+        >
+          <span
+            className={cn(
+              'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-semibold',
+              userResult === 'win' && 'bg-success/10 text-success',
+              userResult === 'lose' && 'bg-danger/8 text-danger/80',
+              userResult === 'draw' && 'bg-white/5 text-white/45',
+            )}
+          >
             <FlagImage
               code={userPick === 'A' ? match.team_a_code : match.team_b_code}
               size={40}
               className="w-4 h-3 inline-block"
             />
+            {userResult === 'win' && 'Won +1'}
+            {userResult === 'lose' && 'Lost −1'}
+            {userResult === 'draw' && 'Draw 0'}
           </span>
+        </div>
+      )}
+      {isFinished && userPick && !userResult && (
+        <div className="flex items-center justify-center gap-2 mt-3 pt-3 border-t border-white/5">
+          <span className="text-xs text-white/30">Pending result...</span>
         </div>
       )}
 

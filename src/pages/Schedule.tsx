@@ -18,7 +18,9 @@ export default function Schedule() {
   const { data: predictions } = usePredictions({ userId: currentUserId });
   const [filter, setFilter] = useState<FilterTab>('all');
 
-  const predMap = new Map((predictions || []).map((p: any) => [p.match_id, p.pick]));
+  const predMap = new Map(
+    (predictions || []).map((p: any) => [p.match_id, { pick: p.pick, result: p.result }]),
+  );
 
   // Match dates are in ICT (UTC+7); en-CA locale gives YYYY-MM-DD
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Bangkok' }).format(new Date());
@@ -102,14 +104,18 @@ export default function Schedule() {
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <AnimatePresence mode="popLayout">
-                    {dateMatches.map((match: Match) => (
-                      <MatchCard
-                        key={match.id}
-                        match={match}
-                        userPick={predMap.get(match.id) || null}
-                        pickStats={pickStats?.[match.id] ?? null}
-                      />
-                    ))}
+                    {dateMatches.map((match: Match) => {
+                      const pred = predMap.get(match.id);
+                      return (
+                        <MatchCard
+                          key={match.id}
+                          match={match}
+                          userPick={pred?.pick ?? null}
+                          userResult={pred?.result ?? null}
+                          pickStats={pickStats?.[match.id] ?? null}
+                        />
+                      );
+                    })}
                   </AnimatePresence>
                 </div>
               </div>
