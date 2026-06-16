@@ -32,7 +32,11 @@ export function useMatch(id: string) {
     queryKey: ['matches', id],
     queryFn: () => api.getMatch(id),
     enabled: !!id,
-    staleTime: 5 * 60 * 1000, // 5min — scores can change
+    staleTime: 30_000, // 30s — scores change during live
+    refetchInterval: (data) => {
+      if (!data || !data.status) return false;
+      return getEffectiveStatus(data.status, data.date, data.time) === 'live' ? 60_000 : false;
+    },
   });
 }
 
