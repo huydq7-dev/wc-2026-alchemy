@@ -199,18 +199,32 @@ export async function syncFromWcstat(): Promise<{ updated: number; details: stri
       const statusChanged = currentStatus !== newStatus;
       const scoreChanged = currentScoreA !== newScoreA || currentScoreB !== newScoreB;
 
-      if (!statusChanged && !scoreChanged) continue;
-
-      // Update match
-      await db.execute({
-        sql: 'UPDATE matches SET status = ?, score_a = ?, score_b = ? WHERE id = ?',
-        args: [newStatus, newScoreA, newScoreB, internalId],
-      });
-
-      // Cascade to predictions when scores are available and match is finished
-      if (newStatus === 'finished' && newScoreA != null && newScoreB != null) {
-        await handleFinishedMatch(internalId, newScoreA, newScoreB);
+      // Update match if anything changed
+      if (statusChanged || scoreChanged) {
+        await db.execute({
+          sql: 'UPDATE matches SET status = ?, score_a = ?, score_b = ? WHERE id = ?',
+          args: [newStatus, newScoreA, newScoreB, internalId],
+        });
       }
+
+      // Cascade to predictions when scores are available and match is finished.
+      // Run even if another sync already wrote score/status — predictions may
+      // still be pending if that sync didn't cascade.
+      if (newStatus === 'finished' && newScoreA != null && newScoreB != null) {
+        const pending = await db.execute(
+          'SELECT COUNT(*) as cnt FROM predictions WHERE match_id = ? AND result IS NULL AND auto_loss = 0',
+          [internalId],
+        );
+        const hasPending = ((pending.rows[0] as any).cnt as number) > 0;
+        if (hasPending || statusChanged || scoreChanged) {
+          await handleFinishedMatch(internalId, newScoreA, newScoreB);
+          if (hasPending && !statusChanged && !scoreChanged) {
+            console.log(`[wcstatSync] fixed pending predictions for ${internalId}`);
+          }
+        }
+      }
+
+      if (!statusChanged && !scoreChanged) continue;
 
       updated++;
       details.push(
