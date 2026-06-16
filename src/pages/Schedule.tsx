@@ -16,7 +16,7 @@ export default function Schedule() {
   const currentUserId = useGameStore((s) => s.currentUser?.id || '');
   const { data: matches, isLoading } = useMatches();
   const { data: predictions } = usePredictions({ userId: currentUserId });
-  const [filter, setFilter] = useState<FilterTab>('all');
+  const [filter, setFilter] = useState<FilterTab>('upcoming');
 
   const predMap = new Map(
     (predictions || []).map((p: any) => [p.match_id, { pick: p.pick, result: p.result }]),
