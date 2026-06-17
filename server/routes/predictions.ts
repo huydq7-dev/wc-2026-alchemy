@@ -57,7 +57,7 @@ router.post('/', async (req: Request, res: Response) => {
     if (!isPickAllowed(match.date, match.time))
       return res
         .status(400)
-        .json({ error: 'Prediction deadline has passed (30 minutes before kickoff)' });
+        .json({ error: 'Prediction deadline has passed (15 minutes before kickoff)' });
 
     const existing = (
       await db.execute({
