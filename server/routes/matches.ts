@@ -245,6 +245,82 @@ function generateDealExplanation(match: any) {
   };
 }
 
+// POST /api/matches/:id/recalculate — cascade predictions for a finished match
+// Use when scores exist but predictions are still pending (e.g. sync gap on serverless)
+router.post('/:id/recalculate', requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const id = requireSingleValue(req.params.id);
+    const match = (await db.execute('SELECT * FROM matches WHERE id = ?', [id])).rows[0] as any;
+    if (!match) return res.status(404).json({ error: 'Match not found' });
+
+    const scoreA = match.score_a;
+    const scoreB = match.score_b;
+    if (match.status !== 'finished' || scoreA == null || scoreB == null) {
+      return res.status(400).json({ error: 'Match must be finished with scores' });
+    }
+
+    const deal = match.deal as string;
+    const dealSide = (match.deal_side as 'A' | 'B') || 'A';
+
+    // Auto-loss for users who didn't predict
+    const allUsers = (await db.execute('SELECT id, name FROM users')).rows as any[];
+    const existingPreds = (
+      await db.execute('SELECT user_id FROM predictions WHERE match_id = ?', [id])
+    ).rows as any[];
+    const predictedIds = new Set(existingPreds.map((p: any) => p.user_id));
+    const missingUsers = allUsers.filter((u: any) => !predictedIds.has(u.id));
+
+    if (missingUsers.length > 0) {
+      await db.batch(
+        missingUsers.map((u: any) => ({
+          sql: "INSERT OR IGNORE INTO predictions (user_id, match_id, pick, result, points, auto_loss, created_at) VALUES (?, ?, ?, ?, ?, 1, datetime('now', '+7 hours'))",
+          args: [u.id, id, 'A', 'lose', -1],
+        })),
+        'write',
+      );
+    }
+
+    // Recalculate all non-auto_loss predictions
+    const predictions = (
+      await db.execute('SELECT * FROM predictions WHERE match_id = ? AND auto_loss = 0', [id])
+    ).rows as any[];
+
+    if (predictions.length > 0) {
+      const stmts = predictions.map((pred: any) => {
+        const result = calculateResult(scoreA, scoreB, deal, dealSide, pred.pick as 'A' | 'B');
+        const points = result === 'win' ? 1 : result === 'lose' ? -1 : 0;
+        return {
+          sql: 'UPDATE predictions SET result = ?, points = ? WHERE id = ?',
+          args: [result, points, pred.id],
+        };
+      });
+      await db.batch(stmts, 'write');
+    }
+
+    const adminId = getSingleValue(req.headers['x-user-id']);
+    const admin = adminId
+      ? (await db.execute('SELECT name FROM users WHERE id = ?', [adminId])).rows[0] as any
+      : null;
+    await logActivity(
+      adminId || 'system',
+      admin?.name || 'Admin',
+      'update_result',
+      { matchId: id, match: `${match.team_a_name} vs ${match.team_b_name}`, status: 'finished', score_a: scoreA, score_b: scoreB, source: 'manual-recalculate' },
+    ).catch(() => {});
+
+    res.json({
+      ok: true,
+      match: `${match.team_a_name} vs ${match.team_b_name}`,
+      score: `${scoreA}-${scoreB}`,
+      predictionsUpdated: predictions.length,
+      autoLossCreated: missingUsers.length,
+    });
+  } catch (err: any) {
+    console.error('[matches] recalculate error:', err.message);
+    res.status(500).json({ error: 'Failed to recalculate' });
+  }
+});
+
 router.post('/sync-odds', requireAdmin, async (req: Request, res: Response) => {
   try {
     const { syncOdds } = await import('../services/odds.js');

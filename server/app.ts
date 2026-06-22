@@ -15,6 +15,7 @@ import activityRouter from './routes/activity.js';
 import teamsRouter from './routes/teams.js';
 import liveRouter from './routes/live.js';
 import freeStatsRouter from './routes/freeStats.js';
+import cronRouter from './routes/cron.js';
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.use('/api/activity', activityRouter);
 app.use('/api/teams', teamsRouter);
 app.use('/api/live', liveRouter);
 app.use('/api/free-stats', freeStatsRouter);
+app.use('/api/cron', cronRouter);
 
 // Health check
 app.get('/api/health', (_req, res) => {

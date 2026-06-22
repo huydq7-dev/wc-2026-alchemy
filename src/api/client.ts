@@ -47,6 +47,11 @@ export const api = {
     },
   ) => request(`/matches/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   getMatchPickable: (id: string) => request<{ pickable: boolean }>(`/matches/${id}/pickable`),
+  recalculateMatch: (id: string) =>
+    request<{ ok: boolean; predictionsUpdated: number; autoLossCreated: number }>(
+      `/matches/${id}/recalculate`,
+      { method: 'POST' },
+    ),
 
   // Predictions
   getPredictions: (params?: { userId?: string; matchId?: string }) => {
