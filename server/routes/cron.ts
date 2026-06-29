@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { syncFromWcstat } from '../services/wcstatSync.js';
 import { syncScoresFromFootballData } from '../services/footballDataSync.js';
 import { syncScoresFromOpenfootball } from '../services/scoreSync.js';
+import { syncMatches } from '../services/openfootball.js';
 
 const router = Router();
 
@@ -30,6 +31,14 @@ router.get('/sync', async (_req: Request, res: Response) => {
     results.scores = await syncScoresFromOpenfootball();
   } catch (err: any) {
     results.scores = { error: err.message || 'openfootball sync failed' };
+  }
+
+  // 4. openfootball team names — updates knockout placeholders (1A, 2B…) → real team names
+  try {
+    const r = await syncMatches();
+    results.teams = { updated: r.synced, details: [r.message] };
+  } catch (err: any) {
+    results.teams = { error: err.message || 'team name sync failed' };
   }
 
   const totalUpdated = Object.values(results).reduce(

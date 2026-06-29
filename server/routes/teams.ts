@@ -17,7 +17,7 @@ router.get('/', async (_req: Request, res: Response) => {
 
 // GET /api/teams/:code/squad
 router.get('/:code/squad', async (req: Request, res: Response) => {
-  const code = req.params.code.toUpperCase();
+  const code = String(req.params.code).toUpperCase();
   const squad = squads.find((s) => s.teamCode === code);
 
   if (!squad) {

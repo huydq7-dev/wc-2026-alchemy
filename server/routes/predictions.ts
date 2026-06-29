@@ -67,7 +67,7 @@ router.post('/', async (req: Request, res: Response) => {
     ).rows[0] as any;
     if (existing) {
       await db.execute({
-        sql: 'UPDATE predictions SET pick = ? WHERE id = ?',
+        sql: 'UPDATE predictions SET pick = ?, auto_loss = 0 WHERE id = ?',
         args: [pick, existing.id],
       });
     } else {

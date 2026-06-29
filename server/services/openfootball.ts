@@ -3,6 +3,14 @@ import { calculateResult } from '../gameLogic.js';
 
 const BASE = 'https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026';
 
+// Placeholder patterns: "1A", "2B", "3C/D/E", "W73", "L101", "TBD"
+function isPlaceholder(name: string): boolean {
+  if (name === 'TBD') return true;
+  if (/^\d/.test(name)) return true;       // "1A", "2B", "3C/D/E/F"
+  if (/^[WLR]\d/.test(name)) return true;  // "W73", "L101", "R74"
+  return false;
+}
+
 interface OFTeam {
   name: string;
   fifa_code: string;
@@ -169,23 +177,46 @@ export async function syncMatches(): Promise<{ synced: number; message: string }
     const hasScores = m.score1 != null && m.score2 != null;
 
     if (existingIds.has(id)) {
+      // Only update team names if the source has real team names (not placeholders).
+      // This prevents overwriting manually-confirmed teams with "1A"/"2B"/etc.
+      const existing = (await db.execute('SELECT * FROM matches WHERE id = ?', [id])).rows[0] as any;
+      const aIsReal = !isPlaceholder(m.team1);
+      const bIsReal = !isPlaceholder(m.team2);
+      const nameChanged =
+        (aIsReal && (existing.team_a_name !== m.team1 || existing.team_a_code !== team_a_code || existing.team_a_flag !== team_a_flag)) ||
+        (bIsReal && (existing.team_b_name !== m.team2 || existing.team_b_code !== team_b_code || existing.team_b_flag !== team_b_flag));
+
+      if (nameChanged) {
+        await db.execute(
+          'UPDATE matches SET team_a_name = ?, team_a_code = ?, team_a_flag = ?, team_b_name = ?, team_b_code = ?, team_b_flag = ? WHERE id = ?',
+          [
+            aIsReal ? m.team1 : existing.team_a_name,
+            aIsReal ? team_a_code : existing.team_a_code,
+            aIsReal ? team_a_flag : existing.team_a_flag,
+            bIsReal ? m.team2 : existing.team_b_name,
+            bIsReal ? team_b_code : existing.team_b_code,
+            bIsReal ? team_b_flag : existing.team_b_flag,
+            id,
+          ],
+        );
+        updated++;
+      }
+
       if (hasScores) {
-        const match = (await db.execute('SELECT * FROM matches WHERE id = ?', [id])).rows[0] as any;
         await db.execute('UPDATE matches SET status = ?, score_a = ?, score_b = ? WHERE id = ?', [
           'finished',
           m.score1!,
           m.score2!,
           id,
         ]);
-        updated++;
 
         // Recalculate predictions + auto-loss for missed picks
         await processMatchResult(
           id,
           m.score1!,
           m.score2!,
-          match.deal,
-          match.deal_side === 'B' ? 'B' : 'A',
+          existing.deal,
+          existing.deal_side === 'B' ? 'B' : 'A',
         );
       }
     } else {
